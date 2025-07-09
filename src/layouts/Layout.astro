@@ -26,7 +26,12 @@ const isAdminPage = Astro.url.pathname.startsWith('/admin');
 	<body class="bg-background text-foreground">
 		<div class="fixed top-4 right-4 z-50 flex items-center gap-4">
 			<slot name="page-actions" />
-			{isAdminPage && <ThemeToggle />}
+			{isAdminPage && (
+				<>
+					<a href="/logout" class="text-sm text-foreground/70 hover:text-primary transition-colors" title="Cerrar sesión">Logout</a>
+					<ThemeToggle />
+				</>
+			)}
 		</div>
 		<slot />
 		<style is:global>

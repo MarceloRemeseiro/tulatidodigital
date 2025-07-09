@@ -1,0 +1,73 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+let error = '';
+
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const username = formData.get('username');
+  const password = formData.get('password');
+
+  // Estas variables vienen del .env
+  const secretUser = import.meta.env.USUARIO;
+  const secretPass = import.meta.env.PASS;
+
+  if (username === secretUser && password === secretPass) {
+    // Las credenciales son correctas. Creamos la cookie.
+    Astro.cookies.set('session', 'admin-logged-in', {
+      path: '/',
+      httpOnly: true,
+      secure: import.meta.env.PROD, // Solo secure en producción
+      maxAge: 60 * 60 * 24 // 1 día
+    });
+    return Astro.redirect('/admin');
+  } else {
+    error = 'Usuario o contraseña incorrectos.';
+  }
+}
+---
+
+<Layout title="Login - Panel de Administración">
+  <div class="min-h-screen flex items-center justify-center bg-background-alt">
+    <div class="max-w-md w-full bg-background p-8 rounded-2xl shadow-xl border border-border">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-foreground">Acceso al Panel</h1>
+        <p class="text-foreground/80 mt-2">Introduce tus credenciales para continuar</p>
+      </div>
+
+      {error && (
+        <div class="bg-destructive/10 border border-destructive/20 text-destructive p-4 mb-6 rounded-lg text-center">
+          {error}
+        </div>
+      )}
+
+      <form method="POST" class="space-y-6">
+        <div>
+          <label for="username" class="block text-sm font-medium text-foreground/90">Usuario</label>
+          <input 
+            type="text" 
+            id="username" 
+            name="username" 
+            required
+            class="mt-1 block w-full px-4 py-3 bg-background border border-foreground/20 rounded-lg shadow-sm focus:ring-primary focus:border-primary"
+          >
+        </div>
+        <div>
+          <label for="password" class="block text-sm font-medium text-foreground/90">Contraseña</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            required
+            class="mt-1 block w-full px-4 py-3 bg-background border border-foreground/20 rounded-lg shadow-sm focus:ring-primary focus:border-primary"
+          >
+        </div>
+        <div>
+          <button type="submit" class="w-full bg-primary text-primary-foreground font-bold py-3 px-6 rounded-lg hover:bg-primary/90 transition-colors">
+            Entrar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</Layout> 
