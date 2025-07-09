@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "1030:4321"
+    env_file:
+      - .env
+    restart: unless-stopped 
