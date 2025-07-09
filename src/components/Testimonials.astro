@@ -1,0 +1,145 @@
+---
+---
+
+<section id="casos-exito" class="py-20 md:py-32 bg-white section-fade-in">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center">
+      <h2 class="text-3xl md:text-4xl font-extrabold text-stone-800">
+        Testimonios: Historias Reales de Éxito Real.
+      </h2>
+      <p class="mt-4 max-w-2xl mx-auto text-lg text-stone-600">
+        Clientes que Resuenan: Tu Latido, Nuestro Logro.
+      </p>
+    </div>
+    
+    <div class="mt-16 overflow-hidden relative max-w-4xl mx-auto">
+      <div id="testimonial-carousel" class="flex transition-transform duration-500 ease-in-out">
+        <!-- Los testimonios se cargarán dinámicamente -->
+      </div>
+    </div>
+    
+    <div class="text-center mt-8 flex justify-center space-x-3" id="carousel-dots">
+      <!-- Los dots se generarán dinámicamente -->
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const testimonials = [
+      {
+        quote: "Desde que trabajo con Tu Latido Digital por fin siento que mi negocio digital tiene coherencia, ritmo y resultados. Son parte de mi equipo, no un proveedor externo.",
+        name: "Laura G.",
+        company: "Emprendedora Digital"
+      },
+      {
+        quote: "No sabía que necesitaba un equipo así hasta que las conocí. Me han dado paz, foco y resultados. Recomendadas al 100%.",
+        name: "Sara R.",
+        company: "CEO de marca de productos wellness"
+      },
+      {
+        quote: "Gracias a Tu Latido Digital, nuestro ROI se disparó un 200% en tres meses. Su compromiso es inigualable y realmente sienten tu proyecto como suyo.",
+        name: "Ana García",
+        company: "CEO, Moda Sostenible"
+      },
+      {
+        quote: "Raquel y Lydia transformaron completamente nuestra estrategia digital. Pasamos de improvisar a tener un plan claro que funciona.",
+        name: "Carmen M.",
+        company: "Fundadora, Tech Startup"
+      },
+      {
+        quote: "Su enfoque integral es lo que marcó la diferencia. No solo ejecutan, sino que entienden el negocio y aportan ideas que realmente funcionan.",
+        name: "Patricia L.",
+        company: "Directora de Marketing"
+      }
+    ];
+
+    const carouselContainer = document.getElementById('testimonial-carousel');
+    const dotsContainer = document.getElementById('carousel-dots');
+    let currentTestimonial = 0;
+    let carouselInterval: number;
+
+    function renderCarousel() {
+      if (!carouselContainer || !dotsContainer) return;
+      
+      carouselContainer.innerHTML = '';
+      dotsContainer.innerHTML = '';
+      
+      testimonials.forEach((testimonial, index) => {
+        // Crear slide del testimonial
+        const slide = document.createElement('div');
+        slide.className = 'w-full flex-shrink-0 px-4';
+        slide.innerHTML = `
+                     <div class="bg-gradient-to-br from-primary-50 to-secondary-50 p-8 rounded-2xl shadow-xl border border-stone-200">
+            <p class="text-xl italic text-stone-700">"${testimonial.quote}"</p>
+            <div class="mt-6 flex items-center justify-center">
+              <div class="text-center">
+                <p class="font-bold text-primary-700">${testimonial.name}</p>
+                <p class="text-sm text-stone-500">${testimonial.company}</p>
+              </div>
+            </div>
+          </div>
+        `;
+        carouselContainer.appendChild(slide);
+
+        // Crear dot de navegación
+        const dot = document.createElement('button');
+        dot.className = `w-3 h-3 rounded-full transition ${index === currentTestimonial ? 'bg-primary-600' : 'bg-stone-300'}`;
+        dot.addEventListener('click', () => {
+          currentTestimonial = index;
+          updateCarousel();
+          resetInterval();
+        });
+        dotsContainer.appendChild(dot);
+      });
+      
+      updateCarousel();
+    }
+    
+    function updateCarousel() {
+      if (!carouselContainer || !dotsContainer) return;
+      
+      carouselContainer.style.transform = `translateX(-${currentTestimonial * 100}%)`;
+      
+      Array.from(dotsContainer.children).forEach((dot, index) => {
+        const dotElement = dot as HTMLElement;
+        dotElement.className = `w-3 h-3 rounded-full transition ${index === currentTestimonial ? 'bg-primary-600' : 'bg-stone-300'}`;
+      });
+    }
+
+    function nextTestimonial() {
+      currentTestimonial = (currentTestimonial + 1) % testimonials.length;
+      updateCarousel();
+    }
+
+    function resetInterval() {
+      clearInterval(carouselInterval);
+      carouselInterval = setInterval(nextTestimonial, 6000);
+    }
+
+    // Inicializar carousel
+    renderCarousel();
+    resetInterval();
+
+    // Pausar en hover
+    carouselContainer?.addEventListener('mouseenter', () => {
+      clearInterval(carouselInterval);
+    });
+
+    carouselContainer?.addEventListener('mouseleave', () => {
+      resetInterval();
+    });
+
+    // Navegación con teclado
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        currentTestimonial = currentTestimonial > 0 ? currentTestimonial - 1 : testimonials.length - 1;
+        updateCarousel();
+        resetInterval();
+      } else if (e.key === 'ArrowRight') {
+        nextTestimonial();
+        resetInterval();
+      }
+    });
+  });
+</script> 

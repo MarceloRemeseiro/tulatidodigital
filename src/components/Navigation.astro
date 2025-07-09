@@ -1,0 +1,166 @@
+---
+---
+
+<header id="navbar" class="bg-stone-50/80 backdrop-blur-lg fixed top-0 left-0 right-0 z-50 transition-all duration-300 shadow-md">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-20">
+      <div class="flex-shrink-0">
+        <a href="#inicio" class="flex items-center space-x-2">
+          <img src="/LOGOLATIDO.png" alt="Tu Latido Digital Logo" class="h-14 w-auto">
+          <span class="text-2xl font-bold text-gray-800 dark:text-white">
+            TU LATIDO<span class="text-secondary-600">.</span>DIGITAL
+          </span>
+        </a>
+      </div>
+      
+      <div class="hidden md:block">
+        <div class="ml-10 flex items-baseline space-x-4 nav-links">
+          <a href="#servicios" class="text-stone-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">
+            Servicios
+          </a>
+          <a href="#casos-exito" class="text-stone-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">
+            Testimonios
+          </a>
+          <a href="#nosotros" class="text-stone-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">
+            Quiénes Somos
+          </a>
+          <a href="#contacto" class="text-stone-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium">
+            Contacto
+          </a>
+        </div>
+      </div>
+      
+      <div class="hidden md:flex items-center space-x-4">
+        <button id="theme-toggle" class="p-2 rounded-lg hover:bg-stone-200 transition-colors">
+          <span id="theme-icon" class="text-xl">🌙</span>
+        </button>
+        <a href="#contacto" class="bg-gradient-brand text-white font-bold py-3 px-6 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
+          Quiero Crecer ✨
+        </a>
+      </div>
+      
+      <div class="-mr-2 flex md:hidden">
+        <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-stone-600 hover:text-primary-600 hover:bg-stone-100 focus:outline-none">
+          <span class="sr-only">Abrir menú principal</span>
+          <div id="hamburger-icon" class="block h-6 w-6">
+            <span class="block w-6 h-0.5 bg-current transform transition duration-500 ease-in-out"></span>
+            <span class="block w-6 h-0.5 bg-current mt-1.5 transform transition duration-500 ease-in-out"></span>
+            <span class="block w-6 h-0.5 bg-current mt-1.5 transform transition duration-500 ease-in-out"></span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="mobile-menu" class="md:hidden hidden">
+    <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 text-center">
+      <a href="#servicios" class="text-stone-600 hover:text-primary-600 block px-3 py-2 rounded-md text-base font-medium">
+        Servicios
+      </a>
+      <a href="#casos-exito" class="text-stone-600 hover:text-primary-600 block px-3 py-2 rounded-md text-base font-medium">
+        Testimonios
+      </a>
+      <a href="#nosotros" class="text-stone-600 hover:text-primary-600 block px-3 py-2 rounded-md text-base font-medium">
+        Quiénes Somos
+      </a>
+      <a href="#contacto" class="text-stone-600 hover:text-primary-600 block px-3 py-2 rounded-md text-base font-medium">
+        Contacto
+      </a>
+      <div class="flex justify-center space-x-4 mt-4">
+        <button id="theme-toggle-mobile" class="p-2 rounded-lg hover:bg-stone-200 transition-colors">
+          <span id="theme-icon-mobile" class="text-xl">🌙</span>
+        </button>
+        <a href="#contacto" class="block w-full text-center bg-gradient-brand text-white font-bold py-3 px-6 rounded-lg hover:opacity-90 transition-opacity">
+          Quiero Crecer ✨
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Mobile menu functionality
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const hamburgerIcon = document.getElementById('hamburger-icon');
+
+    mobileMenuButton?.addEventListener('click', () => {
+      mobileMenu?.classList.toggle('hidden');
+      if (hamburgerIcon) {
+        hamburgerIcon.children[0].classList.toggle('rotate-45');
+        hamburgerIcon.children[0].classList.toggle('translate-y-2');
+        hamburgerIcon.children[1].classList.toggle('opacity-0');
+        hamburgerIcon.children[2].classList.toggle('-rotate-45');
+        hamburgerIcon.children[2].classList.toggle('-translate-y-2');
+      }
+    });
+
+    // Close mobile menu when clicking on links
+    document.querySelectorAll('#mobile-menu a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu?.classList.add('hidden');
+        if (hamburgerIcon) {
+          hamburgerIcon.children[0].classList.remove('rotate-45', 'translate-y-2');
+          hamburgerIcon.children[1].classList.remove('opacity-0');
+          hamburgerIcon.children[2].classList.remove('-rotate-45', '-translate-y-2');
+        }
+      });
+    });
+
+    // Navbar scroll effect
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        navbar?.classList.add('shadow-xl');
+      } else {
+        navbar?.classList.remove('shadow-xl');
+      }
+    });
+
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleMobile = document.getElementById('theme-toggle-mobile');
+    const themeIcon = document.getElementById('theme-icon');
+    const themeIconMobile = document.getElementById('theme-icon-mobile');
+
+    const toggleTheme = () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      
+      const icon = newTheme === 'dark' ? '☀️' : '🌙';
+      if (themeIcon) themeIcon.textContent = icon;
+      if (themeIconMobile) themeIconMobile.textContent = icon;
+    };
+
+    themeToggle?.addEventListener('click', toggleTheme);
+    themeToggleMobile?.addEventListener('click', toggleTheme);
+
+    // Initialize theme icons
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const icon = currentTheme === 'dark' ? '☀️' : '🌙';
+    if (themeIcon) themeIcon.textContent = icon;
+    if (themeIconMobile) themeIconMobile.textContent = icon;
+
+    // Active navigation highlighting
+    const navLinks = document.querySelectorAll('.nav-links a');
+    const allSections = document.querySelectorAll('main section');
+    
+    const navObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(link => {
+            link.classList.toggle('active-nav', link.getAttribute('href')?.substring(1) === entry.target.id);
+          });
+        }
+      });
+    }, { rootMargin: '-50% 0px -50% 0px' });
+    
+    allSections.forEach(section => {
+      navObserver.observe(section);
+    });
+  });
+</script> 

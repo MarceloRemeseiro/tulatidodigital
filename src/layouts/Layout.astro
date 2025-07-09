@@ -1,0 +1,119 @@
+---
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Tu Latido Digital - Agencia de Marketing Digital especializada en Copywriting, Community Management y Media Buying" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="keywords" content="marketing digital, copywriting, community management, media buying, agencia digital">
+    <meta name="author" content="Tu Latido Digital">
+    <meta property="og:title" content={title}>
+    <meta property="og:description" content={description}>
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tulatidodigital.com">
+    <meta name="twitter:card" content="summary_large_image">
+    
+    <title>{title}</title>
+    
+    <style>
+      body {
+        font-family: 'Poppins', sans-serif;
+      }
+      
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+      }
+      
+      .hero-bg {
+        background-color: #fcfaf7;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)),
+          url('https://www.transparenttextures.com/patterns/cubes.png');
+      }
+      
+      .section-fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+      }
+      
+      .section-fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      .active-nav {
+        font-weight: 700;
+        color: #7f6ded;
+      }
+      
+      .active-toggle {
+        background-color: #7f6ded;
+        color: white;
+        border-color: #7f6ded;
+      }
+      
+      .modal {
+        transition: opacity 0.25s ease;
+      }
+      
+      /* Dark mode variables */
+      :root {
+        --bg-primary: #fcfaf7;
+        --bg-secondary: #ffffff;
+        --text-primary: #1c1917;
+        --text-secondary: #57534e;
+      }
+      
+      [data-theme="dark"] {
+        --bg-primary: #0c0a09;
+        --bg-secondary: #1c1917;
+        --text-primary: #fafaf9;
+        --text-secondary: #a8a29e;
+      }
+    </style>
+  </head>
+  <body class="bg-stone-50 text-stone-800 antialiased">
+    <slot />
+    
+    <script>
+      // Theme toggle functionality
+      const initTheme = () => {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      };
+      
+      // Initialize theme on page load
+      initTheme();
+      
+      // Smooth scrolling for anchor links
+      document.addEventListener('click', (e) => {
+        const target = e.target as HTMLAnchorElement;
+        if (target.href && target.href.includes('#')) {
+          const id = target.href.split('#')[1];
+          const element = document.getElementById(id);
+          if (element) {
+            e.preventDefault();
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      });
+    </script>
+  </body>
+</html> 
