@@ -1,0 +1,397 @@
+---
+/// <reference types="node" />
+
+import Layout from '../../layouts/Layout.astro';
+import content from '../../content/services.json';
+import type { ServiceContent } from '../../content/types';
+
+const typedContent = content as ServiceContent;
+---
+
+<Layout title="Admin - Servicios">
+  <button slot="page-actions" id="save-all-btn" class="button-primary">Guardar Cambios</button>
+
+  <div class="max-w-4xl mx-auto py-10 px-4">
+    <a href="/admin" class="text-primary hover:underline mb-4 block">&larr; Volver al panel de admin</a>
+    <h1 class="text-3xl font-bold mb-6">Editar Contenido de la Sección Servicios</h1>
+    <p class="mb-6 text-foreground/80">Todos los cambios que realices se guardarán únicamente cuando presiones el botón "Guardar Cambios" de la esquina superior derecha.</p>
+    
+    <div id="notification" class="hidden p-4 mb-4 rounded-lg"></div>
+
+    <form id="services-form">
+      <fieldset class="space-y-6 border border-foreground/20 p-6 rounded-lg">
+        <legend class="text-xl font-bold px-2">Contenido Principal</legend>
+        
+        <div>
+          <label for="title" class="block text-sm font-medium">Título Principal</label>
+          <input type="text" id="title" name="title" value={typedContent.title} class="mt-1 block w-full input">
+        </div>
+
+        <div>
+          <label for="subtitle" class="block text-sm font-medium">Subtítulo</label>
+          <textarea id="subtitle" name="subtitle" rows="3" class="mt-1 block w-full input">{typedContent.subtitle}</textarea>
+        </div>
+      </fieldset>
+
+      <fieldset class="mt-8 border border-foreground/20 p-6 rounded-lg">
+        <legend class="text-xl font-bold px-2">Paquetes Integrales</legend>
+        <div id="packages-container" class="space-y-6">
+          <!-- Los paquetes se renderizarán aquí con JS -->
+        </div>
+        <div class="mt-6">
+          <button type="button" id="add-package-btn" class="button-secondary">Añadir Paquete</button>
+        </div>
+      </fieldset>
+      
+      <fieldset class="mt-8 border border-foreground/20 p-6 rounded-lg">
+        <legend class="text-xl font-bold px-2">Servicios Individuales</legend>
+        <div id="services-container" class="space-y-6">
+          <!-- Los servicios se renderizarán aquí con JS -->
+        </div>
+        <div class="mt-6">
+          <button type="button" id="add-service-btn" class="button-secondary">Añadir Servicio</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="mt-8 space-y-6 border border-foreground/20 p-6 rounded-lg">
+        <legend class="text-xl font-bold px-2">Modal Video IA</legend>
+        <div class="space-y-4">
+          <div>
+            <label for="modal_title" class="block text-sm font-medium">Título del Modal</label>
+            <input type="text" id="modal_title" name="modal_title" value={typedContent.modal.title} class="mt-1 block w-full input">
+          </div>
+          <div>
+            <label for="modal_subtitle" class="block text-sm font-medium">Subtítulo del Modal</label>
+            <input type="text" id="modal_subtitle" name="modal_subtitle" value={typedContent.modal.subtitle} class="mt-1 block w-full input">
+          </div>
+          <div>
+            <label for="modal_paragraph" class="block text-sm font-medium">Párrafo Principal</label>
+            <textarea id="modal_paragraph" name="modal_paragraph" rows="4" class="mt-1 block w-full input">{typedContent.modal.paragraph}</textarea>
+          </div>
+          <div class="benefits-section">
+            <label class="block text-sm font-medium">Beneficios</label>
+            <div id="benefits-container" class="space-y-2 mt-2">
+              <!-- Los beneficios se renderizarán aquí -->
+            </div>
+            <button type="button" id="add-benefit-btn" class="button-secondary-outline mt-2">Añadir Beneficio</button>
+          </div>
+          <div>
+            <label for="modal_cta" class="block text-sm font-medium">Texto del Botón (CTA)</label>
+            <input type="text" id="modal_cta" name="modal_cta" value={typedContent.modal.cta} class="mt-1 block w-full input">
+          </div>
+        </div>
+      </fieldset>
+      
+    </form>
+  </div>
+</Layout>
+
+<template id="package-template">
+  <div class="package-item border-t border-foreground/10 pt-6" data-package-id="">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold">Paquete</h3>
+      <button type="button" class="button-danger delete-package-btn">Borrar Paquete</button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium">Título</label>
+        <input type="text" data-field="title" class="package-field mt-1 block w-full input">
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Descripción</label>
+        <textarea data-field="description" rows="3" class="package-field mt-1 block w-full input"></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Texto del Botón (CTA)</label>
+        <input type="text" data-field="cta" class="package-field mt-1 block w-full input">
+      </div>
+      <div class="features-section">
+        <label class="block text-sm font-medium">Características</label>
+        <div class="features-list space-y-2 mt-2">
+          <!-- Las características se renderizarán aquí -->
+        </div>
+        <button type="button" class="button-secondary-outline add-feature-btn mt-2">Añadir Característica</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template id="feature-template">
+  <div class="feature-item flex items-center gap-2">
+    <input type="text" class="feature-input flex-grow input text-sm" value="">
+    <button type="button" class="button-danger-outline delete-feature-btn">X</button>
+  </div>
+</template>
+
+<template id="service-template">
+  <div class="service-item border-t border-foreground/10 pt-6" data-service-id="">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold">Servicio</h3>
+      <button type="button" class="button-danger delete-service-btn">Borrar Servicio</button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium">Título</label>
+        <input type="text" data-field="title" class="service-field mt-1 block w-full input">
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Descripción</label>
+        <textarea data-field="description" rows="3" class="service-field mt-1 block w-full input"></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Texto del Botón (CTA)</label>
+        <input type="text" data-field="cta" class="service-field mt-1 block w-full input">
+      </div>
+    </div>
+  </div>
+</template>
+
+<template id="benefit-template">
+  <div class="benefit-item flex items-center gap-2">
+    <input type="text" class="benefit-input flex-grow input text-sm" value="">
+    <button type="button" class="button-danger-outline delete-benefit-btn">X</button>
+  </div>
+</template>
+
+<script define:vars={{ initialContent: typedContent }}>
+document.addEventListener('DOMContentLoaded', () => {
+  let content = JSON.parse(JSON.stringify(initialContent));
+
+  // FIX: Asegurarse de que todos los elementos tengan un ID para poder editarlos.
+  // Estos IDs se guardarán permanentemente al hacer clic en "Guardar Cambios".
+  content.packages.forEach(pkg => {
+    if (!pkg.id) pkg.id = crypto.randomUUID();
+  });
+  content.individualServices.forEach(service => {
+    if (!service.id) service.id = crypto.randomUUID();
+  });
+
+  const form = document.getElementById('services-form');
+  const packagesContainer = document.getElementById('packages-container');
+  const servicesContainer = document.getElementById('services-container');
+  const packageTemplate = document.getElementById('package-template');
+  const featureTemplate = document.getElementById('feature-template');
+  const serviceTemplate = document.getElementById('service-template');
+  const benefitsContainer = document.getElementById('benefits-container');
+  const benefitTemplate = document.getElementById('benefit-template');
+
+  // Funciones para renderizar el contenido (sin cambios)
+  function renderPackages() {
+    packagesContainer.innerHTML = '';
+    content.packages.forEach(pkg => {
+      const pkgEl = packageTemplate.content.cloneNode(true).firstElementChild;
+      pkgEl.dataset.packageId = pkg.id;
+      pkgEl.querySelector('[data-field="title"]').value = pkg.title;
+      pkgEl.querySelector('[data-field="description"]').value = pkg.description;
+      pkgEl.querySelector('[data-field="cta"]').value = pkg.cta;
+      const featuresList = pkgEl.querySelector('.features-list');
+      featuresList.innerHTML = '';
+      pkg.features.forEach((feature, index) => {
+        const featureEl = featureTemplate.content.cloneNode(true).firstElementChild;
+        featureEl.querySelector('.feature-input').value = feature;
+        featureEl.dataset.featureIndex = index;
+        featuresList.appendChild(featureEl);
+      });
+      packagesContainer.appendChild(pkgEl);
+    });
+  }
+
+  function renderServices() {
+    servicesContainer.innerHTML = '';
+    content.individualServices.forEach(service => {
+      const serviceEl = serviceTemplate.content.cloneNode(true).firstElementChild;
+      serviceEl.dataset.serviceId = service.id;
+      serviceEl.querySelector('[data-field="title"]').value = service.title;
+      serviceEl.querySelector('[data-field="description"]').value = service.description;
+      serviceEl.querySelector('[data-field="cta"]').value = service.cta;
+      servicesContainer.appendChild(serviceEl);
+    });
+  }
+
+  function renderBenefits() {
+    benefitsContainer.innerHTML = '';
+    content.modal.benefits.forEach((benefit, index) => {
+      const benefitEl = benefitTemplate.content.cloneNode(true).firstElementChild;
+      benefitEl.querySelector('.benefit-input').value = benefit;
+      benefitEl.dataset.benefitIndex = index;
+      benefitsContainer.appendChild(benefitEl);
+    });
+  }
+
+  function renderAll() {
+    renderPackages();
+    renderServices();
+    renderBenefits();
+  }
+  
+  // RENDERIZADO
+  function renderPackages() {
+    packagesContainer.innerHTML = '';
+    content.packages.forEach(pkg => {
+      const pkgEl = packageTemplate.content.cloneNode(true).firstElementChild;
+      pkgEl.dataset.packageId = pkg.id;
+      pkgEl.querySelector('[data-field="title"]').value = pkg.title;
+      pkgEl.querySelector('[data-field="description"]').value = pkg.description;
+      pkgEl.querySelector('[data-field="cta"]').value = pkg.cta;
+      const featuresList = pkgEl.querySelector('.features-list');
+      featuresList.innerHTML = '';
+      pkg.features.forEach((feature, index) => {
+        const featureEl = featureTemplate.content.cloneNode(true).firstElementChild;
+        featureEl.querySelector('.feature-input').value = feature;
+        featureEl.dataset.featureIndex = index;
+        featuresList.appendChild(featureEl);
+      });
+      packagesContainer.appendChild(pkgEl);
+    });
+  }
+
+  function renderServices() {
+    servicesContainer.innerHTML = '';
+    content.individualServices.forEach(service => {
+      const serviceEl = serviceTemplate.content.cloneNode(true).firstElementChild;
+      serviceEl.dataset.serviceId = service.id;
+      serviceEl.querySelector('[data-field="title"]').value = service.title;
+      serviceEl.querySelector('[data-field="description"]').value = service.description;
+      serviceEl.querySelector('[data-field="cta"]').value = service.cta;
+      servicesContainer.appendChild(serviceEl);
+    });
+  }
+
+  // MANEJO DE CLICS (Añadir/Borrar) - SOLO LOCAL
+  form.addEventListener('click', (e) => {
+    const target = e.target;
+    if (target.id === 'add-package-btn') {
+      content.packages.push({ id: crypto.randomUUID(), title: 'Nuevo Paquete', description: '', features: [], cta: 'Saber Más' });
+      renderPackages();
+    }
+    if (target.id === 'add-service-btn') {
+      content.individualServices.push({ id: crypto.randomUUID(), title: 'Nuevo Servicio', description: '', cta: 'Saber Más', type: 'individual' });
+      renderServices();
+    }
+    if (target.id === 'add-benefit-btn') {
+      content.modal.benefits.push('Nuevo beneficio');
+      renderBenefits();
+    }
+    
+    const pkgEl = target.closest('.package-item');
+    if (pkgEl) {
+      const packageId = pkgEl.dataset.packageId;
+      if (target.classList.contains('delete-package-btn')) {
+        if (confirm('¿Seguro que quieres borrar este paquete?')) {
+          content.packages = content.packages.filter(p => p.id !== packageId);
+          renderPackages();
+        }
+      }
+      if (target.classList.contains('add-feature-btn')) {
+        const pkg = content.packages.find(p => p.id === packageId);
+        if (pkg) pkg.features.push('Nueva característica');
+        renderPackages();
+      }
+      if (target.classList.contains('delete-feature-btn')) {
+        const pkg = content.packages.find(p => p.id === packageId);
+        const featureEl = target.closest('.feature-item');
+        if (pkg && featureEl) {
+          pkg.features.splice(parseInt(featureEl.dataset.featureIndex, 10), 1);
+          renderPackages();
+        }
+      }
+    }
+    
+    const serviceEl = target.closest('.service-item');
+    if (serviceEl && target.classList.contains('delete-service-btn')) {
+      if (confirm('¿Seguro que quieres borrar este servicio?')) {
+        const serviceId = serviceEl.dataset.serviceId;
+        content.individualServices = content.individualServices.filter(s => s.id !== serviceId);
+        renderServices();
+      }
+    }
+    if (target.closest('.benefit-item') && target.classList.contains('delete-benefit-btn')) {
+      const benefitEl = target.closest('.benefit-item');
+      content.modal.benefits.splice(parseInt(benefitEl.dataset.benefitIndex, 10), 1);
+      renderBenefits();
+    }
+  });
+  
+  // MANEJO DE EDICIÓN DE TEXTO - SOLO LOCAL
+  form.addEventListener('input', (e) => {
+    const target = e.target;
+    // ... (Lógica para actualizar el objeto 'content' localmente)
+    // Este código es un poco largo, pero maneja la actualización de todos los campos
+    const pkgEl = target.closest('.package-item');
+    const serviceEl = target.closest('.service-item');
+
+    if (pkgEl) {
+        const packageId = pkgEl.dataset.packageId;
+        const pkg = content.packages.find(p => p.id === packageId);
+        if (!pkg) return;
+        if (target.matches('[data-field]')) {
+            pkg[target.dataset.field] = target.value;
+        } else if (target.matches('.feature-input')) {
+            const featureIndex = parseInt(target.closest('.feature-item').dataset.featureIndex, 10);
+            pkg.features[featureIndex] = target.value;
+        }
+    } else if (serviceEl) {
+        const serviceId = serviceEl.dataset.serviceId;
+        const service = content.individualServices.find(s => s.id === serviceId);
+        if (service && target.matches('[data-field]')) {
+            service[target.dataset.field] = target.value;
+        }
+    } else { // Campos generales
+        if(content[target.id] !== undefined) content[target.id] = target.value;
+        if(content.modal[target.id.replace('modal_', '')] !== undefined) {
+          const key = target.id.replace('modal_', '');
+          content.modal[key] = key === 'benefits' ? target.value.split('\\n') : target.value;
+        }
+    }
+    if (target.closest('.benefit-item') && target.classList.contains('benefit-input')) {
+      const benefitEl = target.closest('.benefit-item');
+      const benefitIndex = parseInt(benefitEl.dataset.benefitIndex, 10);
+      content.modal.benefits[benefitIndex] = target.value;
+    }
+  });
+
+  // BOTÓN DE GUARDADO GENERAL - ÚNICA LLAMADA A LA API
+  document.getElementById('save-all-btn').addEventListener('click', async () => {
+    const notification = document.getElementById('notification');
+    try {
+      const response = await fetch('/api/services', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update_all', data: content }),
+      });
+      if (!response.ok) throw new Error('Error de red al guardar');
+      
+      notification.textContent = '¡Cambios guardados con éxito!';
+      notification.className = 'p-4 mb-4 rounded-lg bg-green-200 text-green-800 block';
+    } catch (error) {
+      notification.textContent = 'Error al guardar. Inténtalo de nuevo.';
+      notification.className = 'p-4 mb-4 rounded-lg bg-red-200 text-red-800 block';
+    } finally {
+      setTimeout(() => { notification.classList.add('hidden'); }, 3000);
+    }
+  });
+
+  renderAll();
+});
+</script>
+
+<style>
+  .input {
+    @apply mt-1 block w-full px-4 py-3 bg-background border border-foreground/20 rounded-lg shadow-sm focus:ring-primary focus:border-primary;
+  }
+  .button-primary {
+    @apply bg-primary text-primary-foreground font-bold py-3 px-6 rounded-lg hover:bg-primary/90 transition-colors;
+  }
+  .button-secondary {
+    @apply bg-secondary text-secondary-foreground font-bold py-2 px-4 rounded-lg hover:bg-secondary/90 transition-colors text-sm;
+  }
+  .button-danger {
+    @apply bg-destructive text-destructive-foreground font-bold py-1 px-3 rounded-md hover:bg-destructive/90 transition-colors text-xs;
+  }
+  .button-secondary-outline {
+    @apply bg-transparent border border-secondary text-secondary font-bold py-1 px-3 rounded-md hover:bg-secondary hover:text-secondary-foreground transition-colors text-xs;
+  }
+   .button-danger-outline {
+    @apply bg-transparent border border-destructive text-destructive font-bold py-0 px-2 rounded-md hover:bg-destructive hover:text-destructive-foreground transition-colors text-xs;
+  }
+</style> 

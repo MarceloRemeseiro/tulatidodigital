@@ -1,165 +1,52 @@
 ---
 ---
 
-<section id="contacto" class="py-20 md:py-32 bg-white section-fade-in">
+<section id="contacto" class="py-20 md:py-32 bg-background section-fade-in">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center">
-      <h2 class="text-3xl md:text-4xl font-extrabold text-stone-800">
+      <h2 class="text-3xl md:text-4xl font-extrabold text-foreground">
         Tu Negocio Merece Respirar Digital. ¡Conectemos!
       </h2>
-      <p class="mt-4 text-lg text-stone-600">
+      <p class="mt-4 text-lg text-foreground/80">
         Escríbenos y cuéntanos dónde estás. Nosotras te decimos cómo hacer que tu marca vuelva a latir con fuerza.
       </p>
     </div>
-    
-    <div class="mt-12 bg-stone-50 p-8 rounded-2xl shadow-2xl border border-stone-200">
-      <form id="contact-form" action="#" method="POST" class="space-y-6">
+    <div class="mt-12 bg-background-secondary p-8 rounded-2xl shadow-2xl border border-foreground/10">
+      <form action="#" method="POST">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label for="nombre" class="block text-sm font-medium text-stone-700">
-              Nombre *
-            </label>
-            <input 
-              type="text" 
-              name="nombre" 
-              id="nombre" 
-              required
-              class="mt-1 block w-full px-4 py-3 border border-stone-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 transition-colors"
-              placeholder="Tu nombre"
-            >
+            <label for="nombre" class="block text-sm font-medium text-foreground/90">Nombre</label>
+            <input type="text" name="nombre" id="nombre" class="mt-1 block w-full px-4 py-3 bg-background border border-foreground/20 rounded-lg shadow-sm focus:ring-primary focus:border-primary text-foreground">
           </div>
-          
           <div>
-            <label for="email" class="block text-sm font-medium text-stone-700">
-              Email *
+            <label for="email" class="block text-sm font-medium text-foreground/90">Email</label>
+            <input type="email" name="email" id="email" class="mt-1 block w-full px-4 py-3 bg-background border border-foreground/20 rounded-lg shadow-sm focus:ring-primary focus:border-primary text-foreground">
+          </div>
+          <div class="md:col-span-2">
+            <label for="mensaje" class="block text-sm font-medium text-foreground/90">
+              Cuéntanos sobre tu negocio y qué necesitas
             </label>
-            <input 
-              type="email" 
-              name="email" 
-              id="email" 
-              required
-              class="mt-1 block w-full px-4 py-3 border border-stone-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 transition-colors"
-              placeholder="tu@email.com"
-            >
+            <textarea id="mensaje" name="mensaje" rows="4" class="mt-1 block w-full px-4 py-3 bg-background border border-foreground/20 rounded-lg shadow-sm focus:ring-primary focus:border-primary text-foreground"></textarea>
           </div>
         </div>
-        
-        <div>
-          <label for="empresa" class="block text-sm font-medium text-stone-700">
-            Empresa/Proyecto
-          </label>
-          <input 
-            type="text" 
-            name="empresa" 
-            id="empresa"
-            class="mt-1 block w-full px-4 py-3 border border-stone-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 transition-colors"
-            placeholder="Nombre de tu empresa o proyecto"
-          >
-        </div>
-        
-        <div>
-          <label for="servicio" class="block text-sm font-medium text-stone-700">
-            ¿Qué servicio te interesa más?
-          </label>
-          <select 
-            name="servicio" 
-            id="servicio"
-            class="mt-1 block w-full px-4 py-3 border border-stone-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 transition-colors"
-          >
-            <option value="">Selecciona una opción</option>
-            <option value="paquete-impulso-total">Paquete Impulso Total</option>
-            <option value="paquete-visibilidad-extrema">Paquete Visibilidad Extrema</option>
-            <option value="paquete-crecimiento-venta">Paquete Crecimiento y Venta</option>
-            <option value="redes-sociales">Gestión de Redes Sociales</option>
-            <option value="publicidad-digital">Publicidad Digital (Meta Ads)</option>
-            <option value="copywriting">Copywriting y Email Marketing</option>
-            <option value="edicion-video">Edición de Video y Reels</option>
-            <option value="videos-ia">Videos IA Sin Cámara</option>
-            <option value="asistencia-virtual">Asistencia Virtual</option>
-            <option value="embudos-estrategia">Embudos y Estrategia Digital</option>
-            <option value="setter-closer">Setter y Closer de Ventas</option>
-            <option value="consulta-general">Consulta General</option>
-          </select>
-        </div>
-        
-        <div>
-          <label for="mensaje" class="block text-sm font-medium text-stone-700">
-            Cuéntanos sobre tu negocio y qué necesitas *
-          </label>
-          <textarea 
-            id="mensaje" 
-            name="mensaje" 
-            rows="5" 
-            required
-            class="mt-1 block w-full px-4 py-3 border border-stone-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 transition-colors"
-            placeholder="Describe tu situación actual, tus objetivos y cómo podemos ayudarte..."
-          ></textarea>
-        </div>
-        
-        <div class="flex items-start">
-          <input 
-            type="checkbox" 
-            id="acepto-politica" 
-            name="acepto-politica" 
-            required
-            class="mt-1 h-4 w-4 text-teal-600 focus:ring-teal-500 border-stone-300 rounded"
-          >
-          <label for="acepto-politica" class="ml-2 text-sm text-stone-600">
-            Acepto la <a href="#" class="text-teal-600 hover:text-teal-800 underline">política de privacidad</a> 
-            y el tratamiento de mis datos para contactar conmigo. *
-          </label>
-        </div>
-        
-        <div class="text-center">
-          <button 
-            type="submit" 
-            class="bg-gradient-brand text-white font-bold py-3 px-12 rounded-lg hover:opacity-90 transition-opacity shadow-lg transform hover:scale-105"
-          >
+        <div class="mt-6 text-center">
+          <button type="submit" class="bg-gradient-brand text-primary-foreground font-bold py-3 px-12 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
             Quiero que mi negocio respire digital ✨
           </button>
         </div>
       </form>
-      
-      <!-- Información de contacto directo -->
-      <div class="mt-12 pt-8 border-t border-stone-200">
-        <div class="text-center text-stone-600">
-          <p class="font-semibold text-lg mb-4">O escríbenos directamente:</p>
-          
-          <div class="grid md:grid-cols-3 gap-6">
-            <div class="flex flex-col items-center">
-              <div class="text-2xl mb-2">📧</div>
-              <p class="font-medium">Email</p>
-                             <a href="mailto:hola@tulatidodigital.com" class="text-primary-600 hover:text-primary-800 transition-colors">
-                hola@tulatidodigital.com
-              </a>
-            </div>
-            
-            <div class="flex flex-col items-center">
-              <div class="text-2xl mb-2">📱</div>
-              <p class="font-medium">Instagram</p>
-              <a href="https://instagram.com/tulatidodigital" target="_blank" rel="noopener noreferrer" 
-                 class="text-primary-600 hover:text-primary-800 transition-colors">
-                @tulatidodigital
-              </a>
-            </div>
-            
-            <div class="flex flex-col items-center">
-              <div class="text-2xl mb-2">💼</div>
-              <p class="font-medium">LinkedIn</p>
-              <a href="https://linkedin.com/company/tulatidodigital" target="_blank" rel="noopener noreferrer" 
-                 class="text-primary-600 hover:text-primary-800 transition-colors">
-                Tu Latido Digital
-              </a>
-            </div>
-          </div>
-          
-          <div class="mt-8 p-4 bg-primary-50 rounded-lg">
-            <p class="text-sm text-primary-800">
-              <strong>Tiempo de respuesta:</strong> Nos comprometemos a responderte en menos de 24 horas. 
-              Tu proyecto es importante para nosotras.
-            </p>
-          </div>
-        </div>
+      <div class="mt-8 text-center text-foreground/80">
+        <p class="font-semibold">O escríbenos directamente:</p>
+        <p class="mt-2 text-lg">
+          📧 <a href="mailto:hola@tulatidodigital.com" class="text-primary hover:text-primary/80">
+            hola@tulatidodigital.com
+          </a>
+        </p>
+        <p class="mt-2 text-lg">
+          📢 Instagram: <a href="https://instagram.com/tulatidodigital" target="_blank" class="text-primary hover:text-primary/80">
+            @tulatidodigital
+          </a>
+        </p>
       </div>
     </div>
   </div>

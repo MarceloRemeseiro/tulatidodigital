@@ -1,0 +1,29 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Admin Dashboard">
+  <div class="max-w-4xl mx-auto py-10 px-4">
+    <h1 class="text-3xl font-bold mb-6">Panel de Administración</h1>
+    <p class="mb-8 text-foreground/80">Selecciona la sección que deseas editar.</p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Card para Hero -->
+      <a href="/admin/hero" class="bg-background-secondary p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow text-center">
+        <h2 class="text-2xl font-bold text-primary">Sección Hero</h2>
+        <p class="mt-2 text-foreground/80">Edita el título, subtítulo, y la promesa de tu marca.</p>
+      </a>
+      
+      <a href="/admin/services" class="bg-background-secondary p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow text-center">
+        <h2 class="text-2xl font-bold text-primary">Sección Servicios</h2>
+        <p class="mt-2 text-foreground/80">Edita los paquetes, servicios individuales y más.</p>
+      </a>
+
+      <!-- Próximamente: Card para Testimonials -->
+      <a href="/admin/testimonials" class="bg-background-secondary p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow text-center">
+        <h2 class="text-2xl font-bold text-primary">Sección Testimonios</h2>
+        <p class="mt-2 text-foreground/80">Gestiona las citas y autores de los testimonios.</p>
+      </a>
+    </div>
+  </div>
+</Layout> 

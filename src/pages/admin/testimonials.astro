@@ -1,0 +1,180 @@
+---
+/// <reference types="node" />
+
+import Layout from '../../layouts/Layout.astro';
+import content from '../../content/testimonials.json';
+import type { Testimonial } from '../../content/types';
+
+const typedContent = content.testimonials as Testimonial[];
+---
+
+<Layout title="Admin - Testimonios">
+  <button slot="page-actions" id="save-all-btn" class="button-primary">Guardar Cambios</button>
+
+  <div class="max-w-4xl mx-auto py-10 px-4">
+    <a href="/admin" class="text-primary hover:underline mb-4 block">&larr; Volver al panel de admin</a>
+    <h1 class="text-3xl font-bold mb-6">Editar Contenido de la Sección Testimonios</h1>
+    <p class="mb-6 text-foreground/80">Todos los cambios que realices se guardarán únicamente cuando presiones el botón "Guardar Cambios" de la esquina superior derecha.</p>
+    
+    <div id="notification" class="hidden p-4 mb-4 rounded-lg"></div>
+
+    <form id="testimonials-form" class="space-y-6">
+      <fieldset class="space-y-6 border border-foreground/20 p-6 rounded-lg">
+        <legend class="text-xl font-bold px-2">Contenido Principal</legend>
+        <div>
+          <label for="title" class="block text-sm font-medium">Título Principal</label>
+          <input type="text" id="title" name="title" value={content.title} class="mt-1 block w-full input">
+        </div>
+        <div>
+          <label for="subtitle" class="block text-sm font-medium">Subtítulo</label>
+          <textarea id="subtitle" name="subtitle" rows="3" class="mt-1 block w-full input">{content.subtitle}</textarea>
+        </div>
+      </fieldset>
+
+      <fieldset class="mt-8 border border-foreground/20 p-6 rounded-lg">
+        <legend class="text-xl font-bold px-2">Testimonios</legend>
+        <div id="testimonials-container" class="space-y-6">
+          <!-- Los testimonios se renderizarán aquí -->
+        </div>
+        <div class="mt-6">
+          <button type="button" id="add-testimonial-btn" class="button-secondary">Añadir Testimonio</button>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</Layout>
+
+<template id="testimonial-template">
+  <div class="testimonial-item border border-foreground/20 p-6 rounded-lg" data-testimonial-id="">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold">Testimonio</h3>
+      <button type="button" class="button-danger delete-testimonial-btn">Borrar Testimonio</button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium">Cita</label>
+        <textarea data-field="quote" rows="4" class="testimonial-field mt-1 block w-full input"></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Nombre</label>
+        <input type="text" data-field="name" class="testimonial-field mt-1 block w-full input">
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Rol o Empresa</label>
+        <input type="text" data-field="role" class="testimonial-field mt-1 block w-full input">
+      </div>
+    </div>
+  </div>
+</template>
+
+<script define:vars={{ initialContent: typedContent, initialTitle: content.title, initialSubtitle: content.subtitle }}>
+document.addEventListener('DOMContentLoaded', () => {
+  let testimonials = JSON.parse(JSON.stringify(initialContent));
+  let title = initialTitle;
+  let subtitle = initialSubtitle;
+
+  // Asegurarse de que todos tengan un ID
+  testimonials.forEach(t => {
+    if (!t.id) t.id = crypto.randomUUID();
+  });
+
+  const form = document.getElementById('testimonials-form');
+  const container = document.getElementById('testimonials-container');
+  const template = document.getElementById('testimonial-template');
+  const saveBtn = document.getElementById('save-all-btn');
+  const notification = document.getElementById('notification');
+  const titleInput = document.getElementById('title');
+  const subtitleInput = document.getElementById('subtitle');
+
+  function renderTestimonials() {
+    container.innerHTML = '';
+    testimonials.forEach(testimonial => {
+      const el = template.content.cloneNode(true).firstElementChild;
+      el.dataset.testimonialId = testimonial.id;
+      el.querySelector('[data-field="quote"]').value = testimonial.quote;
+      el.querySelector('[data-field="name"]').value = testimonial.name;
+      el.querySelector('[data-field="role"]').value = testimonial.role;
+      container.appendChild(el);
+    });
+  }
+
+  form.addEventListener('click', (e) => {
+    const target = e.target;
+    if (target.id === 'add-testimonial-btn') {
+      testimonials.push({ id: crypto.randomUUID(), quote: 'Nueva cita...', name: 'Nombre', role: 'Rol o Empresa' });
+      renderTestimonials();
+    }
+    
+    const itemEl = target.closest('.testimonial-item');
+    if (itemEl && target.classList.contains('delete-testimonial-btn')) {
+      if (confirm('¿Seguro que quieres borrar este testimonio?')) {
+        const testimonialId = itemEl.dataset.testimonialId;
+        testimonials = testimonials.filter(t => t.id !== testimonialId);
+        renderTestimonials();
+      }
+    }
+  });
+
+  form.addEventListener('input', (e) => {
+    const target = e.target;
+
+    if (target.id === 'title') {
+      title = target.value;
+      return;
+    }
+    if (target.id === 'subtitle') {
+      subtitle = target.value;
+      return;
+    }
+
+    const itemEl = target.closest('.testimonial-item');
+    if (itemEl) {
+      const testimonialId = itemEl.dataset.testimonialId;
+      const testimonial = testimonials.find(t => t.id === testimonialId);
+      if (testimonial && target.matches('[data-field]')) {
+        testimonial[target.dataset.field] = target.value;
+      }
+    }
+  });
+
+  saveBtn.addEventListener('click', async () => {
+    try {
+      const response = await fetch('/api/testimonials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            title: title,
+            subtitle: subtitle,
+            testimonials: testimonials
+        }),
+      });
+      if (!response.ok) throw new Error('Error al guardar');
+      
+      notification.textContent = '¡Testimonios guardados con éxito!';
+      notification.className = 'p-4 mb-4 rounded-lg bg-green-200 text-green-800 block';
+    } catch (error) {
+      notification.textContent = 'Error al guardar. Inténtalo de nuevo.';
+      notification.className = 'p-4 mb-4 rounded-lg bg-red-200 text-red-800 block';
+    } finally {
+      setTimeout(() => { notification.classList.add('hidden'); }, 3000);
+    }
+  });
+
+  renderTestimonials();
+});
+</script>
+
+<style>
+  .input {
+    @apply mt-1 block w-full px-4 py-3 bg-background border border-foreground/20 rounded-lg shadow-sm focus:ring-primary focus:border-primary;
+  }
+  .button-primary {
+    @apply bg-primary text-primary-foreground font-bold py-3 px-6 rounded-lg hover:bg-primary/90 transition-colors;
+  }
+  .button-secondary {
+    @apply bg-secondary text-secondary-foreground font-bold py-2 px-4 rounded-lg hover:bg-secondary/90 transition-colors text-sm;
+  }
+  .button-danger {
+    @apply bg-destructive text-destructive-foreground font-bold py-1 px-3 rounded-md hover:bg-destructive/90 transition-colors text-xs;
+  }
+</style> 

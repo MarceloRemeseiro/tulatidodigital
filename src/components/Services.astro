@@ -1,330 +1,194 @@
 ---
+import content from '../content/services.json';
+import type { ServiceContent, Package, IndividualService, Step } from '../content/types';
+
+const { title, subtitle, toggle, packages, individualServices, modal } = content as ServiceContent;
 ---
 
-<section id="servicios" class="py-20 md:py-32 bg-stone-50 section-fade-in">
+<section id="servicios" class="py-20 md:py-32 bg-background section-fade-in">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center">
-      <h2 class="text-3xl md:text-4xl font-extrabold text-stone-800">
-        Qué Hacemos: Servicios pensados para que delegues sin miedo y crezcas con dirección.
-      </h2>
-      <p class="mt-4 max-w-2xl mx-auto text-lg text-stone-600">
-        Todo lo que tu negocio necesita para crecer está aquí. Y lo hacemos como si fuera nuestro.
-      </p>
+      <h2 class="text-3xl md:text-4xl font-extrabold text-foreground">{title}</h2>
+      <p class="mt-4 max-w-2xl mx-auto text-lg text-foreground/80">{subtitle}</p>
     </div>
 
-    <!-- Toggle para cambiar entre paquetes y servicios individuales -->
-    <div class="mt-12 flex justify-center space-x-2 md:space-x-4 bg-stone-200 p-2 rounded-full max-w-sm mx-auto">
+    <div class="mt-12 flex justify-center space-x-2 md:space-x-4 bg-foreground/10 p-2 rounded-full max-w-sm mx-auto">
       <button id="toggle-paquetes" class="w-full py-2 px-4 rounded-full text-sm md:text-base font-semibold transition active-toggle">
-        Paquetes Integrales
+        {toggle.packages}
       </button>
-      <button id="toggle-individuales" class="w-full py-2 px-4 rounded-full text-sm md:text-base font-semibold transition">
-        Servicios Individuales
+      <button id="toggle-individuales" class="w-full py-2 px-4 rounded-full text-sm md:text-base font-semibold transition text-foreground/80">
+        {toggle.individual}
       </button>
     </div>
 
-    <!-- Contenedor de Paquetes Integrales -->
     <div id="paquetes-container" class="mt-16">
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <!-- Paquete Impulso Total -->
-        <div class="bg-white p-8 rounded-2xl shadow-lg border border-stone-200 transform hover:scale-105 hover:shadow-2xl transition-all duration-300">
-          <h3 class="text-2xl font-bold text-primary-700">Paquete Impulso Total</h3>
-          <p class="mt-4 text-stone-600">
-            La solución definitiva para una presencia digital imparable. Delegas todo, te enfocas en crecer.
-          </p>
-          <ul class="mt-6 space-y-3 text-stone-700">
-            <li class="flex items-center">
-              <span class="text-primary-500 mr-3">✔</span>Estrategia Digital Completa
-            </li>
-            <li class="flex items-center">
-              <span class="text-primary-500 mr-3">✔</span>Gestión de Redes Sociales Premium
-            </li>
-            <li class="flex items-center">
-              <span class="text-primary-500 mr-3">✔</span>Publicidad Digital (Meta Ads) Avanzada
-            </li>
-            <li class="flex items-center">
-              <span class="text-primary-500 mr-3">✔</span>Copywriting y Email Marketing Estratégico
-            </li>
-            <li class="flex items-center">
-              <span class="text-primary-500 mr-3">✔</span>1 Video con IA al mes
-            </li>
-          </ul>
-          <a href="#contacto" class="mt-8 block w-full text-center bg-primary-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-primary-700 transition-colors">
-            ¡Quiero mi Impulso Total!
-          </a>
-        </div>
-
-        <!-- Paquete Visibilidad Extrema (Destacado) -->
-        <div class="bg-gradient-to-br from-primary-700 to-primary-600 text-white p-8 rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-300 ring-4 ring-offset-2 ring-primary-500">
-          <h3 class="text-2xl font-bold">Paquete Visibilidad Extrema</h3>
-          <p class="mt-4 opacity-90">
-            Diseñado para marcas que necesitan una explosión de visibilidad y conexión con su audiencia.
-          </p>
-          <ul class="mt-6 space-y-3">
-            <li class="flex items-center">
-              <span class="mr-3">✔</span>Gestión de Redes Sociales
-            </li>
-            <li class="flex items-center">
-              <span class="mr-3">✔</span>Publicidad Digital (Meta Ads)
-            </li>
-            <li class="flex items-center">
-              <span class="mr-3">✔</span>Edición de Video y Reels
-            </li>
-            <li class="flex items-center">
-              <span class="mr-3">✔</span>Copywriting para Lanzamientos
-            </li>
-          </ul>
-          <a href="#contacto" class="mt-8 block w-full text-center bg-white text-primary-700 font-bold py-3 px-6 rounded-lg hover:bg-stone-100 transition-colors">
-            Aumentar mi Visibilidad
-          </a>
-        </div>
-
-        <!-- Paquete Crecimiento y Venta -->
-        <div class="bg-white p-8 rounded-2xl shadow-lg border border-stone-200 transform hover:scale-105 hover:shadow-2xl transition-all duration-300">
-          <h3 class="text-2xl font-bold text-primary-700">Paquete Crecimiento y Venta</h3>
-          <p class="mt-4 text-stone-600">
-            Para negocios que necesitan optimizar su proceso de venta y convertir más leads.
-          </p>
-          <ul class="mt-6 space-y-3 text-stone-700">
-            <li class="flex items-center">
-              <span class="text-primary-500 mr-3">✔</span>Embudos y Estrategia Digital
-            </li>
-            <li class="flex items-center">
-              <span class="text-primary-500 mr-3">✔</span>Setter y Closer de Ventas
-            </li>
-            <li class="flex items-center">
-              <span class="text-primary-500 mr-3">✔</span>Copywriting de Conversión
-            </li>
-            <li class="flex items-center">
-              <span class="text-primary-500 mr-3">✔</span>Asistencia Virtual para Soporte
-            </li>
-          </ul>
-          <a href="#contacto" class="mt-8 block w-full text-center bg-primary-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-primary-700 transition-colors">
-            Quiero Vender Más
-          </a>
-        </div>
+        {packages.map((pkg: Package, index: number) => (
+          <div class:list={[
+            "p-8 rounded-2xl shadow-lg transform hover:scale-105 transition-all duration-300",
+            index === 1 
+              ? "bg-gradient-brand text-primary-foreground ring-4 ring-offset-2 ring-primary" 
+              : "bg-background-secondary border border-foreground/10"
+          ]}>
+            <h3 class="text-2xl font-bold">{pkg.title}</h3>
+            <p class:list={["mt-4", { "opacity-90": index === 1, "text-foreground/80": index !== 1 }]}>
+              {pkg.description}
+            </p>
+            <ul class:list={["mt-6 space-y-3", { "text-foreground/90": index !== 1 }]}>
+              {pkg.features.map((feature: string) => (
+                <li class="flex items-center">
+                  <span class:list={["mr-3", { "text-primary": index !== 1 }]}>✔</span>{feature}
+                </li>
+              ))}
+            </ul>
+            <a href="#contacto" class:list={[
+              "mt-8 block w-full text-center font-bold py-3 px-6 rounded-lg transition-colors",
+              index === 1 
+                ? "bg-background text-primary hover:bg-background/90" 
+                : "bg-primary text-primary-foreground hover:bg-primary/90"
+            ]}>
+              {pkg.cta}
+            </a>
+          </div>
+        ))}
       </div>
     </div>
-
-    <!-- Contenedor de Servicios Individuales -->
+    
     <div id="individuales-container" class="mt-16 hidden">
       <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8" id="services-grid">
-        <!-- Los servicios se cargarán dinámicamente con JavaScript -->
+        <!-- Services will be dynamically loaded here -->
       </div>
     </div>
   </div>
 </section>
 
-<!-- Modal de Videos IA -->
+<!-- Modal for AI Videos -->
 <div id="modal-ia" class="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none">
-  <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto transform scale-95 transition-transform duration-300">
+  <div class="bg-background rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto transform scale-95 transition-transform duration-300">
     <div class="p-6 md:p-8 relative">
-      <button data-modal-close="modal-ia" class="absolute top-4 right-4 text-stone-500 hover:text-stone-800">
+      <button data-modal-close="modal-ia" class="absolute top-4 right-4 text-foreground/50 hover:text-foreground">
         <span class="text-2xl">&times;</span>
       </button>
       <div class="text-center">
-        <h2 class="text-3xl font-bold text-orange-700">Tu Voz, Tu Presencia, Sin Cámaras.</h2>
-        <p class="mt-2 text-lg text-stone-600">Videos con IA que Revolucionan tu Marca.</p>
+        <h2 class="text-3xl font-bold text-secondary">{modal.title}</h2>
+        <p class="mt-2 text-lg text-foreground/80">{modal.subtitle}</p>
       </div>
       <div class="mt-8 text-left space-y-6">
-        <p class="text-stone-700">
-          ¿Odias salir en cámara pero sabes que necesitas el poder del video para vender tus servicios o formaciones? 
-          Estás en el lugar correcto. Nuestra tecnología de IA crea avatares y voces hiperrealistas que comunican tu mensaje 
-          con profesionalidad y convicción, sin que tengas que ponerte delante de la lente.
-        </p>
+        <p class="text-foreground/90">{modal.paragraph}</p>
         
         <div>
-          <h3 class="font-bold text-xl text-primary-700 mb-4">¿Cómo funciona? Es así de simple:</h3>
+          <h3 class="font-bold text-xl text-primary mb-4">{modal.stepsTitle}</h3>
           <div class="grid md:grid-cols-3 gap-6 text-center">
-            <div class="bg-stone-100 p-4 rounded-lg">
-              <div class="text-3xl font-bold text-primary-600">1</div>
-              <p class="mt-2 font-semibold">Escribe tu guion</p>
-              <p class="text-sm text-stone-600">O deja que nuestra IA lo cree por ti.</p>
-            </div>
-            <div class="bg-stone-100 p-4 rounded-lg">
-              <div class="text-3xl font-bold text-primary-600">2</div>
-              <p class="mt-2 font-semibold">Elige tu avatar</p>
-              <p class="text-sm text-stone-600">Selecciona uno de nuestra galería o clona tu propia imagen.</p>
-            </div>
-            <div class="bg-stone-100 p-4 rounded-lg">
-              <div class="text-3xl font-bold text-primary-600">3</div>
-              <p class="mt-2 font-semibold">Genera tu video</p>
-              <p class="text-sm text-stone-600">En minutos tendrás un video profesional listo para publicar.</p>
-            </div>
+            {modal.steps.map((step: Step, index: number) => (
+              <div class="bg-foreground/10 p-4 rounded-lg">
+                <div class="text-3xl font-bold text-primary">{index + 1}</div>
+                <p class="mt-2 font-semibold text-foreground">{step.title}</p>
+                <p class="text-sm text-foreground/70">{step.description}</p>
+              </div>
+            ))}
           </div>
         </div>
         
         <div>
-          <h3 class="font-bold text-xl text-primary-700 mb-2">Beneficios que te cambiarán el juego:</h3>
-          <ul class="list-disc list-inside space-y-1 text-stone-700">
-            <li><strong>Ahorro de tiempo y costes:</strong> Olvídate de estudios, equipos y largas horas de grabación.</li>
-            <li><strong>Calidad profesional:</strong> Avatares y voces indistinguibles de los humanos.</li>
-            <li><strong>Alcance global:</strong> Tu mensaje en múltiples idiomas sin esfuerzo.</li>
-            <li><strong>Consistencia de marca:</strong> Un portavoz perfecto, siempre disponible.</li>
-            <li><strong>Libérate del miedo escénico:</strong> Concéntrate en tu mensaje, no en la cámara.</li>
+          <h3 class="font-bold text-xl text-primary mb-2">{modal.benefitsTitle}</h3>
+          <ul class="list-disc list-inside space-y-1 text-foreground/90">
+            {modal.benefits.map((benefit: string) => <li>{benefit}</li>)}
           </ul>
         </div>
         
         <div class="pt-4 text-center">
-          <a href="#contacto" class="bg-gradient-primary text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-opacity">
-            Crea Tu Primer Video IA
+          <a href="#contacto" class="bg-gradient-brand text-primary-foreground font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-opacity">
+            {modal.cta}
           </a>
         </div>
       </div>
     </div>
   </div>
 </div>
-
-<script>
+<script define:vars={{ individualServices }} is:inline>
   document.addEventListener('DOMContentLoaded', function () {
-    // Toggle entre paquetes y servicios individuales
     const togglePaquetes = document.getElementById('toggle-paquetes');
     const toggleIndividuales = document.getElementById('toggle-individuales');
     const paquetesContainer = document.getElementById('paquetes-container');
     const individualesContainer = document.getElementById('individuales-container');
     const servicesGrid = document.getElementById('services-grid');
 
-    // Datos de servicios individuales
-    const servicesData = [
-                {
-                    id: 'redes-sociales',
-                    title: 'Gestión de Redes Sociales',
-                    description: 'Tu Presencia, Tu Voz, Tu Comunidad. No se trata de estar por estar. Se trata de tener presencia con estrategia, estilo y coherencia. Creamos, planificamos y gestionamos tus redes para que hablen tu idioma y conecten con tu audiencia. Contenido creativo, interacción real y una comunidad que crece contigo. ¡Deja que tus redes trabajen para ti!',
-                    type: 'individual',
-                    cta: 'Saber más →'
-                },
-                {
-                    id: 'publicidad-digital',
-                    title: 'Publicidad Digital (Meta Ads)',
-                    description: 'Anuncios que Venden, No que Gastan. Lanzar anuncios sin estrategia es tirar el dinero. Nosotras diseñamos y gestionamos campañas que venden, con segmentación inteligente, análisis continuo y mensajes que impactan. Haz que tu inversión en publicidad trabaje para ti de verdad. ¡Es hora de un ROI real!',
-                    type: 'individual',
-                    cta: 'Saber más →'
-                },
-                {
-                    id: 'copywriting',
-                    title: 'Copywriting y Email Marketing',
-                    description: 'Palabras que Convierten, Emocionan y Seducen. Tus palabras venden. O alejan. Por eso creamos textos que comunican, emocionan y convierten. Desde tu web, hasta tus emails o lanzamientos: todo escrito con estrategia y personalidad. Porque cada palabra importa. ¡Vende con cada frase!',
-                    type: 'individual',
-                    cta: 'Saber más →'
-                },
-                {
-                    id: 'edicion-video',
-                    title: 'Edición de Vídeo y Reels',
-                    description: 'Tus Ideas, Nuestro Arte. Vídeos que Capturan Miradas. ¿Tienes buenas ideas pero no sabes cómo darles forma? Nosotras sí. Transformamos tu contenido en piezas atractivas, ágiles y actuales para reels, TikTok o campañas. Y siempre con tu estilo y tu mensaje claro. Porque en digital, el vídeo es rey. ¡Haz que tu mensaje se vea!',
-                    type: 'individual',
-                    cta: 'Saber más →'
-                },
-                {
-                    id: 'asistencia-virtual',
-                    title: 'Asistencia Virtual (Back Office)',
-                    description: 'Libera Tu Tiempo, Multiplica Tu Impacto. Delegar tareas repetitivas y de gestión no es un lujo, es una necesidad si quieres crecer. Nos encargamos de tu organización, emails, soporte al cliente, agenda, documentos… y lo hacemos con cariño, orden y eficiencia. ¡Recupera tu foco!',
-                    type: 'individual',
-                    cta: 'Saber más →'
-                },
-                {
-                    id: 'embudos-estrategia',
-                    title: 'Embudos y Estrategia Digital',
-                    description: 'El Camino Directo a la Venta. Tener presencia online no basta. Necesitas un recorrido claro que guíe a tu cliente ideal desde el primer contacto hasta la venta. Diseñamos embudos personalizados, coherentes con tu marca y enfocados en resultados. Plan + acción = conversión. ¡Transforma visitas en ventas!',
-                    type: 'individual',
-                    cta: 'Saber más →'
-                },
-                {
-                    id: 'setter-closer',
-                    title: 'Setter y Closer de Ventas',
-                    description: 'No Más Mensajes sin Cierre. Nosotras Vendemos Por Ti. ¿Recibes mensajes pero no sabes cómo convertirlos en ventas? ¿Te faltan tiempo o herramientas para hacer seguimiento y cerrar? Aquí entramos nosotras. Respondemos, guiamos y vendemos por ti. Desde el primer mensaje hasta el “¡sí quiero!”. ¡Cierra más ventas sin esfuerzo!',
-                    type: 'individual',
-                    cta: 'Saber más →'
-                },
-                {
-                    id: 'videos-ia',
-                    title: 'Videos IA Sin Cámara',
-                    description: 'Tu presencia en video, sin miedo escénico. Nuestra tecnología de IA crea avatares y voces hiperrealistas que comunican tu mensaje con profesionalidad y convicción, sin que tengas que ponerte delante de la lente.',
-                    type: 'ia-special',
-                    cta: '¡Lo quiero! →'
-                }
-            ];
-
-    // Función para renderizar servicios individuales
     function renderIndividualServices() {
+      if (!servicesGrid) return;
       servicesGrid.innerHTML = '';
-      servicesData.forEach(service => {
+      individualServices.forEach((service) => {
         const serviceCard = document.createElement('div');
-        serviceCard.className = `bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow border border-stone-200 text-center ${service.type === 'ia-special' ? 'bg-orange-50 border-2 border-orange-500' : ''}`;
+        serviceCard.className = `bg-background p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow border border-foreground/10 text-center ${service.type === 'ia-special' ? 'bg-secondary/10 border-2 border-secondary' : ''}`;
         serviceCard.innerHTML = `
-          <h3 class="text-xl font-bold ${service.type === 'ia-special' ? 'text-orange-800' : 'text-stone-800'}">${service.title}</h3>
-          <p class="mt-2 text-sm ${service.type === 'ia-special' ? 'text-orange-700' : 'text-stone-600'}">${service.description}</p>
+          <h3 class="text-xl font-bold ${service.type === 'ia-special' ? 'text-secondary' : 'text-foreground'}">${service.title}</h3>
+          <p class="mt-2 text-sm ${service.type === 'ia-special' ? 'text-secondary' : 'text-foreground/80'}">${service.description}</p>
           ${service.type === 'ia-special' ? 
-            `<button data-modal-target="modal-ia" class="mt-4 inline-block text-orange-600 hover:text-orange-800 font-semibold">${service.cta}</button>` :
-            `<a href="#contacto" class="mt-4 inline-block text-primary-600 hover:text-primary-800 font-semibold">${service.cta}</a>`
+            `<button data-modal-target="modal-ia" class="mt-4 inline-block text-secondary hover:text-secondary/90 font-semibold">${service.cta}</button>` :
+            `<a href="#contacto" class="mt-4 inline-block text-primary hover:text-primary/90 font-semibold">${service.cta}</a>`
           }
         `;
         servicesGrid.appendChild(serviceCard);
       });
     }
 
-    // Event listeners para los toggles
     togglePaquetes?.addEventListener('click', () => {
       paquetesContainer?.classList.remove('hidden');
       individualesContainer?.classList.add('hidden');
-      togglePaquetes.classList.add('active-toggle');
+      togglePaquetes?.classList.add('active-toggle');
       toggleIndividuales?.classList.remove('active-toggle');
+      toggleIndividuales?.classList.add('text-foreground/80');
     });
 
     toggleIndividuales?.addEventListener('click', () => {
       individualesContainer?.classList.remove('hidden');
       paquetesContainer?.classList.add('hidden');
-      toggleIndividuales.classList.add('active-toggle');
+      toggleIndividuales?.classList.add('active-toggle');
+      toggleIndividuales?.classList.remove('text-foreground/80');
       togglePaquetes?.classList.remove('active-toggle');
       renderIndividualServices();
     });
 
-    // Inicializar servicios individuales
-    renderIndividualServices();
+    togglePaquetes?.click();
 
-    // Funcionalidad del modal
-    const modalTriggers = document.querySelectorAll('[data-modal-target]');
-    const modalCloses = document.querySelectorAll('[data-modal-close]');
-    
-    modalTriggers.forEach(trigger => {
-      trigger.addEventListener('click', () => {
-        const triggerElement = trigger as HTMLElement;
-        const modal = document.getElementById(triggerElement.dataset.modalTarget);
-        openModal(modal);
-      });
-    });
-
-    // Delegación de eventos para botones dinámicos
     document.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement;
-      if (target && target.dataset && target.dataset.modalTarget) {
-        const modal = document.getElementById(target.dataset.modalTarget);
-        openModal(modal);
+      const target = e.target;
+      if (target && target.matches('[data-modal-target]')) {
+        const modalId = target.dataset.modalTarget;
+        if (modalId) {
+          const modal = document.getElementById(modalId);
+          openModal(modal);
+        }
       }
     });
 
-    modalCloses.forEach(close => {
+    document.querySelectorAll('[data-modal-close]').forEach(close => {
       close.addEventListener('click', () => {
-        const closeElement = close as HTMLElement;
-        const modal = document.getElementById(closeElement.dataset.modalClose);
-        closeModal(modal);
+        const modalId = close.dataset.modalClose;
+        if (modalId) {
+          const modal = document.getElementById(modalId);
+          closeModal(modal);
+        }
       });
     });
 
     window.addEventListener('click', event => {
-      const target = event.target as HTMLElement;
-      if (target && target.classList && target.classList.contains('modal')) {
+      const target = event.target;
+      if (target.classList.contains('modal')) {
         closeModal(target);
       }
     });
 
     function openModal(modal) {
-      modal?.classList.remove('opacity-0', 'pointer-events-none');
-      setTimeout(() => modal?.querySelector('div > div')?.classList.remove('scale-95'), 50);
+      if (!modal) return;
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      setTimeout(() => modal.querySelector('div > div')?.classList.remove('scale-95'), 50);
       document.body.style.overflow = 'hidden';
     }
 
     function closeModal(modal) {
-      modal?.querySelector('div > div')?.classList.add('scale-95');
-      setTimeout(() => modal?.classList.add('opacity-0', 'pointer-events-none'), 250);
+      if (!modal) return;
+      modal.querySelector('div > div')?.classList.add('scale-95');
+      setTimeout(() => modal.classList.add('opacity-0', 'pointer-events-none'), 250);
       document.body.style.overflow = 'auto';
     }
   });

@@ -1,0 +1,107 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import content from '../../content/hero.json';
+---
+
+<Layout title="Admin - Hero Section">
+  <button slot="page-actions" id="save-btn" class="button-primary">Guardar Cambios</button>
+
+  <div class="max-w-4xl mx-auto py-10 px-4">
+    <a href="/admin" class="text-primary hover:underline mb-4 block">&larr; Volver al panel de admin</a>
+    <h1 class="text-3xl font-bold mb-6">Editar Contenido de la Sección Hero</h1>
+    
+    <div id="notification" class="hidden p-4 mb-4 rounded-lg"></div>
+
+    <form id="hero-form">
+      <div class="space-y-6">
+        <div>
+          <label for="headline" class="block text-sm font-medium text-foreground/90">Titular Principal</label>
+          <input type="text" id="headline" name="headline" value={content.headline} class="mt-1 block w-full input">
+        </div>
+        
+        <div>
+          <label for="subheadline" class="block text-sm font-medium text-foreground/90">Sub-titular</label>
+          <input type="text" id="subheadline" name="subheadline" value={content.subheadline} class="mt-1 block w-full input">
+        </div>
+        
+        <div>
+          <label for="paragraph" class="block text-sm font-medium text-foreground/90">Párrafo de Introducción</label>
+          <textarea id="paragraph" name="paragraph" rows="4" class="mt-1 block w-full input">{content.paragraph}</textarea>
+        </div>
+        
+        <div>
+          <label for="ctaButton" class="block text-sm font-medium text-foreground/90">Texto del Botón (CTA)</label>
+          <input type="text" id="ctaButton" name="ctaButton" value={content.ctaButton} class="mt-1 block w-full input">
+        </div>
+
+        <hr class="border-foreground/20">
+
+        <h2 class="text-2xl font-bold">Sección Promesa</h2>
+        
+        <div>
+          <label for="promiseTitle" class="block text-sm font-medium text-foreground/90">Título de la Promesa</p>
+          <input type="text" id="promiseTitle" name="promiseTitle" value={content.promise.title} class="mt-1 block w-full input">
+        </div>
+        
+        <div>
+          <label for="promiseParagraph" class="block text-sm font-medium text-foreground/90">Párrafo de la Promesa</label>
+          <textarea id="promiseParagraph" name="promiseParagraph" rows="4" class="mt-1 block w-full input">{content.promise.paragraph}</textarea>
+        </div>
+      </div>
+    </form>
+  </div>
+</Layout>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('hero-form');
+  const saveBtn = document.getElementById('save-btn');
+  const notification = document.getElementById('notification');
+
+  if (!form || !saveBtn || !notification) {
+    console.error('Error: No se encontraron los elementos del formulario en la página.');
+    return;
+  }
+
+  saveBtn.addEventListener('click', async () => {
+    const formData = new FormData(form as HTMLFormElement);
+    const data = {
+      headline: formData.get('headline'),
+      subheadline: formData.get('subheadline'),
+      paragraph: formData.get('paragraph'),
+      ctaButton: formData.get('ctaButton'),
+      promise: {
+        title: formData.get('promiseTitle'),
+        paragraph: formData.get('promiseParagraph')
+      }
+    };
+
+    try {
+      const response = await fetch('/api/hero', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) throw new Error('Error al guardar');
+
+      notification.textContent = '¡Contenido guardado con éxito!';
+      notification.className = 'p-4 mb-4 rounded-lg bg-green-200 text-green-800 block';
+    } catch (error) {
+      notification.textContent = 'Error al guardar. Inténtalo de nuevo.';
+      notification.className = 'p-4 mb-4 rounded-lg bg-red-200 text-red-800 block';
+    } finally {
+      setTimeout(() => { notification.classList.add('hidden'); }, 3000);
+    }
+  });
+});
+</script>
+
+<style>
+  .input {
+    @apply mt-1 block w-full px-4 py-3 bg-background border border-foreground/20 rounded-lg shadow-sm focus:ring-primary focus:border-primary;
+  }
+  .button-primary {
+    @apply bg-primary text-primary-foreground font-bold py-3 px-6 rounded-lg hover:bg-primary/90 transition-colors;
+  }
+</style> 

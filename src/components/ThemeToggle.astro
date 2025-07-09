@@ -1,0 +1,36 @@
+---
+---
+<button id="theme-toggle" class="p-2 rounded-md hover:bg-foreground/10 transition-colors">
+  <span class="sun-icon">☀️</span>
+  <span class="moon-icon hidden">🌙</span>
+</button>
+
+<script is:inline>
+  const themeToggle = document.getElementById('theme-toggle');
+  const sunIcon = themeToggle.querySelector('.sun-icon');
+  const moonIcon = themeToggle.querySelector('.moon-icon');
+
+  const applyTheme = (theme) => {
+    document.documentElement.setAttribute('data-theme', theme);
+    if (theme === 'dark') {
+      sunIcon.classList.add('hidden');
+      moonIcon.classList.remove('hidden');
+    } else {
+      sunIcon.classList.remove('hidden');
+      moonIcon.classList.add('hidden');
+    }
+  };
+
+  const toggleTheme = () => {
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    localStorage.setItem('theme', newTheme);
+    applyTheme(newTheme);
+  };
+
+  themeToggle.addEventListener('click', toggleTheme);
+
+  // Apply theme on initial load
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  applyTheme(savedTheme);
+</script> 

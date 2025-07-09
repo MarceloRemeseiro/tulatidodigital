@@ -1,0 +1,24 @@
+{
+  "title": "Lo que dicen de nosotras",
+  "subtitle": "Historias reales de colaboraciones que nos llenan de orgullo.",
+  "testimonials": [
+    {
+      "id": "e6f4a8d1-1b2c-4e8a-9a4d-0e6e1f9b1a2b",
+      "quote": "Desde que delegué mi estrategia digital en Tu Latido, no solo he recuperado mi tiempo, sino que mis ventas han aumentado un 40%. Su profesionalidad y cercanía son inigualables. ¡Son parte de mi equipo!",
+      "name": "Ana García",
+      "role": "CEO de 'Crea y Crece'"
+    },
+    {
+      "id": "f8a7b9c2-2c3d-4f9b-8a1e-1f9b2a3c4d5e",
+      "quote": "El copywriting que han hecho para mi web ha sido un antes y un después. Saben captar la esencia de tu marca y comunicarla de una forma que realmente conecta y vende. ¡Totalmente recomendadas!",
+      "name": "Carlos Rodríguez",
+      "role": "Fundador de 'Nómada Digital School'"
+    },
+    {
+      "id": "a9b8c7d3-3d4e-4a9c-9b2f-2a3b4c5d6e7f",
+      "quote": "Tenía miedo de invertir en publicidad, pero con ellas cada euro ha contado. Entienden el mercado, optimizan las campañas y los resultados hablan por sí solos. ¡Un acierto total!",
+      "name": "Laura Fernández",
+      "role": "Diseñadora y Creadora de 'Luz y Forma'"
+    }
+  ]
+} 

@@ -1,43 +1,49 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: ['selector', '[data-theme="dark"]'],
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
   theme: {
     extend: {
       colors: {
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
         primary: {
-          50: '#f8f7ff',
-          100: '#f0edff',
-          200: '#e4ddff',
-          300: '#d2c2ff',
-          400: '#b899ff',
-          500: '#7f6ded',
-          600: '#6c59d6',
-          700: '#5b47c7',
-          800: '#4c38b3',
-          900: '#3d2a99'
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
         },
         secondary: {
-          50: '#fdf2f8',
-          100: '#fce7f3',
-          200: '#fbcfe8',
-          300: '#f9a8d4',
-          400: '#f472b6',
-          500: '#dc68cd',
-          600: '#c454b8',
-          700: '#a840a3',
-          800: '#8b2f8f',
-          900: '#6d1f7b'
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
         },
-        'gradient-start': '#7f6ded',
-        'gradient-end': '#dc68cd'
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
       },
       fontFamily: {
         'poppins': ['Poppins', 'sans-serif']
       },
       backgroundImage: {
-        'gradient-primary': 'linear-gradient(135deg, #7f6ded, #dc68cd)',
-        'gradient-fuchsia': 'linear-gradient(135deg, #7f6ded, #dc68cd)',
-        'gradient-brand': 'linear-gradient(135deg, #7f6ded, #dc68cd)'
+        'gradient-brand': 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)))'
       },
       animation: {
         'fade-in': 'fadeIn 0.6s ease-out',

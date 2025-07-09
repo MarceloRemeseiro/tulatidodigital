@@ -1,0 +1,134 @@
+{
+  "title": "Qué Hacemos: Servicios pensados para que delegues sin miedo y crezcas con dirección.",
+  "subtitle": "Todo lo que tu negocio necesita para crecer está aquí. Y lo hacemos como si fuera nuestro.",
+  "toggle": {
+    "packages": "Paquetes Integrales",
+    "individual": "Servicios Individuales"
+  },
+  "packages": [
+    {
+      "title": "Paquete Impulso Total",
+      "description": "La solución definitiva para una presencia digital imparable. Delegas todo, te enfocas en crecer.",
+      "features": [
+        "Estrategia Digital Completa",
+        "Gestión de Redes Sociales Premium",
+        "Publicidad Digital (Meta Ads) Avanzada",
+        "Copywriting y Email Marketing Estratégico",
+        "1 Video con IA al mes"
+      ],
+      "cta": "¡Quiero mi Impulso Total!",
+      "id": "e93e0ff2-730e-4fe9-80d2-e820860b23db"
+    },
+    {
+      "title": "Paquete Visibilidad Extrema",
+      "description": "Diseñado para marcas que necesitan una explosión de visibilidad y conexión con su audiencia.",
+      "features": [
+        "Gestión de Redes Sociales",
+        "Publicidad Digital (Meta Ads)",
+        "Edición de Video y Reels",
+        "Copywriting para Lanzamientos"
+      ],
+      "cta": "Aumentar mi Visibilidad",
+      "id": "6b3654cf-b928-4546-9b1c-99a59ec181dd"
+    },
+    {
+      "title": "Paquete Crecimiento y Venta",
+      "description": "Para negocios que necesitan optimizar su proceso de venta y convertir más leads.",
+      "features": [
+        "Embudos y Estrategia Digital",
+        "Setter y Closer de Ventas",
+        "Copywriting de Conversión",
+        "Asistencia Virtual para Soporte"
+      ],
+      "cta": "Quiero Vender Más",
+      "id": "cecf1c31-062f-4824-abf5-3af2b12cffe2"
+    }
+  ],
+  "individualServices": [
+    {
+      "id": "redes-sociales",
+      "title": "Gestión de Redes Sociales",
+      "description": "Tu Presencia, Tu Voz, Tu Comunidad. No se trata de estar por estar. Se trata de tener presencia con estrategia, estilo y coherencia. Creamos, planificamos y gestionamos tus redes para que hablen tu idioma y conecten con tu audiencia. Contenido creativo, interacción real y una comunidad que crece contigo. ¡Deja que tus redes trabajen para ti!",
+      "type": "individual",
+      "cta": "Saber más →"
+    },
+    {
+      "id": "publicidad-digital",
+      "title": "Publicidad Digital (Meta Ads)",
+      "description": "Anuncios que Venden, No que Gastan. Lanzar anuncios sin estrategia es tirar el dinero. Nosotras diseñamos y gestionamos campañas que venden, con segmentación inteligente, análisis continuo y mensajes que impactan. Haz que tu inversión en publicidad trabaje para ti de verdad. ¡Es hora de un ROI real!",
+      "type": "individual",
+      "cta": "Saber más →"
+    },
+    {
+      "id": "copywriting",
+      "title": "Copywriting y Email Marketing",
+      "description": "Palabras que Convierten, Emocionan y Seducen. Tus palabras venden. O alejan. Por eso creamos textos que comunican, emocionan y convierten. Desde tu web, hasta tus emails o lanzamientos: todo escrito con estrategia y personalidad. Porque cada palabra importa. ¡Vende con cada frase!",
+      "type": "individual",
+      "cta": "Saber más →"
+    },
+    {
+      "id": "edicion-video",
+      "title": "Edición de Vídeo y Reels",
+      "description": "Tus Ideas, Nuestro Arte. Vídeos que Capturan Miradas. ¿Tienes buenas ideas pero no sabes cómo darles forma? Nosotras sí. Transformamos tu contenido en piezas atractivas, ágiles y actuales para reels, TikTok o campañas. Y siempre con tu estilo y tu mensaje claro. Porque en digital, el vídeo es rey. ¡Haz que tu mensaje se vea!",
+      "type": "individual",
+      "cta": "Saber más →"
+    },
+    {
+      "id": "asistencia-virtual",
+      "title": "Asistencia Virtual (Back Office)",
+      "description": "Libera Tu Tiempo, Multiplica Tu Impacto. Delegar tareas repetitivas y de gestión no es un lujo, es una necesidad si quieres crecer. Nos encargamos de tu organización, emails, soporte al cliente, agenda, documentos… y lo hacemos con cariño, orden y eficiencia. ¡Recupera tu foco!",
+      "type": "individual",
+      "cta": "Saber más →"
+    },
+    {
+      "id": "embudos-estrategia",
+      "title": "Embudos y Estrategia Digital",
+      "description": "El Camino Directo a la Venta. Tener presencia online no basta. Necesitas un recorrido claro que guíe a tu cliente ideal desde el primer contacto hasta la venta. Diseñamos embudos personalizados, coherentes con tu marca y enfocados en resultados. Plan + acción = conversión. ¡Transforma visitas en ventas!",
+      "type": "individual",
+      "cta": "Saber más →"
+    },
+    {
+      "id": "setter-closer",
+      "title": "Setter y Closer de Ventas",
+      "description": "No Más Mensajes sin Cierre. Nosotras Vendemos Por Ti. ¿Recibes mensajes pero no sabes cómo convertirlos en ventas? ¿Te faltan tiempo o herramientas para hacer seguimiento y cerrar? Aquí entramos nosotras. Respondemos, guiamos y vendemos por ti. Desde el primer mensaje hasta el “¡sí quiero!”. ¡Cierra más ventas sin esfuerzo!",
+      "type": "individual",
+      "cta": "Saber más →"
+    },
+    {
+      "id": "videos-ia",
+      "title": "Videos IA Sin Cámara",
+      "description": "Tu presencia en video, sin miedo escénico. Nuestra tecnología de IA crea avatares y voces hiperrealistas que comunican tu mensaje con profesionalidad y convicción, sin que tengas que ponerte delante de la lente.",
+      "type": "ia-special",
+      "cta": "¡Lo quiero! →"
+    }
+  ],
+  "modal": {
+    "title": "Qué Hacemos: Servicios pensados para que delegues sin miedo y crezcas con dirección.",
+    "subtitle": "Videos con IA que Revolucionan tu Marca.",
+    "paragraph": "...",
+    "stepsTitle": "¿Cómo funciona? Es así de simple:",
+    "steps": [
+      {
+        "title": "Escribe tu guion",
+        "description": "O deja que nuestra IA lo cree por ti."
+      },
+      {
+        "title": "Elige tu avatar",
+        "description": "Selecciona uno de nuestra galería o clona tu propia imagen."
+      },
+      {
+        "title": "Genera tu video",
+        "description": "En minutos tendrás un video profesional listo para publicar."
+      }
+    ],
+    "benefitsTitle": "Beneficios que te cambiarán el juego:",
+    "benefits": [
+      "Ahorro de tiempo y costes: Olvídate de estudios, equipos y largas horas de grabación.",
+      "Calidad profesional: Avatares y voces indistinguibles de los humanos.",
+      "Alcance global: Tu mensaje en múltiples idiomas sin esfuerzo.",
+      "Consistencia de marca: Un portavoz perfecto, siempre disponible.",
+      "Libérate del miedo escénico: Concéntrate en tu mensaje, no en la cámara."
+    ],
+    "cta": "Crea Tu Primer Video IA"
+  }
+}
