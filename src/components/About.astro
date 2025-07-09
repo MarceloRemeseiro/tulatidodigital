@@ -1,51 +1,38 @@
 ---
+import content from '../content/about.json';
 ---
 
 <section id="nosotros" class="py-20 md:py-32 bg-background-alt section-fade-in">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
     <h2 class="text-4xl font-bold text-primary">
-      Quiénes Somos: Raquel y Lydia. Dos Trayectorias. Un Solo Latido. Tu Impulso.
+      {content.title}
     </h2>
     <p class="mt-6 text-xl text-foreground/90">
-      Nosotras no nos conocimos ayer. Ni improvisamos esto. Venimos de trabajar muchos años ayudando a emprendedoras, pymes y marcas a brillar online. Hemos sido community managers, copywriters, media buyers, asistentes virtuales, editors de vídeo, setters, closers... y no por probar, sino para entenderlo TODO. Porque para ayudar de verdad a un negocio, hay que tener una visión completa. Y ahora, juntas, hemos unido toda esa experiencia en algo nuevo: Una solución digital integral que no solo ejecuta, sino que piensa, siente y respira contigo.
+      {content.paragraph}
     </p>
     <div class="mt-12">
       <h3 class="text-3xl font-bold text-secondary">
-        Nuestro Enfoque: Estrategia con Alma, Ejecución con Cabeza, Comunicación con Flow.
+        {content.focus.title}
       </h3>
       <p class="mt-6 text-lg text-foreground/80">
-        Esto no es una agencia cualquiera. Aquí no vendemos "servicios sueltos". Vendemos claridad, acompañamiento y acción. Nos metemos en tu negocio como si fuera el nuestro. Porque entendemos el embudo completo: Desde el primer mensaje que recibe una clienta potencial, hasta el cierre de la venta. Y más allá.
+        {content.focus.paragraph}
       </p>
     </div>
     <div class="mt-12 text-left">
       <h3 class="text-3xl font-bold text-primary">
-        ¿Por Qué Tu Latido Digital es Tu Mejor Aliado?
+        {content.reasons.title}
       </h3>
       <ul class="mt-6 space-y-4 text-lg text-foreground/80">
-        <li class="flex items-start">
-          <span class="text-secondary text-2xl mr-3">✨</span>
-          <span>Porque tenemos experiencia real, no solo bonitos currículos. Hemos estado en tu lugar.</span>
-        </li>
-        <li class="flex items-start">
-          <span class="text-secondary text-2xl mr-3">💬</span>
-          <span>Porque hablamos tu idioma y entendemos tus prioridades. Sin tecnicismos, con soluciones claras.</span>
-        </li>
-        <li class="flex items-start">
-          <span class="text-secondary text-2xl mr-3">🚀</span>
-          <span>Porque hemos ayudado a muchas como tú a dejar de improvisar y a trazar un camino de crecimiento.</span>
-        </li>
-        <li class="flex items-start">
-          <span class="text-secondary text-2xl mr-3">✅</span>
-          <span>Porque con nosotras dejas de hacer malabares y empiezas a tener un plan. Acción y dirección.</span>
-        </li>
-        <li class="flex items-start">
-          <span class="text-secondary text-2xl mr-3">💖</span>
-          <span>Porque tu tiempo, tu energía y tu marca merecen un equipo que lo sienta contigo. Tu éxito es nuestro latido.</span>
-        </li>
+        {content.reasons.items.map(item => (
+          <li class="flex items-start">
+            <span class="text-secondary text-2xl mr-3">{item.icon}</span>
+            <span>{item.text}</span>
+          </li>
+        ))}
       </ul>
     </div>
     <a href="#contacto" class="mt-12 inline-block bg-gradient-to-r from-primary to-secondary text-primary-foreground font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
-      Hablemos de Tu Éxito
+      {content.cta}
     </a>
   </div>
 </section> 

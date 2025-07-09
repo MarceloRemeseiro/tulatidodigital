@@ -1,6 +1,6 @@
 ---
 
-import Layout from '../../layouts/Layout.astro';
+import Layout from '../../layouts/AdminLayout.astro';
 import content from '../../content/services.json';
 import type { ServiceContent } from '../../content/types';
 
@@ -372,25 +372,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderAll();
 });
-</script>
-
-<style>
-  .input {
-    @apply mt-1 block w-full px-4 py-3 bg-background border border-foreground/20 rounded-lg shadow-sm focus:ring-primary focus:border-primary;
-  }
-  .button-primary {
-    @apply bg-primary text-primary-foreground font-bold py-3 px-6 rounded-lg hover:bg-primary/90 transition-colors;
-  }
-  .button-secondary {
-    @apply bg-secondary text-secondary-foreground font-bold py-2 px-4 rounded-lg hover:bg-secondary/90 transition-colors text-sm;
-  }
-  .button-danger {
-    @apply bg-destructive text-destructive-foreground font-bold py-1 px-3 rounded-md hover:bg-destructive/90 transition-colors text-xs;
-  }
-  .button-secondary-outline {
-    @apply bg-transparent border border-secondary text-secondary font-bold py-1 px-3 rounded-md hover:bg-secondary hover:text-secondary-foreground transition-colors text-xs;
-  }
-   .button-danger-outline {
-    @apply bg-transparent border border-destructive text-destructive font-bold py-0 px-2 rounded-md hover:bg-destructive hover:text-destructive-foreground transition-colors text-xs;
-  }
-</style> 
+</script> 

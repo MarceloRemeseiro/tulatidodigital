@@ -1,23 +1,18 @@
 ---
+import AdminNavigation from '../components/AdminNavigation.astro';
+
 interface Props {
 	title: string;
-	description?: string;
 }
 
-import ThemeToggle from '../components/ThemeToggle.astro';
-
-const { 
-	title, 
-	description = "Tu Latido Digital - Agencia de Marketing Digital especializada en Copywriting, Community Management y Media Buying" 
-} = Astro.props;
-const isAdminPage = Astro.url.pathname.startsWith('/admin');
+const { title } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang="es" data-theme="light">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="description" content={description} />
+		<meta name="description" content="Astro description" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
@@ -35,16 +30,10 @@ const isAdminPage = Astro.url.pathname.startsWith('/admin');
 			document.documentElement.setAttribute('data-theme', theme);
 		</script>
 	</head>
-	<body class="bg-background text-foreground">
-		<div class="fixed top-4 right-4 z-50 flex items-center gap-4">
-			<slot name="page-actions" />
-			{isAdminPage && (
-				<>
-					<a href="/logout" class="text-sm text-foreground/70 hover:text-primary transition-colors" title="Cerrar sesión">Logout</a>
-					<ThemeToggle />
-				</>
-			)}
-		</div>
+	<body class="bg-background text-foreground font-sans">
+		<AdminNavigation>
+			<slot name="page-actions" slot="page-actions" />
+		</AdminNavigation>
 		<slot />
 		<style is:global>
 			:root {
@@ -96,60 +85,15 @@ const isAdminPage = Astro.url.pathname.startsWith('/admin');
 				--ring: 252, 82%, 65%;
 			}
 
-			html {
-				scroll-behavior: smooth;
-			}
-
-			body {
-				font-family: 'Poppins', sans-serif;
-			}
-
-			.bg-stripes-texture {
-				background-color: hsl(var(--background));
-				background-image: repeating-linear-gradient(
-					45deg,
-					hsl(var(--foreground) / 0.02),
-					hsl(var(--foreground) / 0.02) 2px,
-					transparent 2px,
-					transparent 20px
-				);
-			}
-
-			.section-fade-in {
-				opacity: 0;
-				transform: translateY(20px);
-				transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-			}
-
-			.section-fade-in.visible {
-				opacity: 1;
-				transform: translateY(0);
-			}
-
-			.active-toggle {
-				background-color: hsl(var(--primary));
-				color: hsl(var(--primary-foreground));
-			}
-
-			.modal {
-				transition: opacity 0.25s ease;
-			}
+			.button-primary { @apply bg-primary text-primary-foreground font-semibold py-2 px-4 rounded-lg hover:opacity-90 transition-opacity; }
+			.button-secondary { @apply bg-secondary text-secondary-foreground font-semibold py-2 px-4 rounded-lg hover:opacity-90 transition-opacity; }
+			.button-danger { @apply bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors; }
+			.button-danger-outline { @apply border border-red-600 text-red-600 font-semibold py-1 px-3 rounded-lg hover:bg-red-600 hover:text-white transition-colors text-sm; }
+			.button-secondary-outline { @apply border border-secondary text-secondary font-semibold py-1 px-3 rounded-lg hover:bg-secondary hover:text-white transition-colors text-sm; }
+			.input { @apply block w-full bg-background-alt border border-border rounded-md p-2 focus:ring-primary focus:border-primary transition; }
 
 			[data-theme="light"] .moon-icon { display: none; }
 			[data-theme="dark"] .sun-icon { display: none; }
 		</style>
-		<script>
-			const intersectionObserver = new IntersectionObserver((entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						entry.target.classList.add('visible');
-					}
-				});
-			});
-
-			document.querySelectorAll('.section-fade-in').forEach((section) => {
-				intersectionObserver.observe(section);
-			});
-		</script>
 	</body>
 </html> 

@@ -6,13 +6,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   const isAuthenticated = session?.value === 'admin-logged-in';
   const isPublic = import.meta.env.PUBLICA === 'true';
 
-  // Logout siempre disponible para usuarios logueados
-  if (isAuthenticated && url.pathname === '/logout') {
-    cookies.delete('session', { path: '/' });
-    return redirect('/login');
-  }
-
-  // Si está autenticado, tiene acceso a todo
+  // Si está autenticado, tiene acceso a todo (excepto /logout, que tiene su propia página)
   if (isAuthenticated) {
     return next();
   }

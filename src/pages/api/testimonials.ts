@@ -6,6 +6,20 @@ const testimonialsPath = path.join(process.cwd(), 'src/content/testimonials.json
 
 export const prerender = false;
 
+export const GET: APIRoute = async () => {
+  try {
+    const data = await fs.readFile(testimonialsPath, 'utf-8');
+    return new Response(data, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ message: "File not found" }), {
+      status: 404,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+};
+
 export const POST: APIRoute = async ({ request }) => {
   try {
     const data = await request.json();

@@ -2,13 +2,13 @@ import type { APIRoute } from 'astro';
 import { promises as fs } from 'fs';
 import path from 'path';
 
-const heroPath = path.join(process.cwd(), 'src/content/hero.json');
+const contentPath = path.join(process.cwd(), 'src/content/about.json');
 
 export const prerender = false;
 
 export const GET: APIRoute = async () => {
   try {
-    const data = await fs.readFile(heroPath, 'utf-8');
+    const data = await fs.readFile(contentPath, 'utf-8');
     return new Response(data, {
       headers: { 'Content-Type': 'application/json' },
     });
@@ -23,22 +23,13 @@ export const GET: APIRoute = async () => {
 export const POST: APIRoute = async ({ request }) => {
   try {
     const data = await request.json();
-    
-    await fs.writeFile(heroPath, JSON.stringify(data, null, 2));
-
-    return new Response(JSON.stringify({ message: 'Contenido guardado con éxito' }), {
+    await fs.writeFile(contentPath, JSON.stringify(data, null, 2));
+    return new Response(JSON.stringify({ message: "Content updated successfully" }), {
       status: 200,
-      headers: {
-        'Content-Type': 'application/json'
-      }
     });
   } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ message: 'Error al guardar el contenido' }), {
+    return new Response(JSON.stringify({ message: "Error updating content" }), {
       status: 500,
-      headers: {
-        'Content-Type': 'application/json'
-      }
     });
   }
 }; 

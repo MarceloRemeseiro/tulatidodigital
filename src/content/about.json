@@ -1,0 +1,34 @@
+{
+  "title": "Quiénes Somos: Raquel y Lydia. Dos Trayectorias. Un Solo Latido. Tu Impulso.",
+  "paragraph": "Nosotras no nos conocimos ayer. Ni improvisamos esto. Venimos de trabajar muchos años ayudando a emprendedoras, pymes y marcas a brillar online. Hemos sido community managers, copywriters, media buyers, asistentes virtuales, editors de vídeo, setters, closers... y no por probar, sino para entenderlo TODO. Porque para ayudar de verdad a un negocio, hay que tener una visión completa. Y ahora, juntas, hemos unido toda esa experiencia en algo nuevo: Una solución digital integral que no solo ejecuta, sino que piensa, siente y respira contigo.",
+  "cta": "Hablemos de Tu Éxito",
+  "focus": {
+    "title": "Nuestro Enfoque: Estrategia con Alma, Ejecución con Cabeza, Comunicación con Flow.",
+    "paragraph": "Esto no es una agencia cualquiera. Aquí no vendemos \"servicios sueltos\". Vendemos claridad, acompañamiento y acción. Nos metemos en tu negocio como si fuera el nuestro. Porque entendemos el embudo completo: Desde el primer mensaje que recibe una clienta potencial, hasta el cierre de la venta. Y más allá."
+  },
+  "reasons": {
+    "title": "¿Por Qué Tu Latido Digital es Tu Mejor Aliado?",
+    "items": [
+      {
+        "icon": "✨",
+        "text": "Porque tenemos experiencia real, no solo bonitos currículos. Hemos estado en tu lugar."
+      },
+      {
+        "icon": "💬",
+        "text": "Porque hablamos tu idioma y entendemos tus prioridades. Sin tecnicismos, con soluciones claras."
+      },
+      {
+        "icon": "🚀",
+        "text": "Porque hemos ayudado a muchas como tú a dejar de improvisar y a trazar un camino de crecimiento."
+      },
+      {
+        "icon": "✅",
+        "text": "Porque con nosotras dejas de hacer malabares y empiezas a tener un plan. Acción y dirección."
+      },
+      {
+        "icon": "💖",
+        "text": "Porque tu tiempo, tu energía y tu marca merecen un equipo que lo sienta contigo. Tu éxito es nuestro latido."
+      }
+    ]
+  }
+}

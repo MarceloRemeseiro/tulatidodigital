@@ -1,36 +1,34 @@
 ---
 ---
-<button id="theme-toggle" class="p-2 rounded-md hover:bg-foreground/10 transition-colors">
+<button id="theme-toggle" class="p-2 rounded-md hover:bg-foreground/10 transition-colors" aria-label="Cambiar tema">
   <span class="sun-icon">☀️</span>
-  <span class="moon-icon hidden">🌙</span>
+  <span class="moon-icon">🌙</span>
 </button>
 
-<script is:inline>
-  const themeToggle = document.getElementById('theme-toggle');
-  const sunIcon = themeToggle.querySelector('.sun-icon');
-  const moonIcon = themeToggle.querySelector('.moon-icon');
-
-  const applyTheme = (theme) => {
+<script>
+  const applyTheme = () => {
+    // 1. Lee el tema desde localStorage, o usa 'light' si no hay nada.
+    const theme = localStorage.getItem('theme') || 'light';
+    // 2. Aplica el tema al documento.
     document.documentElement.setAttribute('data-theme', theme);
-    if (theme === 'dark') {
-      sunIcon.classList.add('hidden');
-      moonIcon.classList.remove('hidden');
-    } else {
-      sunIcon.classList.remove('hidden');
-      moonIcon.classList.add('hidden');
-    }
   };
 
   const toggleTheme = () => {
     const currentTheme = localStorage.getItem('theme') || 'light';
     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
     localStorage.setItem('theme', newTheme);
-    applyTheme(newTheme);
+    applyTheme(); // Vuelve a aplicar para que el cambio sea instantáneo.
   };
 
-  themeToggle.addEventListener('click', toggleTheme);
+  // Este evento se dispara en la carga inicial Y después de cada navegación de ViewTransitions.
+  document.addEventListener('DOMContentLoaded', () => {
+    // Siempre nos aseguramos de que el tema correcto esté aplicado.
+    applyTheme();
 
-  // Apply theme on initial load
-  const savedTheme = localStorage.getItem('theme') || 'light';
-  applyTheme(savedTheme);
+    // Y siempre nos aseguramos de que el botón funcione.
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', toggleTheme);
+    }
+  });
 </script> 

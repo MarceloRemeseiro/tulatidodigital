@@ -1,0 +1,183 @@
+---
+import Layout from '../../layouts/AdminLayout.astro';
+---
+
+<Layout title="Admin | Quiénes Somos">
+  <button slot="page-actions" id="save-button" class="button-primary">Guardar Cambios</button>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <a href="/admin" class="text-primary hover:underline mb-4 block">&larr; Volver al panel de admin</a>
+    <h1 class="text-3xl font-bold mb-6 text-foreground">Editar Sección "Quiénes Somos"</h1>
+    <p class="mb-6 text-foreground/80">Todos los cambios que realices se guardarán únicamente cuando presiones el botón "Guardar Cambios" de la esquina superior derecha.</p>
+    
+    <div id="notification" class="hidden p-4 mb-4 rounded-lg"></div>
+
+    <form id="about-form" class="space-y-8">
+      
+      <fieldset class="space-y-6 border border-foreground/20 p-6 rounded-lg">
+        <legend class="text-xl font-bold px-2">Contenido Principal</legend>
+        <div>
+          <label for="title" class="block text-sm font-medium">Título Principal</label>
+          <input type="text" id="title" name="title" class="mt-1 block w-full input">
+        </div>
+        <div>
+          <label for="paragraph" class="block text-sm font-medium">Párrafo Principal</label>
+          <textarea id="paragraph" name="paragraph" rows="6" class="mt-1 block w-full input"></textarea>
+        </div>
+        <div>
+            <label for="cta" class="block text-sm font-medium">Texto del Botón (CTA)</label>
+            <input type="text" id="cta" name="cta" class="mt-1 block w-full input">
+        </div>
+      </fieldset>
+      
+      <fieldset class="space-y-6 border border-foreground/20 p-6 rounded-lg">
+        <legend class="text-xl font-bold px-2 text-secondary">Sección de Enfoque</legend>
+        <div>
+          <label for="focus-title" class="block text-sm font-medium">Título de Enfoque</label>
+          <input type="text" id="focus-title" name="focus.title" class="mt-1 block w-full input">
+        </div>
+        <div>
+          <label for="focus-paragraph" class="block text-sm font-medium">Párrafo de Enfoque</label>
+          <textarea id="focus-paragraph" name="focus.paragraph" rows="4" class="mt-1 block w-full input"></textarea>
+        </div>
+      </fieldset>
+      
+      <fieldset class="space-y-6 border border-foreground/20 p-6 rounded-lg">
+        <legend class="text-xl font-bold px-2 text-primary">Sección de Razones</legend>
+        <div>
+          <label for="reasons-title" class="block text-sm font-medium">Título de Razones</label>
+          <input type="text" id="reasons-title" name="reasons.title" class="mt-1 block w-full input">
+        </div>
+        <div id="reasons-list" class="space-y-4 mt-4">
+          <!-- Los items se cargarán aquí dinámicamente -->
+        </div>
+        <button type="button" id="add-reason" class="button-secondary">Añadir Razón</button>
+      </fieldset>
+    </form>
+  </main>
+</Layout>
+
+<template id="reason-template">
+    <div class="reason-item flex items-center gap-2 p-2 bg-background-secondary rounded">
+        <input type="text" data-field="icon" class="w-16 p-2 bg-background border border-border rounded" placeholder="Icono">
+        <input type="text" data-field="text" class="flex-grow p-2 bg-background border border-border rounded" placeholder="Texto de la razón">
+        <button type="button" class="remove-reason button-danger-outline">✖</button>
+    </div>
+</template>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const form = document.getElementById('about-form');
+    const reasonsList = document.getElementById('reasons-list');
+    const saveButton = document.getElementById('save-button');
+    const notification = document.getElementById('notification');
+    const reasonTemplate = document.getElementById('reason-template');
+    let contentData = {};
+
+    function showNotification(message, isError = false) {
+      notification.textContent = message;
+      notification.className = `p-4 mb-4 rounded-lg ${isError ? 'bg-red-500/20 text-red-500' : 'bg-green-500/20 text-green-500'}`;
+      notification.classList.remove('hidden');
+      setTimeout(() => {
+        notification.classList.add('hidden');
+      }, 3000);
+    }
+
+    async function loadContent() {
+      try {
+        const response = await fetch('/api/about');
+        if (!response.ok) throw new Error('Failed to load content');
+        contentData = await response.json();
+        
+        document.getElementById('title').value = contentData.title;
+        document.getElementById('paragraph').value = contentData.paragraph;
+        document.getElementById('cta').value = contentData.cta;
+        document.getElementById('focus-title').value = contentData.focus.title;
+        document.getElementById('focus-paragraph').value = contentData.focus.paragraph;
+        document.getElementById('reasons-title').value = contentData.reasons.title;
+        renderReasons();
+
+      } catch (error) {
+        console.error("Error loading content:", error);
+        showNotification('No se pudo cargar el contenido.', true);
+      }
+    }
+
+    function renderReasons() {
+      reasonsList.innerHTML = '';
+      if (!contentData.reasons || !contentData.reasons.items) return;
+      
+      contentData.reasons.items.forEach((item, index) => {
+        const reasonNode = reasonTemplate.content.cloneNode(true);
+        const reasonDiv = reasonNode.querySelector('.reason-item');
+        reasonDiv.dataset.index = index;
+        reasonDiv.querySelector('[data-field="icon"]').value = item.icon;
+        reasonDiv.querySelector('[data-field="text"]').value = item.text;
+        reasonsList.appendChild(reasonNode);
+      });
+    }
+    
+    document.getElementById('add-reason').addEventListener('click', () => {
+        if (!contentData.reasons.items) contentData.reasons.items = [];
+        contentData.reasons.items.push({ icon: '🆕', text: 'Nueva razón' });
+        renderReasons();
+    });
+
+    reasonsList.addEventListener('click', (e) => {
+      const removeButton = e.target.closest('.remove-reason');
+      if (removeButton) {
+        const index = removeButton.closest('.reason-item').dataset.index;
+        contentData.reasons.items.splice(index, 1);
+        renderReasons();
+      }
+    });
+
+    saveButton.addEventListener('click', async () => {
+      saveButton.textContent = 'Guardando...';
+      saveButton.disabled = true;
+
+      const formData = new FormData(form);
+      const updatedContent = {
+        title: formData.get('title'),
+        paragraph: formData.get('paragraph'),
+        cta: formData.get('cta'),
+        focus: {
+          title: formData.get('focus.title'),
+          paragraph: formData.get('focus.paragraph')
+        },
+        reasons: {
+          title: formData.get('reasons.title'),
+          items: []
+        }
+      };
+      
+      const reasonNodes = reasonsList.querySelectorAll('.reason-item');
+      reasonNodes.forEach(node => {
+          updatedContent.reasons.items.push({
+              icon: node.querySelector('[data-field="icon"]').value,
+              text: node.querySelector('[data-field="text"]').value
+          });
+      });
+
+      try {
+        const response = await fetch('/api/about', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedContent)
+        });
+
+        if (!response.ok) throw new Error('Failed to save');
+        showNotification('¡Contenido guardado con éxito!');
+        
+      } catch (error) {
+        console.error("Error saving content:", error);
+        showNotification('Error al guardar el contenido.', true);
+      } finally {
+        saveButton.textContent = 'Guardar Cambios';
+        saveButton.disabled = false;
+      }
+    });
+
+    loadContent();
+  });
+</script> 

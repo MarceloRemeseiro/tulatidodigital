@@ -1,6 +1,5 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import content from '../../content/hero.json';
+import Layout from '../../layouts/AdminLayout.astro';
 ---
 
 <Layout title="Admin - Hero Section">
@@ -16,22 +15,22 @@ import content from '../../content/hero.json';
       <div class="space-y-6">
         <div>
           <label for="headline" class="block text-sm font-medium text-foreground/90">Titular Principal</label>
-          <input type="text" id="headline" name="headline" value={content.headline} class="mt-1 block w-full input">
+          <input type="text" id="headline" name="headline" class="mt-1 block w-full input">
         </div>
         
         <div>
           <label for="subheadline" class="block text-sm font-medium text-foreground/90">Sub-titular</label>
-          <input type="text" id="subheadline" name="subheadline" value={content.subheadline} class="mt-1 block w-full input">
+          <input type="text" id="subheadline" name="subheadline" class="mt-1 block w-full input">
         </div>
         
         <div>
           <label for="paragraph" class="block text-sm font-medium text-foreground/90">Párrafo de Introducción</label>
-          <textarea id="paragraph" name="paragraph" rows="4" class="mt-1 block w-full input">{content.paragraph}</textarea>
+          <textarea id="paragraph" name="paragraph" rows="4" class="mt-1 block w-full input"></textarea>
         </div>
         
         <div>
           <label for="ctaButton" class="block text-sm font-medium text-foreground/90">Texto del Botón (CTA)</label>
-          <input type="text" id="ctaButton" name="ctaButton" value={content.ctaButton} class="mt-1 block w-full input">
+          <input type="text" id="ctaButton" name="ctaButton" class="mt-1 block w-full input">
         </div>
 
         <hr class="border-foreground/20">
@@ -39,13 +38,13 @@ import content from '../../content/hero.json';
         <h2 class="text-2xl font-bold">Sección Promesa</h2>
         
         <div>
-          <label for="promiseTitle" class="block text-sm font-medium text-foreground/90">Título de la Promesa</p>
-          <input type="text" id="promiseTitle" name="promiseTitle" value={content.promise.title} class="mt-1 block w-full input">
+          <label for="promiseTitle" class="block text-sm font-medium text-foreground/90">Título de la Promesa</label>
+          <input type="text" id="promiseTitle" name="promiseTitle" class="mt-1 block w-full input">
         </div>
         
         <div>
           <label for="promiseParagraph" class="block text-sm font-medium text-foreground/90">Párrafo de la Promesa</label>
-          <textarea id="promiseParagraph" name="promiseParagraph" rows="4" class="mt-1 block w-full input">{content.promise.paragraph}</textarea>
+          <textarea id="promiseParagraph" name="promiseParagraph" rows="4" class="mt-1 block w-full input"></textarea>
         </div>
       </div>
     </form>
@@ -54,17 +53,41 @@ import content from '../../content/hero.json';
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('hero-form');
+  const form = document.getElementById('hero-form') as HTMLFormElement | null;
   const saveBtn = document.getElementById('save-btn');
   const notification = document.getElementById('notification');
 
-  if (!form || !saveBtn || !notification) {
-    console.error('Error: No se encontraron los elementos del formulario en la página.');
-    return;
-  }
+  const showNotification = (message: string, isError = false) => {
+    if (notification) {
+      notification.textContent = message;
+      notification.className = `p-4 mb-4 rounded-lg ${isError ? 'bg-red-200 text-red-800' : 'bg-green-200 text-green-800'} block`;
+      setTimeout(() => { notification.classList.add('hidden'); }, 3000);
+    }
+  };
+  
+  const loadContent = async () => {
+    if (!form) return;
+    try {
+      const response = await fetch('/api/hero');
+      if (!response.ok) throw new Error('Failed to load content');
+      const content = await response.json();
+      
+      (form.elements.namedItem('headline') as HTMLInputElement).value = content.headline;
+      (form.elements.namedItem('subheadline') as HTMLInputElement).value = content.subheadline;
+      (form.elements.namedItem('paragraph') as HTMLInputElement).value = content.paragraph;
+      (form.elements.namedItem('ctaButton') as HTMLInputElement).value = content.ctaButton;
+      (form.elements.namedItem('promiseTitle') as HTMLInputElement).value = content.promise.title;
+      (form.elements.namedItem('promiseParagraph') as HTMLInputElement).value = content.promise.paragraph;
 
-  saveBtn.addEventListener('click', async () => {
-    const formData = new FormData(form as HTMLFormElement);
+    } catch (error) {
+      console.error("Error loading content:", error);
+      showNotification('No se pudo cargar el contenido.', true);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!form) return;
+    const formData = new FormData(form);
     const data = {
       headline: formData.get('headline'),
       subheadline: formData.get('subheadline'),
@@ -84,24 +107,17 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       if (!response.ok) throw new Error('Error al guardar');
-
-      notification.textContent = '¡Contenido guardado con éxito!';
-      notification.className = 'p-4 mb-4 rounded-lg bg-green-200 text-green-800 block';
+      showNotification('¡Contenido guardado con éxito!');
     } catch (error) {
-      notification.textContent = 'Error al guardar. Inténtalo de nuevo.';
-      notification.className = 'p-4 mb-4 rounded-lg bg-red-200 text-red-800 block';
-    } finally {
-      setTimeout(() => { notification.classList.add('hidden'); }, 3000);
+      showNotification('Error al guardar. Inténtalo de nuevo.', true);
     }
-  });
-});
-</script>
+  };
 
-<style>
-  .input {
-    @apply mt-1 block w-full px-4 py-3 bg-background border border-foreground/20 rounded-lg shadow-sm focus:ring-primary focus:border-primary;
+  if (form && saveBtn && notification) {
+    loadContent();
+    saveBtn.addEventListener('click', handleSave);
+  } else {
+    console.error('Error: No se encontraron los elementos del formulario en la página.');
   }
-  .button-primary {
-    @apply bg-primary text-primary-foreground font-bold py-3 px-6 rounded-lg hover:bg-primary/90 transition-colors;
-  }
-</style> 
+});
+</script> 
