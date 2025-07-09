@@ -27,7 +27,7 @@ const testimonials = content.testimonials as Testimonial[];
     </div>
 </section>
 
-<script define:vars={{ testimonials }}>
+<script is:inline define:vars={{ testimonials }}>
   document.addEventListener('DOMContentLoaded', function () {
     const carouselContainer = document.getElementById('testimonial-carousel');
     const dotsContainer = document.getElementById('carousel-dots');

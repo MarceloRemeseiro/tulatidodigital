@@ -66,7 +66,7 @@ const typedContent = content.testimonials as Testimonial[];
   </div>
 </template>
 
-<script define:vars={{ initialContent: typedContent, initialTitle: content.title, initialSubtitle: content.subtitle }}>
+<script is:inline define:vars={{ initialContent: typedContent, initialTitle: content.title, initialSubtitle: content.subtitle }}>
 document.addEventListener('DOMContentLoaded', () => {
   let testimonials = JSON.parse(JSON.stringify(initialContent));
   let title = initialTitle;
@@ -84,6 +84,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const notification = document.getElementById('notification');
   const titleInput = document.getElementById('title');
   const subtitleInput = document.getElementById('subtitle');
+  console.log(titleInput, subtitleInput);
+  
 
   function renderTestimonials() {
     container.innerHTML = '';
