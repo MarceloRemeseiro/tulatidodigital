@@ -1,33 +1,30 @@
 ---
 import content from '../content/testimonials.json';
-const { title, subtitle, testimonials } = content;
+import type { Testimonial } from '../content/types';
+const testimonials = content.testimonials as Testimonial[];
 ---
 
-<section id="testimonios" class="py-20 md:py-32 bg-background-secondary section-fade-in">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center">
-      <h2 class="text-3xl md:text-4xl font-extrabold text-foreground">{title}</h2>
-      <p class="mt-4 max-w-2xl mx-auto text-lg text-foreground/80">{subtitle}</p>
-    </div>
-    
-    <div class="mt-16 overflow-hidden relative max-w-4xl mx-auto">
-      <div id="testimonial-carousel" class="flex transition-transform duration-500 ease-in-out">
-        {testimonials.map(testimonial => (
-            <div class="w-full flex-shrink-0 px-4">
-                <div class="bg-gradient-to-br from-card to-background-alt text-card-foreground p-8 rounded-2xl shadow-lg border border-border">
-                    <p class="text-xl italic">"{testimonial.quote}"</p>
-                    <p class="mt-8 text-lg font-bold text-primary">{testimonial.name}</p>
-                    <p class="text-sm text-muted-foreground">{testimonial.role}</p>
-                </div>
+<section id="casos-exito" class="py-20 md:py-32 bg-background-main relative overflow-hidden">
+    <!-- Comillas decorativas de fondo -->
+    <div class="absolute -top-10 left-4 md:left-10 text-[15rem] lg:text-[20rem] font-serif text-foreground/5 z-0" aria-hidden="true">“</div>
+    <div class="absolute -bottom-20 right-4 md:right-10 text-[15rem] lg:text-[20rem] font-serif text-foreground/5 z-0" aria-hidden="true">”</div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-foreground">{content.title}</h2>
+            <p class="mt-4 max-w-2xl mx-auto text-lg text-foreground/80">{content.subtitle}</p>
+        </div>
+        
+        <div class="mt-16 overflow-hidden relative max-w-4xl mx-auto">
+            <div id="testimonial-carousel" class="flex transition-transform duration-500 ease-in-out">
+                <!-- El carrusel se renderiza con JS para evitar duplicidad de código -->
             </div>
-        ))}
-      </div>
+        </div>
+        
+        <div class="text-center mt-8 flex justify-center space-x-3" id="carousel-dots">
+            <!-- Los dots se generarán dinámicamente -->
+        </div>
     </div>
-    
-    <div class="text-center mt-8 flex justify-center space-x-3" id="carousel-dots">
-      <!-- Los dots se generarán dinámicamente -->
-    </div>
-  </div>
 </section>
 
 <script define:vars={{ testimonials }}>
@@ -47,13 +44,12 @@ const { title, subtitle, testimonials } = content;
       testimonials.forEach((t, index) => {
         const slide = document.createElement('div');
         slide.className = 'w-full flex-shrink-0 px-4';
+        // HTML de la tarjeta de testimonio unificado
         slide.innerHTML = `
-          <div class="bg-background p-8 rounded-2xl shadow-lg">
-            <p class="text-foreground/80 italic">"${t.quote}"</p>
-            <div class="mt-6">
-              <p class="font-bold text-primary">${t.name}</p>
-              <p class="text-sm text-foreground/70">${t.role}</p>
-            </div>
+          <div class="bg-gradient-to-br from-card to-background-alt text-card-foreground p-8 rounded-2xl shadow-lg border border-border h-full flex flex-col justify-center">
+            <p class="text-xl italic">"${t.quote}"</p>
+            <p class="mt-8 text-lg font-bold text-primary">${t.name}</p>
+            <p class="text-sm text-muted-foreground">${t.role}</p>
           </div>
         `;
         carouselContainer.appendChild(slide);

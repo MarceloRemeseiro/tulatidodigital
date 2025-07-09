@@ -31,6 +31,8 @@ const isAdminPage = Astro.url.pathname.startsWith('/admin');
 		<slot />
 		<style is:global>
 			:root {
+				--background-main: 0 0% 100%; /* White */
+				--background-alt: 48 10% 95%; /* stone-100 */
 				--background: 48 10% 95%; /* stone-100 */
 				--foreground: 240 10% 3.9%; /* slate-950 */
 				--card: 0 0% 100%;
@@ -54,6 +56,8 @@ const isAdminPage = Astro.url.pathname.startsWith('/admin');
 			}
 
 			[data-theme="dark"] {
+				--background-main: 240 10% 3.9%; /* slate-950 */
+				--background-alt: 240 4% 9%; /* a bit darker */
 				--background: 240 10% 3.9%; /* slate-950 */
 				--foreground: 10 40% 98%; /* stone-50 */
 				--card: 240 10% 3.9%;
