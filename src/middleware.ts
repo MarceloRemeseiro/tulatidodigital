@@ -4,27 +4,35 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   const { url, cookies, redirect } = context;
   const session = cookies.get('session');
   const isAuthenticated = session?.value === 'admin-logged-in';
+  const isPublic = import.meta.env.PUBLICA === 'true';
 
-  // Si el usuario está autenticado, puede ver toda la web.
-  // Solo gestionamos el logout.
-  if (isAuthenticated) {
-    if (url.pathname === '/logout') {
-      cookies.delete('session', { path: '/' });
-      return redirect('/login');
-    }
-    return next(); // Acceso total para usuarios logueados
+  // Logout siempre disponible para usuarios logueados
+  if (isAuthenticated && url.pathname === '/logout') {
+    cookies.delete('session', { path: '/' });
+    return redirect('/login');
   }
 
-  // --- A partir de aquí, el usuario NO está autenticado ---
-
-  // Rutas públicas que un visitante normal puede ver
-  const publicPaths = ['/en-construccion', '/login'];
-
-  // Permite el acceso a las rutas públicas y a la API (necesaria para el login)
-  if (publicPaths.includes(url.pathname) || url.pathname.startsWith('/api/')) {
+  // Si está autenticado, tiene acceso a todo
+  if (isAuthenticated) {
     return next();
   }
 
-  // Para cualquier otra ruta, redirigir a "En Construcción"
-  return redirect('/en-construccion');
+  // --- Lógica para visitantes no autenticados ---
+
+  if (isPublic) {
+    // --- MODO PÚBLICO ---
+    // El sitio es visible. Solo se protege /admin
+    if (url.pathname.startsWith('/admin')) {
+      return redirect('/login');
+    }
+  } else {
+    // --- MODO "EN CONSTRUCCIÓN" ---
+    // El sitio no es visible. Todo redirige a /en-construccion
+    const allowedPaths = ['/en-construccion', '/login'];
+    if (!allowedPaths.includes(url.pathname) && !url.pathname.startsWith('/api/')) {
+      return redirect('/en-construccion');
+    }
+  }
+
+  return next();
 }; 
