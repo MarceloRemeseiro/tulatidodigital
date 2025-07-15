@@ -10,5 +10,8 @@ export default defineConfig({
   }),
   build: {
     assets: 'assets'
+  },
+  vite: {
+    assetsInclude: ['**/*.mp4', '**/*.webm', '**/*.ogg'] // Incluir archivos de vídeo como assets
   }
 }); 

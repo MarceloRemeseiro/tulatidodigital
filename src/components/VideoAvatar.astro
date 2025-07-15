@@ -1,0 +1,277 @@
+---
+interface Props {
+  title?: string;
+  subtitle?: string;
+  showControls?: boolean;
+  autoplay?: boolean;
+  muted?: boolean;
+  loop?: boolean;
+  className?: string;
+  containerClass?: string;
+}
+
+const { 
+  title = "¿Cómo es el resultado?",
+  subtitle = "👉 Mira un ejemplo real",
+  showControls = true,
+  autoplay = false,
+  muted = true,
+  loop = true,
+  className = "",
+  containerClass = ""
+} = Astro.props;
+
+// Generar IDs únicos para cada instancia
+const uniqueId = `video-${Math.random().toString(36).substr(2, 9)}`;
+---
+
+<style>
+  .gradient-text {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .video-container {
+    position: relative;
+    max-width: 400px;
+    margin: 0 auto;
+    aspect-ratio: 9/16; /* Para formato vertical 1080x1920 */
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+  
+  .video-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: #f3f4f6; /* Fallback gris mientras carga */
+  }
+  
+  .video-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .video-container:hover .video-overlay {
+    opacity: 1;
+  }
+  
+  .play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0;
+  }
+  
+  .video-container:hover .play-button,
+  .video-paused .play-button {
+    opacity: 1;
+  }
+  
+  .play-button:hover {
+    background: white;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  
+  .play-icon {
+    width: 24px;
+    height: 24px;
+    margin-left: 4px; /* Centrar visualmente el triángulo */
+  }
+  
+  .loading-placeholder {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    padding: 2rem;
+  }
+  
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top: 3px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .video-container {
+      max-width: 300px;
+    }
+    
+    .play-button {
+      width: 60px;
+      height: 60px;
+    }
+    
+    .play-icon {
+      width: 20px;
+      height: 20px;
+    }
+  }
+</style>
+
+<div class={`text-center ${containerClass}`}>
+  {title && (
+    <h2 class="text-3xl md:text-4xl font-bold mb-4 gradient-text">
+      {title}
+    </h2>
+  )}
+  {subtitle && (
+    <p class="text-lg mb-8">{subtitle}</p>
+  )}
+  
+  <div class={`video-container ${className}`} id={`${uniqueId}-container`}>
+    <!-- Loading placeholder -->
+    <div class="loading-placeholder" id={`${uniqueId}-loading`}>
+      <div class="loading-spinner"></div>
+      <p class="text-sm opacity-90">Cargando demo...</p>
+    </div>
+    
+    <!-- Video element -->
+    <video 
+      id={uniqueId}
+      class="video-avatar"
+      preload="metadata"
+      controls={showControls}
+      muted={muted}
+      loop={loop}
+      playsinline
+      style="display: none;"
+    >
+      <source src="/videoAvatar.mp4" type="video/mp4">
+      Tu navegador no soporta video HTML5.
+    </video>
+    
+    <!-- Overlay effects -->
+    <div class="video-overlay"></div>
+    
+    <!-- Custom play button (cuando los controles están ocultos) -->
+    {!showControls && (
+      <button class="play-button" id={`${uniqueId}-play-btn`} aria-label="Reproducir vídeo">
+        <svg class="play-icon" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      </button>
+    )}
+  </div>
+  
+  
+</div>
+
+<script define:vars={{ uniqueId }}>
+  document.addEventListener('DOMContentLoaded', function() {
+    const video = document.getElementById(uniqueId);
+    const container = document.getElementById(`${uniqueId}-container`);
+    const loading = document.getElementById(`${uniqueId}-loading`);
+    const customPlayBtn = document.getElementById(`${uniqueId}-play-btn`);
+    
+    if (!video || !container || !loading || video.tagName !== 'VIDEO') return;
+    
+    // Manejar carga del vídeo
+    video.addEventListener('loadeddata', function() {
+      console.log(`Video ${uniqueId} cargado correctamente`);
+      loading.style.display = 'none';
+      video.style.display = 'block';
+    });
+    
+    // Manejar cuando se puede reproducir
+    video.addEventListener('canplay', function() {
+      console.log(`Video ${uniqueId} listo para reproducir`);
+      loading.style.display = 'none';
+      video.style.display = 'block';
+    });
+    
+    // Manejar errores de carga
+    video.addEventListener('error', function(e) {
+      console.error(`Error cargando video ${uniqueId}:`, e);
+      loading.innerHTML = `
+        <div class="text-center">
+          <div class="text-4xl mb-4">🎬</div>
+          <p class="text-sm">Demo próximamente disponible</p>
+          <p class="text-xs opacity-75 mt-2">Mientras tanto, contacta para ver ejemplos</p>
+        </div>
+      `;
+    });
+    
+    // Timeout de seguridad para mostrar el vídeo después de 3 segundos
+    setTimeout(function() {
+      if (loading.style.display !== 'none') {
+        console.log(`Timeout alcanzado para video ${uniqueId}, mostrando vídeo`);
+        loading.style.display = 'none';
+        video.style.display = 'block';
+      }
+    }, 3000);
+    
+    // Control personalizado de reproducción
+    if (customPlayBtn) {
+      customPlayBtn.addEventListener('click', function() {
+        if (video.paused) {
+          video.play();
+          container.classList.remove('video-paused');
+        } else {
+          video.pause();
+          container.classList.add('video-paused');
+        }
+      });
+      
+      video.addEventListener('play', function() {
+        container.classList.remove('video-paused');
+      });
+      
+      video.addEventListener('pause', function() {
+        container.classList.add('video-paused');
+      });
+    }
+    
+    // Intersection Observer para autoplay cuando sea visible (solo si está habilitado)
+    const autoplayEnabled = video.hasAttribute('autoplay');
+    if (autoplayEnabled) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && video.paused) {
+            video.play().catch(() => {
+              // Si falla el autoplay (políticas del navegador), mostrar botón de play
+              container.classList.add('video-paused');
+            });
+          } else if (!entry.isIntersecting && !video.paused) {
+            video.pause();
+          }
+        });
+      }, { threshold: 0.5 });
+      
+      observer.observe(container);
+    }
+  });
+</script> 

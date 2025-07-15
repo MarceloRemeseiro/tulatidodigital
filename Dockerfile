@@ -24,6 +24,8 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 # Copiar el directorio de contenido para que las APIs puedan escribir
 COPY --from=builder /app/src/content ./src/content
+# Copiar archivos estáticos (incluyendo vídeos)
+COPY --from=builder /app/public ./public
 
 # Dar permisos de escritura al directorio de contenido
 RUN chmod -R 755 ./src/content && chown -R node:node ./src/content

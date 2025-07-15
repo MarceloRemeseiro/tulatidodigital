@@ -25,6 +25,47 @@ export const prerender = false;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+        .video-container-demo {
+            position: relative;
+            max-width: 400px;
+            margin: 0 auto;
+            aspect-ratio: 9/16;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .video-avatar-demo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: #f3f4f6;
+        }
+        .loading-placeholder-demo {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+        .loading-spinner-demo {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        @media (max-width: 640px) {
+            .video-container-demo {
+                max-width: 300px;
+            }
+        }
         .glow-box {
             box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
         }
@@ -211,18 +252,47 @@ export const prerender = false;
 
     <!-- Demo Section -->
     <section class="py-20 px-4 bg-white">
-        <div class="max-w-4xl mx-auto text-center">
-            <h2 class="text-3xl md:text-4xl font-bold mb-8 gradient-text">
-                ¿Cómo es el resultado?
-            </h2>
-            <p class="text-lg mb-8">👉 Mira un ejemplo real</p>
-            <div class="bg-gray-100 rounded-xl p-12 max-w-2xl mx-auto">
-                <p class="text-gray-600 italic">
-                    [Aquí se incrustaría un demo o GIF del avatar hablando]
-                </p>
-                <div class="mt-6">
-                    <div class="w-full h-64 bg-gradient-to-br from-purple-400 to-pink-400 rounded-lg flex items-center justify-center">
-                        <span class="text-white text-4xl">🎬</span>
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-gray-50 rounded-2xl p-8 md:p-12">
+                <div class="max-w-2xl mx-auto">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl md:text-4xl font-bold mb-4 gradient-text">
+                            ¿Cómo es el resultado?
+                        </h2>
+                        <p class="text-lg">👉 Mira un ejemplo real de nuestros avatares con IA</p>
+                    </div>
+                    
+                    <!-- Video Avatar Component -->
+                    <div class="flex justify-center">
+                        <div class="video-container-demo">
+                            <div class="loading-placeholder-demo" id="video-loading-demo">
+                                <div class="loading-spinner-demo"></div>
+                                <p class="text-sm opacity-90">Cargando demo...</p>
+                            </div>
+                            
+                            <video 
+                                id="video-avatar-demo"
+                                class="video-avatar-demo"
+                                preload="metadata"
+                                controls
+                                muted
+                                loop
+                                playsinline
+                                style="display: none;"
+                            >
+                                <source src="/videoAvatar.mp4" type="video/mp4">
+                                Tu navegador no soporta video HTML5.
+                            </video>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 text-center">
+                        <p class="text-sm text-gray-600 italic">
+                            Avatar con IA hablando de forma natural y convincente
+                        </p>
+                        <p class="text-xs text-gray-500 mt-2">
+                            Formato optimizado para redes sociales verticales
+                        </p>
                     </div>
                 </div>
             </div>
@@ -381,6 +451,27 @@ export const prerender = false;
                 }
             });
         });
+
+        // Manejo del vídeo demo
+        const videoDemo = document.getElementById('video-avatar-demo');
+        const loadingDemo = document.getElementById('video-loading-demo');
+        
+        if (videoDemo && loadingDemo) {
+            videoDemo.addEventListener('loadeddata', function() {
+                loadingDemo.style.display = 'none';
+                videoDemo.style.display = 'block';
+            });
+            
+            videoDemo.addEventListener('error', function() {
+                loadingDemo.innerHTML = `
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">🎬</div>
+                        <p class="text-sm">Demo próximamente disponible</p>
+                        <p class="text-xs opacity-75 mt-2">Mientras tanto, contacta para ver ejemplos</p>
+                    </div>
+                `;
+            });
+        }
 
         // Manejo del formulario
         const form = document.getElementById('sin-camara-form');
