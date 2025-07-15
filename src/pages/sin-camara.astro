@@ -281,7 +281,7 @@ export const prerender = false;
                 🖤 Tu mensaje merece ser visto. Nosotras te ayudamos a que lo sea.
             </p>
             
-            <form class="bg-gray-50 p-8 rounded-xl shadow-lg space-y-6">
+            <form id="sin-camara-form" action="/api/sin-camara" method="POST" class="bg-gray-50 p-8 rounded-xl shadow-lg space-y-6">
                 <div>
                     <label for="nombre" class="block text-sm font-medium text-gray-700 mb-2">Nombre *</label>
                     <input type="text" id="nombre" name="nombre" required 
@@ -311,7 +311,7 @@ export const prerender = false;
                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                               placeholder="Cualquier detalle que nos ayude a entender mejor lo que necesitas..."></textarea>
                 </div>
-                <button type="submit" 
+                <button type="submit" id="submit-sin-camara-btn"
                         class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all transform hover:scale-105 glow-box">
                     📝 Enviar solicitud
                 </button>
@@ -383,18 +383,100 @@ export const prerender = false;
         });
 
         // Manejo del formulario
-        const form = document.querySelector('form');
+        const form = document.getElementById('sin-camara-form');
+        const submitBtn = document.getElementById('submit-sin-camara-btn');
+        
         if (form) {
-            form.addEventListener('submit', (e) => {
+            form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
-                // Aquí puedes integrar con tu servicio de email preferido
-                // Por ahora solo mostramos un mensaje de confirmación
-                alert('¡Gracias por tu interés! Te contactaremos pronto con opciones de avatares y voces.');
+                // Deshabilitar botón durante el envío
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = 'Enviando... ⏳';
+                }
                 
-                // Opcional: resetear el formulario
-                form.reset();
+                try {
+                    const formData = new FormData(form);
+                    
+                    const response = await fetch('/api/sin-camara', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showSuccessMessage(result.message);
+                        form.reset();
+                    } else {
+                        showErrorMessage(result.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showErrorMessage('Error al enviar la solicitud. Intenta de nuevo.');
+                } finally {
+                    // Restaurar botón
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '📝 Enviar solicitud';
+                    }
+                }
             });
+        }
+        
+        function showSuccessMessage(message) {
+            if (submitBtn) {
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '¡Solicitud enviada! 🎉';
+                submitBtn.style.background = 'linear-gradient(to right, #10b981, #059669)';
+                
+                showToast(message, 'success');
+                
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.style.background = 'linear-gradient(to right, #9333ea, #db2777)';
+                }, 3000);
+            }
+        }
+        
+        function showErrorMessage(message) {
+            if (submitBtn) {
+                submitBtn.style.background = 'linear-gradient(to right, #ef4444, #dc2626)';
+                
+                showToast(message, 'error');
+                
+                setTimeout(() => {
+                    submitBtn.style.background = 'linear-gradient(to right, #9333ea, #db2777)';
+                }, 3000);
+            }
+        }
+        
+        function showToast(message, type) {
+            // Crear toast notification
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white font-medium z-50 transform transition-all duration-300 ${
+                type === 'success' ? 'bg-green-500' : 'bg-red-500'
+            }`;
+            toast.style.transform = 'translateX(100%)';
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            // Animación de entrada
+            setTimeout(() => {
+                toast.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remover después de 5 segundos
+            setTimeout(() => {
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (document.body.contains(toast)) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
+            }, 5000);
         }
     </script>
 </body>

@@ -163,25 +163,25 @@
       </p>
     </div>
     <div class="mt-12 contact-form p-8 rounded-2xl shadow-2xl glow-box-contact">
-      <form action="#" method="POST">
+      <form id="contact-form" action="/api/contact" method="POST">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label for="nombre" class="block text-sm font-medium contact-label">Nombre</label>
-            <input type="text" name="nombre" id="nombre" class="mt-1 block w-full px-4 py-3 contact-input rounded-lg shadow-sm focus:ring-yellow-400 focus:border-yellow-400" placeholder="Tu nombre">
+            <label for="nombre" class="block text-sm font-medium contact-label">Nombre *</label>
+            <input type="text" name="nombre" id="nombre" required class="mt-1 block w-full px-4 py-3 contact-input rounded-lg shadow-sm focus:ring-yellow-400 focus:border-yellow-400" placeholder="Tu nombre">
           </div>
           <div>
-            <label for="email" class="block text-sm font-medium contact-label">Email</label>
-            <input type="email" name="email" id="email" class="mt-1 block w-full px-4 py-3 contact-input rounded-lg shadow-sm focus:ring-yellow-400 focus:border-yellow-400" placeholder="tu@email.com">
+            <label for="email" class="block text-sm font-medium contact-label">Email *</label>
+            <input type="email" name="email" id="email" required class="mt-1 block w-full px-4 py-3 contact-input rounded-lg shadow-sm focus:ring-yellow-400 focus:border-yellow-400" placeholder="tu@email.com">
           </div>
           <div class="md:col-span-2">
             <label for="mensaje" class="block text-sm font-medium contact-label">
-              Cuéntanos sobre tu negocio y qué necesitas
+              Cuéntanos sobre tu negocio y qué necesitas *
             </label>
-            <textarea id="mensaje" name="mensaje" rows="4" class="mt-1 block w-full px-4 py-3 contact-input rounded-lg shadow-sm focus:ring-yellow-400 focus:border-yellow-400" placeholder="Describe tu proyecto, necesidades o preguntas..."></textarea>
+            <textarea id="mensaje" name="mensaje" rows="4" required class="mt-1 block w-full px-4 py-3 contact-input rounded-lg shadow-sm focus:ring-yellow-400 focus:border-yellow-400" placeholder="Describe tu proyecto, necesidades o preguntas..."></textarea>
           </div>
         </div>
         <div class="mt-6 text-center">
-          <button type="submit" class="inline-block bg-yellow-400 text-gray-900 font-bold py-3 px-12 rounded-full text-lg hover:bg-yellow-300 transition-all transform hover:scale-105 glow-box-contact shadow-2xl">
+          <button type="submit" id="submit-btn" class="inline-block bg-yellow-400 text-gray-900 font-bold py-3 px-12 rounded-full text-lg hover:bg-yellow-300 transition-all transform hover:scale-105 glow-box-contact shadow-2xl">
             Quiero que mi negocio respire digital ✨
           </button>
         </div>
@@ -205,41 +205,100 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('contact-form');
+    const form = document.getElementById('contact-form') as HTMLFormElement;
+    const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
     
-    form?.addEventListener('submit', function(e) {
+    form?.addEventListener('submit', async function(e) {
       e.preventDefault();
       
-      // Aquí puedes agregar la lógica para enviar el formulario
-      // Por ejemplo, usar Formspree, Netlify Forms, o tu propia API
+      // Deshabilitar botón durante el envío
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Enviando... ⏳';
+      }
       
-      const formData = new FormData(form as HTMLFormElement);
-      const data = Object.fromEntries(formData);
-      console.log(data);
-      
-      // Mostrar mensaje de confirmación
-      showSuccessMessage();
-      
-      // Reset form
-      (form as HTMLFormElement).reset();
+      try {
+        const formData = new FormData(form);
+        
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          showSuccessMessage(result.message);
+          form.reset();
+        } else {
+          showErrorMessage(result.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showErrorMessage('Error al enviar el mensaje. Intenta de nuevo.');
+      } finally {
+        // Restaurar botón
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Quiero que mi negocio respire digital ✨';
+        }
+      }
     });
     
-    function showSuccessMessage() {
-      const button = form?.querySelector('button[type="submit"]') as HTMLButtonElement;
-      if (button) {
-        const originalText = button.innerHTML;
-        button.innerHTML = '¡Mensaje enviado! 🎉';
-        button.disabled = true;
-        button.classList.add('bg-green-600');
-        button.classList.remove('bg-gradient-teal');
+    function showSuccessMessage(message: string) {
+      if (submitBtn) {
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '¡Mensaje enviado! 🎉';
+        submitBtn.classList.remove('bg-yellow-400', 'hover:bg-yellow-300');
+        submitBtn.classList.add('bg-green-500');
+        
+        // Mostrar mensaje de éxito
+        showToast(message, 'success');
         
         setTimeout(() => {
-          button.innerHTML = originalText;
-          button.disabled = false;
-          button.classList.remove('bg-green-600');
-          button.classList.add('bg-gradient-teal');
+          submitBtn.innerHTML = originalText;
+          submitBtn.classList.remove('bg-green-500');
+          submitBtn.classList.add('bg-yellow-400', 'hover:bg-yellow-300');
         }, 3000);
       }
+    }
+    
+    function showErrorMessage(message: string) {
+      if (submitBtn) {
+        submitBtn.classList.remove('bg-yellow-400', 'hover:bg-yellow-300');
+        submitBtn.classList.add('bg-red-500');
+        
+        showToast(message, 'error');
+        
+        setTimeout(() => {
+          submitBtn.classList.remove('bg-red-500');
+          submitBtn.classList.add('bg-yellow-400', 'hover:bg-yellow-300');
+        }, 3000);
+      }
+    }
+    
+    function showToast(message: string, type: 'success' | 'error') {
+      // Crear toast notification
+      const toast = document.createElement('div');
+      toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white font-medium z-50 transform transition-all duration-300 ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+      }`;
+      toast.textContent = message;
+      
+      document.body.appendChild(toast);
+      
+      // Animación de entrada
+      setTimeout(() => {
+        toast.style.transform = 'translateX(0)';
+      }, 100);
+      
+      // Remover después de 5 segundos
+      setTimeout(() => {
+        toast.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+          document.body.removeChild(toast);
+        }, 300);
+      }, 5000);
     }
   });
 </script> 
