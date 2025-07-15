@@ -23,9 +23,16 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     // --- MODO "EN CONSTRUCCIÓN" ---
     // El sitio no es visible. Todo redirige a /en-construccion
     const allowedPaths = ['/en-construccion', '/login', '/sin-camara'];
-    if (!allowedPaths.includes(url.pathname) && !url.pathname.startsWith('/api/')) {
+    const currentPath = url.pathname;
+    
+    console.log(`Middleware: Checking path ${currentPath}, PUBLICA=${isPublic}`);
+    
+    if (!allowedPaths.includes(currentPath) && !currentPath.startsWith('/api/')) {
+      console.log(`Middleware: Redirecting ${currentPath} to /en-construccion`);
       return redirect('/en-construccion');
     }
+    
+    console.log(`Middleware: Allowing access to ${currentPath}`);
   }
 
   return next();
