@@ -22,7 +22,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   } else {
     // --- MODO "EN CONSTRUCCIÓN" ---
     // El sitio no es visible. Todo redirige a /en-construccion
-    const allowedPaths = ['/en-construccion', '/login'];
+    const allowedPaths = ['/en-construccion', '/login', '/sin-camara'];
     if (!allowedPaths.includes(url.pathname) && !url.pathname.startsWith('/api/')) {
       return redirect('/en-construccion');
     }

@@ -1,0 +1,401 @@
+---
+// Esta es una página estática independiente para el servicio de vídeos con IA
+export const prerender = true;
+---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu mensaje en vídeo sin cámara | Tu Latido Digital</title>
+    <meta name="description" content="Crea vídeos profesionales con IA sin ponerte delante de la cámara. Avatares realistas, voces naturales y tu mensaje con flow.">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .glow-box {
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <!-- Hero Section -->
+    <section class="min-h-screen gradient-bg flex items-center justify-center px-4 relative overflow-hidden">
+        <div class="max-w-5xl mx-auto text-center text-white relative z-10">
+            <!-- Emoji con más presencia -->
+            <div class="floating mb-6">
+                <span class="text-7xl md:text-8xl drop-shadow-lg">🎙️</span>
+            </div>
+            
+            <!-- Título más compacto -->
+            <h1 class="text-4xl md:text-7xl font-bold mb-4 leading-tight">
+                Tu mensaje en vídeo.
+                <span class="block text-yellow-300 mt-2">Sin cámara. Sin excusas.</span>
+            </h1>
+            
+            <!-- Subtítulo más cerca -->
+            <p class="text-lg md:text-2xl mb-4 opacity-95 leading-relaxed max-w-4xl mx-auto">
+                ¿Te cuesta grabarte? Tenemos la solución: <span class="font-semibold text-yellow-200">crea vídeos profesionales con IA</span>, sin ponerte delante.
+            </p>
+            
+            <!-- Features en línea más visual -->
+            <div class="flex flex-wrap justify-center gap-6 mb-8 text-sm md:text-lg">
+                <div class="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
+                    <span class="mr-2">🤖</span>
+                    <span>Avatares realistas</span>
+                </div>
+                <div class="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
+                    <span class="mr-2">🎵</span>
+                    <span>Voces naturales</span>
+                </div>
+                <div class="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
+                    <span class="mr-2">✨</span>
+                    <span>Tu mensaje con flow</span>
+                </div>
+            </div>
+            
+            <!-- CTA más prominente -->
+            <div class="space-y-4">
+                <a href="#contacto" class="inline-block bg-yellow-400 text-gray-900 px-10 py-4 rounded-full text-lg md:text-xl font-bold hover:bg-yellow-300 transition-all transform hover:scale-105 glow-box shadow-2xl">
+                    💌 Quiero que me contacten
+                </a>
+                <p class="text-sm opacity-80">👇 Descubre cómo funciona</p>
+            </div>
+        </div>
+        
+        <!-- Elementos decorativos de fondo -->
+        <div class="absolute top-20 left-10 w-20 h-20 bg-white/5 rounded-full blur-xl"></div>
+        <div class="absolute bottom-32 right-10 w-32 h-32 bg-yellow-400/10 rounded-full blur-2xl"></div>
+        <div class="absolute top-1/2 left-1/4 w-16 h-16 bg-purple-400/10 rounded-full blur-xl"></div>
+        
+        <!-- Flecha de scroll sutil -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <svg class="w-6 h-6 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Qué es esto Section -->
+    <section class="py-20 px-4 bg-white">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold mb-8 text-center gradient-text">
+                ¿Qué es esto y por qué te interesa?
+            </h2>
+            <div class="text-lg leading-relaxed space-y-6 text-center max-w-3xl mx-auto">
+                <p>
+                    Sabemos que estar en vídeo ayuda a vender, pero no todo el mundo quiere ponerse delante.
+                </p>
+                <p>
+                    Por eso hemos creado un servicio donde tu contenido se convierte en vídeo sin que aparezcas tú (si no quieres).
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cómo lo hacemos Section -->
+    <section class="py-20 px-4 bg-gray-50">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center">
+                🎯 ¿Cómo lo hacemos?
+            </h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+                    <div class="text-4xl mb-4">🤖</div>
+                    <h3 class="text-xl font-semibold mb-4">Avatares hiperrealistas</h3>
+                    <p>(pueden parecerse a ti o no, tú eliges)</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+                    <div class="text-4xl mb-4">🎵</div>
+                    <h3 class="text-xl font-semibold mb-4">Voces naturales</h3>
+                    <p>con el tono y el idioma que necesites</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+                    <div class="text-4xl mb-4">✨</div>
+                    <h3 class="text-xl font-semibold mb-4">Edición completa</h3>
+                    <p>con tu branding, texto, música y ritmo</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ideal para ti Section -->
+    <section class="py-20 px-4 bg-white">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center gradient-text">
+                Ideal para ti si…
+            </h2>
+            <div class="space-y-6 max-w-3xl mx-auto">
+                <div class="flex items-start space-x-4">
+                    <span class="text-green-500 text-xl mt-1">✅</span>
+                    <p class="text-lg">No te gusta salir en cámara (pero sabes que el vídeo vende)</p>
+                </div>
+                <div class="flex items-start space-x-4">
+                    <span class="text-green-500 text-xl mt-1">✅</span>
+                    <p class="text-lg">Quieres crear contenido profesional sin perder tiempo</p>
+                </div>
+                <div class="flex items-start space-x-4">
+                    <span class="text-green-500 text-xl mt-1">✅</span>
+                    <p class="text-lg">Necesitas explicar tus servicios, lanzar un producto o crear vídeos para redes sin complicarte</p>
+                </div>
+                <div class="flex items-start space-x-4">
+                    <span class="text-green-500 text-xl mt-1">✅</span>
+                    <p class="text-lg">Buscas una opción original, moderna y diferente para tu comunicación</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Así funciona Section -->
+    <section class="py-20 px-4 bg-gray-50">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center">
+                Así funciona
+            </h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl font-bold text-purple-600">1</span>
+                    </div>
+                    <p class="font-semibold mb-2">Envías tu guión</p>
+                    <p class="text-sm text-gray-600">(o lo escribimos contigo)</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl font-bold text-purple-600">2</span>
+                    </div>
+                    <p class="font-semibold mb-2">Eliges avatares y voces</p>
+                    <p class="text-sm text-gray-600">o creamos el tuyo personalizado</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl font-bold text-purple-600">3</span>
+                    </div>
+                    <p class="font-semibold mb-2">Producimos el vídeo</p>
+                    <p class="text-sm text-gray-600">con tu estilo y mensaje</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl font-bold text-purple-600">4</span>
+                    </div>
+                    <p class="font-semibold mb-2">Te lo entregamos listo</p>
+                    <p class="text-sm text-gray-600">para publicar (o lo publicamos nosotras)</p>
+                </div>
+            </div>
+            <div class="text-center mt-12">
+                <p class="text-2xl font-semibold gradient-text">
+                    🎥 Sí, tan fácil como suena.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="py-20 px-4 bg-white">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-8 gradient-text">
+                ¿Cómo es el resultado?
+            </h2>
+            <p class="text-lg mb-8">👉 Mira un ejemplo real</p>
+            <div class="bg-gray-100 rounded-xl p-12 max-w-2xl mx-auto">
+                <p class="text-gray-600 italic">
+                    [Aquí se incrustaría un demo o GIF del avatar hablando]
+                </p>
+                <div class="mt-6">
+                    <div class="w-full h-64 bg-gradient-to-br from-purple-400 to-pink-400 rounded-lg flex items-center justify-center">
+                        <span class="text-white text-4xl">🎬</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonios Section -->
+    <section class="py-20 px-4 bg-gray-50">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center">
+                Lo que opinan quienes ya lo han probado
+            </h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <p class="text-lg mb-6 italic">
+                        "Nunca me grabaría, pero ahora tengo vídeos que me representan sin sentirme incómoda. Una pasada."
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                            A
+                        </div>
+                        <div class="ml-4">
+                            <p class="font-semibold">Ana</p>
+                            <p class="text-gray-600 text-sm">terapeuta holística</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <p class="text-lg mb-6 italic">
+                        "Es perfecto para campañas de ventas. Parece que hablo yo, pero sin bloquearme."
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                            C
+                        </div>
+                        <div class="ml-4">
+                            <p class="font-semibold">Carla</p>
+                            <p class="text-gray-600 text-sm">formadora en finanzas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Formulario de Contacto -->
+    <section id="contacto" class="py-20 px-4 bg-white">
+        <div class="max-w-2xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold mb-8 text-center gradient-text">
+                ¿Quieres el tuyo?
+            </h2>
+            <p class="text-lg text-center mb-8">
+                Déjanos tus datos y te contactamos para enseñarte opciones de avatares y voz, sin compromiso.
+            </p>
+            <p class="text-center mb-8 font-medium">
+                🖤 Tu mensaje merece ser visto. Nosotras te ayudamos a que lo sea.
+            </p>
+            
+            <form class="bg-gray-50 p-8 rounded-xl shadow-lg space-y-6">
+                <div>
+                    <label for="nombre" class="block text-sm font-medium text-gray-700 mb-2">Nombre *</label>
+                    <input type="text" id="nombre" name="nombre" required 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+                    <input type="email" id="email" name="email" required 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label for="tipo-video" class="block text-sm font-medium text-gray-700 mb-2">¿Qué tipo de vídeo necesitas?</label>
+                    <select id="tipo-video" name="tipo-video" 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option value="">Selecciona una opción</option>
+                        <option value="presentacion-servicios">Presentación de servicios</option>
+                        <option value="lanzamiento-producto">Lanzamiento de producto</option>
+                        <option value="redes-sociales">Contenido para redes sociales</option>
+                        <option value="campana-ventas">Campaña de ventas</option>
+                        <option value="formacion">Contenido formativo</option>
+                        <option value="otro">Otro (nos lo cuentas después)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="mensaje" class="block text-sm font-medium text-gray-700 mb-2">Cuéntanos más sobre tu proyecto (opcional)</label>
+                    <textarea id="mensaje" name="mensaje" rows="4" 
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                              placeholder="Cualquier detalle que nos ayude a entender mejor lo que necesitas..."></textarea>
+                </div>
+                <button type="submit" 
+                        class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all transform hover:scale-105 glow-box">
+                    📝 Enviar solicitud
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Quiénes somos Section -->
+    <section class="py-20 px-4 bg-gray-50">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-8">
+                ¿Quiénes somos?
+            </h2>
+            <p class="text-lg mb-8">
+                Somos <strong>Tu Latido Digital</strong>, un equipo con estrategia, alma y flow.
+            </p>
+            <p class="text-lg mb-8">
+                Ayudamos a marcas que quieren crecer sin perder su esencia.
+            </p>
+            <div class="space-x-4">
+                <a href="/#nosotros" class="inline-block bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-all">
+                    👉 Conócenos aquí
+                </a>
+                <a href="/" class="inline-block bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-all">
+                    👉 Ver todos los servicios
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Final -->
+    <section class="py-20 px-4 gradient-bg">
+        <div class="max-w-4xl mx-auto text-center text-white">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">
+                🎥 El vídeo es rey. Que el miedo escénico no te impida estar en el juego.
+            </h2>
+            <p class="text-xl mb-10">
+                💌 Déjanos tu contacto y te enseñamos cómo sonar y brillar sin cámara.
+            </p>
+            <a href="#contacto" class="inline-block bg-yellow-400 text-gray-900 px-8 py-4 rounded-full text-lg font-semibold hover:bg-yellow-300 transition-all transform hover:scale-105 glow-box">
+                👉 Quiero que me contacten
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer simple -->
+    <footer class="bg-gray-900 text-white py-8 px-4 text-center">
+        <p class="text-sm">
+            © 2024 Tu Latido Digital. Todos los derechos reservados.
+        </p>
+    </footer>
+
+    <script is:inline>
+        // Smooth scrolling para los enlaces internos
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', (e) => {
+                e.preventDefault();
+                const href = anchor.getAttribute('href');
+                if (href) {
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+
+        // Manejo del formulario
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                // Aquí puedes integrar con tu servicio de email preferido
+                // Por ahora solo mostramos un mensaje de confirmación
+                alert('¡Gracias por tu interés! Te contactaremos pronto con opciones de avatares y voces.');
+                
+                // Opcional: resetear el formulario
+                form.reset();
+            });
+        }
+    </script>
+</body>
+</html> 
