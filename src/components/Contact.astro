@@ -1,49 +1,200 @@
 ---
 ---
 
-<section id="contacto" class="py-20 md:py-32 bg-background-main section-fade-in">
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+<style>
+  .contact-section {
+    /* Modo oscuro por defecto */
+    background: var(--background-main);
+  }
+  
+  /* Modo claro - gradiente morado */
+  :root[data-theme="light"] .contact-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  .contact-texture {
+    background-image: url('https://www.transparenttextures.com/patterns/light-sketch.png');
+  }
+  
+  /* Ocultar textura en modo claro */
+  :root[data-theme="light"] .contact-texture {
+    display: none;
+  }
+  
+  /* Elementos decorativos adaptativos */
+  .contact-decorative {
+    transition: all 0.3s ease;
+  }
+  
+  /* En modo claro, elementos decorativos más visibles */
+  :root[data-theme="light"] .contact-decorative {
+    opacity: 0.8;
+  }
+  
+  /* Texto adaptativo */
+  .contact-text {
+    color: var(--foreground);
+  }
+  
+  :root[data-theme="light"] .contact-text {
+    color: white;
+  }
+  
+  .contact-paragraph {
+    color: var(--foreground);
+    opacity: 0.8;
+  }
+  
+  :root[data-theme="light"] .contact-paragraph {
+    color: white;
+    opacity: 0.9;
+  }
+  
+  /* Formulario adaptativo */
+  .contact-form {
+    /* Modo oscuro - fondo claro para contraste */
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+  
+  :root[data-theme="light"] .contact-form {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Texto del formulario en modo oscuro */
+  .contact-form-text {
+    color: #1f2937; /* gray-800 para modo oscuro */
+  }
+  
+  :root[data-theme="light"] .contact-form-text {
+    color: white;
+  }
+  
+  /* Inputs adaptativos */
+  .contact-input {
+    /* Modo oscuro - inputs claros */
+    background: white;
+    border: 1px solid #d1d5db; /* gray-300 */
+    color: #1f2937; /* gray-800 */
+  }
+  
+  .contact-input:focus {
+    outline: none;
+    ring: 2px;
+    ring-color: #fbbf24; /* yellow-400 */
+    border-color: #fbbf24; /* yellow-400 */
+  }
+  
+  .contact-input::placeholder {
+    color: #6b7280; /* gray-500 */
+  }
+  
+  :root[data-theme="light"] .contact-input {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+  }
+  
+  :root[data-theme="light"] .contact-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  /* Labels adaptativos */
+  .contact-label {
+    /* Modo oscuro - texto oscuro para el formulario claro */
+    color: #374151; /* gray-700 */
+    font-weight: 500;
+  }
+  
+  :root[data-theme="light"] .contact-label {
+    color: white;
+    opacity: 0.9;
+  }
+  
+  /* Enlaces adaptativos */
+  .contact-link {
+    /* Modo oscuro - enlaces que contrasten con fondo claro */
+    color: #7c3aed; /* violet-600 */
+    text-decoration: underline;
+    text-decoration-color: rgba(124, 58, 237, 0.3);
+  }
+  
+  .contact-link:hover {
+    color: #5b21b6; /* violet-800 */
+    text-decoration-color: rgba(91, 33, 182, 0.6);
+  }
+  
+  :root[data-theme="light"] .contact-link {
+    color: #fbbf24; /* yellow-400 */
+    text-decoration: underline;
+    text-decoration-color: rgba(251, 191, 36, 0.3);
+  }
+  
+  :root[data-theme="light"] .contact-link:hover {
+    color: #f59e0b; /* yellow-500 */
+    text-decoration-color: rgba(245, 158, 11, 0.6);
+  }
+  
+  .glow-box-contact {
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+  }
+</style>
+
+<section id="contacto" class="contact-section relative py-20 md:py-32 section-fade-in overflow-hidden">
+    <!-- Textura de fondo sutil (solo en modo oscuro) -->
+    <div class="contact-texture absolute inset-0"></div>
+    
+    <!-- Elementos decorativos de fondo -->
+    <div class="contact-decorative absolute top-20 right-10 w-20 h-20 bg-yellow-400/5 rounded-full blur-xl"></div>
+    <div class="contact-decorative absolute bottom-32 left-10 w-32 h-32 bg-yellow-400/10 rounded-full blur-2xl"></div>
+    <div class="contact-decorative absolute top-1/2 right-1/4 w-16 h-16 bg-yellow-400/5 rounded-full blur-xl"></div>
+    
+  <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
     <div class="text-center">
-      <h2 class="text-3xl md:text-4xl font-extrabold text-foreground">
+      <h2 class="text-3xl md:text-4xl font-extrabold contact-text">
         Tu Negocio Merece Respirar Digital. ¡Conectemos!
       </h2>
-      <p class="mt-4 text-lg text-foreground/80">
+      <p class="mt-4 text-lg contact-paragraph">
         Escríbenos y cuéntanos dónde estás. Nosotras te decimos cómo hacer que tu marca vuelva a latir con fuerza.
       </p>
     </div>
-    <div class="mt-12 bg-background-secondary p-8 rounded-2xl shadow-2xl border border-foreground/10">
+    <div class="mt-12 contact-form p-8 rounded-2xl shadow-2xl glow-box-contact">
       <form action="#" method="POST">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label for="nombre" class="block text-sm font-medium text-foreground/90">Nombre</label>
-            <input type="text" name="nombre" id="nombre" class="mt-1 block w-full px-4 py-3 bg-background border border-foreground/20 rounded-lg shadow-sm focus:ring-primary focus:border-primary text-foreground">
+            <label for="nombre" class="block text-sm font-medium contact-label">Nombre</label>
+            <input type="text" name="nombre" id="nombre" class="mt-1 block w-full px-4 py-3 contact-input rounded-lg shadow-sm focus:ring-yellow-400 focus:border-yellow-400" placeholder="Tu nombre">
           </div>
           <div>
-            <label for="email" class="block text-sm font-medium text-foreground/90">Email</label>
-            <input type="email" name="email" id="email" class="mt-1 block w-full px-4 py-3 bg-background border border-foreground/20 rounded-lg shadow-sm focus:ring-primary focus:border-primary text-foreground">
+            <label for="email" class="block text-sm font-medium contact-label">Email</label>
+            <input type="email" name="email" id="email" class="mt-1 block w-full px-4 py-3 contact-input rounded-lg shadow-sm focus:ring-yellow-400 focus:border-yellow-400" placeholder="tu@email.com">
           </div>
           <div class="md:col-span-2">
-            <label for="mensaje" class="block text-sm font-medium text-foreground/90">
+            <label for="mensaje" class="block text-sm font-medium contact-label">
               Cuéntanos sobre tu negocio y qué necesitas
             </label>
-            <textarea id="mensaje" name="mensaje" rows="4" class="mt-1 block w-full px-4 py-3 bg-background border border-foreground/20 rounded-lg shadow-sm focus:ring-primary focus:border-primary text-foreground"></textarea>
+            <textarea id="mensaje" name="mensaje" rows="4" class="mt-1 block w-full px-4 py-3 contact-input rounded-lg shadow-sm focus:ring-yellow-400 focus:border-yellow-400" placeholder="Describe tu proyecto, necesidades o preguntas..."></textarea>
           </div>
         </div>
         <div class="mt-6 text-center">
-          <button type="submit" class="bg-gradient-brand text-primary-foreground font-bold py-3 px-12 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
+          <button type="submit" class="inline-block bg-yellow-400 text-gray-900 font-bold py-3 px-12 rounded-full text-lg hover:bg-yellow-300 transition-all transform hover:scale-105 glow-box-contact shadow-2xl">
             Quiero que mi negocio respire digital ✨
           </button>
         </div>
       </form>
-      <div class="mt-8 text-center text-foreground/80">
+      <div class="mt-8 text-center contact-form-text">
         <p class="font-semibold">O escríbenos directamente:</p>
         <p class="mt-2 text-lg">
-          📧 <a href="mailto:hola@tulatidodigital.com" class="text-primary hover:text-primary/80">
+          📧 <a href="mailto:hola@tulatidodigital.com" class="contact-link hover:opacity-80 transition-opacity">
             hola@tulatidodigital.com
           </a>
         </p>
         <p class="mt-2 text-lg">
-          📢 Instagram: <a href="https://instagram.com/tulatidodigital" target="_blank" class="text-primary hover:text-primary/80">
+          📢 Instagram: <a href="https://instagram.com/tulatidodigital" target="_blank" class="contact-link hover:opacity-80 transition-opacity">
             @tulatidodigital
           </a>
         </p>

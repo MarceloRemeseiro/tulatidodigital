@@ -8,35 +8,125 @@ const heroFile = await fs.readFile(heroPath, 'utf-8');
 const content = JSON.parse(heroFile);
 ---
 
-<section id="inicio" class="relative min-h-screen flex items-center pt-20 bg-background-main">
-    <!-- Textura de fondo sutil con imagen PNG externa -->
-    <div class="absolute inset-0" style="background-image: url('https://www.transparenttextures.com/patterns/light-sketch.png');"></div>
+<style>
+  .hero-section {
+    /* Modo oscuro por defecto */
+    background: var(--background-main);
+  }
+  
+  /* Modo claro - gradiente morado */
+  :root[data-theme="light"] .hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  .hero-texture {
+    background-image: url('https://www.transparenttextures.com/patterns/light-sketch.png');
+  }
+  
+  /* Ocultar textura en modo claro */
+  :root[data-theme="light"] .hero-texture {
+    display: none;
+  }
+  
+  .gradient-text-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .glow-box-hero {
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+  }
+  .floating-hero {
+    animation: floating 3s ease-in-out infinite;
+  }
+  @keyframes floating {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  /* Elementos decorativos adaptativos */
+  .hero-decorative {
+    transition: all 0.3s ease;
+  }
+  
+  /* En modo claro, elementos decorativos más visibles */
+  :root[data-theme="light"] .hero-decorative {
+    opacity: 0.8;
+  }
+  
+  /* Texto adaptativo */
+  .hero-text {
+    color: var(--foreground);
+  }
+  
+  :root[data-theme="light"] .hero-text {
+    color: white;
+  }
+  
+  .hero-paragraph {
+    color: var(--foreground);
+    opacity: 0.8;
+  }
+  
+  :root[data-theme="light"] .hero-paragraph {
+    color: white;
+    opacity: 0.9;
+  }
+  
+  /* Flecha adaptativa */
+  .hero-arrow {
+    color: var(--foreground);
+    opacity: 0.4;
+  }
+  
+  :root[data-theme="light"] .hero-arrow {
+    color: white;
+    opacity: 0.6;
+  }
+</style>
+
+<section id="inicio" class="hero-section relative min-h-screen flex items-center pt-20 overflow-hidden">
+    <!-- Textura de fondo sutil (solo en modo oscuro) -->
+    <div class="hero-texture absolute inset-0"></div>
     
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-foreground leading-tight">
-      {content.headline}
-      <span class="block text-secondary mt-2 sm:mt-4">
-        {content.subheadline}
-      </span>
-    </h1>
-    <p class="mt-8 max-w-3xl mx-auto text-lg sm:text-xl text-foreground/80">
-      {content.paragraph}
-    </p>
-    <div class="mt-12">
-      <a href="#contacto" class="bg-gradient-brand text-primary-foreground font-bold py-3 px-6 sm:py-4 sm:px-10 rounded-full text-base sm:text-lg hover:opacity-90 transition-all transform hover:scale-105 shadow-2xl">
-        {content.ctaButton}
-      </a>
+    <!-- Elementos decorativos de fondo -->
+    <div class="hero-decorative absolute top-20 left-10 w-20 h-20 bg-yellow-400/5 rounded-full blur-xl"></div>
+    <div class="hero-decorative absolute bottom-32 right-10 w-32 h-32 bg-yellow-400/10 rounded-full blur-2xl"></div>
+    <div class="hero-decorative absolute top-1/2 left-1/4 w-16 h-16 bg-yellow-400/5 rounded-full blur-xl"></div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
+      <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold hero-text leading-tight">
+        {content.headline}
+        <span class="block text-yellow-400 mt-2 sm:mt-4">
+          {content.subheadline}
+        </span>
+      </h1>
+      <p class="mt-8 max-w-3xl mx-auto text-lg sm:text-xl hero-paragraph leading-relaxed">
+        {content.paragraph}
+      </p>
+      <div class="mt-12">
+        <a href="#contacto" class="inline-block bg-yellow-400 text-gray-900 font-bold py-3 px-6 sm:py-4 sm:px-10 rounded-full text-base sm:text-lg hover:bg-yellow-300 transition-all transform hover:scale-105 glow-box-hero shadow-2xl">
+          {content.ctaButton}
+        </a>
+      </div>
     </div>
-  </div>
+    
+    <!-- Flecha de scroll sutil -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <svg class="w-6 h-6 hero-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+        </svg>
+    </div>
 </section>
 
 <!-- Sección Promise/Promesa -->
 <section id="promesa" class="py-20 md:py-32 bg-background-main section-fade-in">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <h2 class="text-3xl md:text-4xl font-bold text-foreground">
+    <h2 class="text-3xl md:text-4xl font-bold text-primary">
       {content.promise.title}
     </h2>
-    <p class="mt-6 text-lg text-foreground/80">
+    <p class="mt-6 text-lg text-foreground/80 leading-relaxed">
       {content.promise.paragraph}
     </p>
   </div>
