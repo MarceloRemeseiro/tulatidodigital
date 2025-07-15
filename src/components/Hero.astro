@@ -1,5 +1,11 @@
 ---
-import content from '../content/hero.json';
+import { promises as fs } from 'fs';
+import path from 'path';
+
+// Leer el contenido dinámicamente
+const heroPath = path.join(process.cwd(), 'src/content/hero.json');
+const heroFile = await fs.readFile(heroPath, 'utf-8');
+const content = JSON.parse(heroFile);
 ---
 
 <section id="inicio" class="relative min-h-screen flex items-center pt-20 bg-background-main">

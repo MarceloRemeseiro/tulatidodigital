@@ -1,5 +1,11 @@
 ---
-import content from '../content/about.json';
+import { promises as fs } from 'fs';
+import path from 'path';
+
+// Leer el contenido dinámicamente
+const contentPath = path.join(process.cwd(), 'src/content/about.json');
+const contentFile = await fs.readFile(contentPath, 'utf-8');
+const content = JSON.parse(contentFile);
 ---
 
 <section id="nosotros" class="py-20 md:py-32 bg-background-alt section-fade-in">
@@ -23,7 +29,7 @@ import content from '../content/about.json';
         {content.reasons.title}
       </h3>
       <ul class="mt-6 space-y-4 text-lg text-foreground/80">
-        {content.reasons.items.map(item => (
+        {content.reasons.items.map((item: any) => (
           <li class="flex items-start">
             <span class="text-secondary text-2xl mr-3">{item.icon}</span>
             <span>{item.text}</span>

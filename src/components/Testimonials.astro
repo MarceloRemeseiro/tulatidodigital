@@ -1,6 +1,12 @@
 ---
-import content from '../content/testimonials.json';
+import { promises as fs } from 'fs';
+import path from 'path';
 import type { Testimonial } from '../content/types';
+
+// Leer el contenido dinámicamente
+const testimonialsPath = path.join(process.cwd(), 'src/content/testimonials.json');
+const testimonialsFile = await fs.readFile(testimonialsPath, 'utf-8');
+const content = JSON.parse(testimonialsFile);
 const testimonials = content.testimonials as Testimonial[];
 ---
 
