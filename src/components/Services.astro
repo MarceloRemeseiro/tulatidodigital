@@ -1,14 +1,14 @@
 ---
 import { promises as fs } from 'fs';
 import path from 'path';
-import type { ServiceContent, Package, Step } from '../content/types';
+import type { ServiceContent, Package } from '../content/types';
 
 // Leer el contenido dinámicamente
 const servicesPath = path.join(process.cwd(), 'src/content/services.json');
 const servicesFile = await fs.readFile(servicesPath, 'utf-8');
 const content = JSON.parse(servicesFile) as ServiceContent;
 
-const { title, subtitle, toggle, packages, individualServices, modal } = content;
+const { title, subtitle, toggle, packages, individualServices } = content;
 ---
 
 <section id="servicios" class="py-20 md:py-32 bg-background-alt section-fade-in">
@@ -68,49 +68,7 @@ const { title, subtitle, toggle, packages, individualServices, modal } = content
   </div>
 </section>
 
-<!-- Modal for AI Videos -->
-<div id="modal-ia" class="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none">
-  <div class="bg-background rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto transform scale-95 transition-transform duration-300">
-    <div class="p-6 md:p-8 relative">
-      <button data-modal-close="modal-ia" class="absolute top-4 right-4 text-foreground/50 hover:text-foreground">
-        <span class="text-2xl">&times;</span>
-      </button>
-      <div class="text-center">
-        <h2 class="text-3xl font-bold text-secondary">{modal.title}</h2>
-        <p class="mt-2 text-lg text-foreground/80">{modal.subtitle}</p>
-      </div>
-      <div class="mt-8 text-left space-y-6">
-        <p class="text-foreground/90">{modal.paragraph}</p>
-        
-        <div>
-          <h3 class="font-bold text-xl text-primary mb-4">{modal.stepsTitle}</h3>
-          <div class="grid md:grid-cols-3 gap-6 text-center">
-            {modal.steps.map((step: Step, index: number) => (
-              <div class="bg-foreground/10 p-4 rounded-lg">
-                <div class="text-3xl font-bold text-primary">{index + 1}</div>
-                <p class="mt-2 font-semibold text-foreground">{step.title}</p>
-                <p class="text-sm text-foreground/70">{step.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        <div>
-          <h3 class="font-bold text-xl text-primary mb-2">{modal.benefitsTitle}</h3>
-          <ul class="list-disc list-inside space-y-1 text-foreground/90">
-            {modal.benefits.map((benefit: string) => <li>{benefit}</li>)}
-          </ul>
-        </div>
-        
-        <div class="pt-4 text-center">
-          <a href="#contacto" class="bg-gradient-brand text-primary-foreground font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-opacity">
-            {modal.cta}
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+
 <script is:inline define:vars={{ services: individualServices }}>
   document.addEventListener('DOMContentLoaded', function () {
     const togglePaquetes = document.getElementById('toggle-paquetes');
@@ -129,7 +87,7 @@ const { title, subtitle, toggle, packages, individualServices, modal } = content
           <h3 class="text-xl font-bold ${service.type === 'ia-special' ? 'text-secondary' : 'text-foreground'}">${service.title}</h3>
           <p class="mt-2 text-sm ${service.type === 'ia-special' ? 'text-secondary' : 'text-foreground/80'}">${service.description}</p>
           ${service.type === 'ia-special' ? 
-            `<button data-modal-target="modal-ia" class="mt-4 inline-block text-secondary hover:text-secondary/90 font-semibold">${service.cta}</button>` :
+            `<a href="/sin-camara" class="mt-4 inline-block text-secondary hover:text-secondary/90 font-semibold">${service.cta}</a>` :
             `<a href="#contacto" class="mt-4 inline-block text-primary hover:text-primary/90 font-semibold">${service.cta}</a>`
           }
         `;
@@ -155,47 +113,5 @@ const { title, subtitle, toggle, packages, individualServices, modal } = content
     });
 
     togglePaquetes?.click();
-
-    document.addEventListener('click', (e) => {
-      const target = e.target;
-      if (target && target.matches('[data-modal-target]')) {
-        const modalId = target.dataset.modalTarget;
-        if (modalId) {
-          const modal = document.getElementById(modalId);
-          openModal(modal);
-        }
-      }
-    });
-
-    document.querySelectorAll('[data-modal-close]').forEach(close => {
-      close.addEventListener('click', () => {
-        const modalId = close.dataset.modalClose;
-        if (modalId) {
-          const modal = document.getElementById(modalId);
-          closeModal(modal);
-        }
-      });
-    });
-
-    window.addEventListener('click', event => {
-      const target = event.target;
-      if (target.classList.contains('modal')) {
-        closeModal(target);
-      }
-    });
-
-    function openModal(modal) {
-      if (!modal) return;
-      modal.classList.remove('opacity-0', 'pointer-events-none');
-      setTimeout(() => modal.querySelector('div > div')?.classList.remove('scale-95'), 50);
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeModal(modal) {
-      if (!modal) return;
-      modal.querySelector('div > div')?.classList.add('scale-95');
-      setTimeout(() => modal.classList.add('opacity-0', 'pointer-events-none'), 250);
-      document.body.style.overflow = 'auto';
-    }
   });
 </script> 

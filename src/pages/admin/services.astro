@@ -64,34 +64,7 @@ const credentials = {
         </div>
       </fieldset>
 
-      <fieldset class="mt-8 space-y-6 border border-foreground/20 p-6 rounded-lg">
-        <legend class="text-xl font-bold px-2">Modal Video IA</legend>
-        <div class="space-y-4">
-          <div>
-            <label for="modal_title" class="block text-sm font-medium">Título del Modal</label>
-            <input type="text" id="modal_title" name="modal_title" value={typedContent.modal.title} class="mt-1 block w-full input">
-          </div>
-          <div>
-            <label for="modal_subtitle" class="block text-sm font-medium">Subtítulo del Modal</label>
-            <input type="text" id="modal_subtitle" name="modal_subtitle" value={typedContent.modal.subtitle} class="mt-1 block w-full input">
-          </div>
-          <div>
-            <label for="modal_paragraph" class="block text-sm font-medium">Párrafo Principal</label>
-            <textarea id="modal_paragraph" name="modal_paragraph" rows="4" class="mt-1 block w-full input">{typedContent.modal.paragraph}</textarea>
-          </div>
-          <div class="benefits-section">
-            <label class="block text-sm font-medium">Beneficios</label>
-            <div id="benefits-container" class="space-y-2 mt-2">
-              <!-- Los beneficios se renderizarán aquí -->
-            </div>
-            <button type="button" id="add-benefit-btn" class="button-secondary-outline mt-2">Añadir Beneficio</button>
-          </div>
-          <div>
-            <label for="modal_cta" class="block text-sm font-medium">Texto del Botón (CTA)</label>
-            <input type="text" id="modal_cta" name="modal_cta" value={typedContent.modal.cta} class="mt-1 block w-full input">
-          </div>
-        </div>
-      </fieldset>
+
       
     </form>
   </div>
@@ -157,12 +130,7 @@ const credentials = {
   </div>
 </template>
 
-<template id="benefit-template">
-  <div class="benefit-item flex items-center gap-2">
-    <input type="text" class="benefit-input flex-grow input text-sm" value="">
-    <button type="button" class="button-danger-outline delete-benefit-btn">X</button>
-  </div>
-</template>
+
 
 <script is:inline define:vars={{ initialContent: typedContent, authCredentials: credentials }}>
 document.addEventListener('DOMContentLoaded', () => {
@@ -186,8 +154,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const packageTemplate = document.getElementById('package-template');
   const featureTemplate = document.getElementById('feature-template');
   const serviceTemplate = document.getElementById('service-template');
-  const benefitsContainer = document.getElementById('benefits-container');
-  const benefitTemplate = document.getElementById('benefit-template');
 
   // Funciones para renderizar el contenido (sin cambios)
   function renderPackages() {
@@ -222,20 +188,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function renderBenefits() {
-    benefitsContainer.innerHTML = '';
-    content.modal.benefits.forEach((benefit, index) => {
-      const benefitEl = benefitTemplate.content.cloneNode(true).firstElementChild;
-      benefitEl.querySelector('.benefit-input').value = benefit;
-      benefitEl.dataset.benefitIndex = index;
-      benefitsContainer.appendChild(benefitEl);
-    });
-  }
-
   function renderAll() {
     renderPackages();
     renderServices();
-    renderBenefits();
   }
   
   // RENDERIZADO
@@ -282,10 +237,6 @@ document.addEventListener('DOMContentLoaded', () => {
       content.individualServices.push({ id: crypto.randomUUID(), title: 'Nuevo Servicio', description: '', cta: 'Saber Más', type: 'individual' });
       renderServices();
     }
-    if (target.id === 'add-benefit-btn') {
-      content.modal.benefits.push('Nuevo beneficio');
-      renderBenefits();
-    }
     
     const pkgEl = target.closest('.package-item');
     if (pkgEl) {
@@ -319,11 +270,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderServices();
       }
     }
-    if (target.closest('.benefit-item') && target.classList.contains('delete-benefit-btn')) {
-      const benefitEl = target.closest('.benefit-item');
-      content.modal.benefits.splice(parseInt(benefitEl.dataset.benefitIndex, 10), 1);
-      renderBenefits();
-    }
   });
   
   // MANEJO DE EDICIÓN DE TEXTO - SOLO LOCAL
@@ -352,15 +298,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } else { // Campos generales
         if(content[target.id] !== undefined) content[target.id] = target.value;
-        if(content.modal[target.id.replace('modal_', '')] !== undefined) {
-          const key = target.id.replace('modal_', '');
-          content.modal[key] = key === 'benefits' ? target.value.split('\\n') : target.value;
-        }
-    }
-    if (target.closest('.benefit-item') && target.classList.contains('benefit-input')) {
-      const benefitEl = target.closest('.benefit-item');
-      const benefitIndex = parseInt(benefitEl.dataset.benefitIndex, 10);
-      content.modal.benefits[benefitIndex] = target.value;
     }
   });
 
