@@ -25,14 +25,19 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     const allowedPaths = ['/en-construccion', '/login', '/sin-camara'];
     const currentPath = url.pathname;
     
-    console.log(`Middleware: Checking path ${currentPath}, PUBLICA=${isPublic}`);
+    console.log(`Middleware: Original URL: ${url.href}`);
+    console.log(`Middleware: Pathname: "${currentPath}"`);
+    console.log(`Middleware: PUBLICA=${isPublic}`);
+    console.log(`Middleware: Allowed paths:`, allowedPaths);
+    console.log(`Middleware: Path included in allowed:`, allowedPaths.includes(currentPath));
+    console.log(`Middleware: Starts with /api/:`, currentPath.startsWith('/api/'));
     
     if (!allowedPaths.includes(currentPath) && !currentPath.startsWith('/api/')) {
-      console.log(`Middleware: Redirecting ${currentPath} to /en-construccion`);
+      console.log(`Middleware: ❌ Redirecting ${currentPath} to /en-construccion`);
       return redirect('/en-construccion');
     }
     
-    console.log(`Middleware: Allowing access to ${currentPath}`);
+    console.log(`Middleware: ✅ Allowing access to ${currentPath}`);
   }
 
   return next();
