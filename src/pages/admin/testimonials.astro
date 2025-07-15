@@ -1,5 +1,12 @@
 ---
 import Layout from '../../layouts/AdminLayout.astro';
+import testimonialsContent from '../../content/testimonials.json';
+
+// Pasar las credenciales de forma segura al cliente
+const credentials = {
+  username: import.meta.env.USUARIO,
+  password: import.meta.env.PASS
+};
 ---
 
 <Layout title="Admin | Testimonios">
@@ -17,11 +24,11 @@ import Layout from '../../layouts/AdminLayout.astro';
         <legend class="text-xl font-bold px-2">Contenido Principal</legend>
         <div>
           <label for="title" class="block text-sm font-medium">Título Principal</label>
-          <input type="text" id="title" name="title" class="mt-1 block w-full input">
+          <input type="text" id="title" name="title" value={testimonialsContent.title} class="mt-1 block w-full input">
         </div>
         <div>
           <label for="subtitle" class="block text-sm font-medium">Subtítulo</label>
-          <textarea id="subtitle" name="subtitle" rows="3" class="mt-1 block w-full input"></textarea>
+          <textarea id="subtitle" name="subtitle" rows="3" class="mt-1 block w-full input">{testimonialsContent.subtitle}</textarea>
         </div>
       </fieldset>
 
@@ -61,19 +68,25 @@ import Layout from '../../layouts/AdminLayout.astro';
   </div>
 </template>
 
-<script>
+<script is:inline define:vars={{ contentData: testimonialsContent, authCredentials: credentials }}>
   document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('testimonials-form');
     const container = document.getElementById('testimonials-container');
-    const template = document.getElementById('testimonial-template') as HTMLTemplateElement;
+    const template = document.getElementById('testimonial-template');
     const saveBtn = document.getElementById('save-all-btn');
     const notification = document.getElementById('notification');
-    const titleInput = document.getElementById('title') as HTMLInputElement;
-    const subtitleInput = document.getElementById('subtitle') as HTMLTextAreaElement;
+    const titleInput = document.getElementById('title');
+    const subtitleInput = document.getElementById('subtitle');
 
-    let contentData: { title: string, subtitle: string, testimonials: {id: string, quote: string, name: string, role: string}[] } = { title: '', subtitle: '', testimonials: [] };
+    // Asegurar que todos los testimonios tengan ID
+    contentData.testimonials.forEach(t => {
+        if (!t.id) t.id = crypto.randomUUID();
+    });
 
-    const showNotification = (message: string, isError = false) => {
+    // Preparar autenticación
+    const authHeader = 'Basic ' + btoa(authCredentials.username + ':' + authCredentials.password);
+
+    const showNotification = (message, isError = false) => {
       if (notification) {
         notification.textContent = message;
         notification.className = `p-4 mb-4 rounded-lg ${isError ? 'bg-red-500/20 text-red-500' : 'bg-green-500/20 text-green-500'} block`;
@@ -81,26 +94,7 @@ import Layout from '../../layouts/AdminLayout.astro';
       }
     };
 
-    const loadContent = async () => {
-      if (!form || !titleInput || !subtitleInput || !container) return;
-      try {
-        const response = await fetch('/api/testimonials');
-        if (!response.ok) throw new Error('Failed to load content');
-        contentData = await response.json();
-        
-        contentData.testimonials.forEach(t => {
-            if (!t.id) t.id = crypto.randomUUID();
-        });
 
-        titleInput.value = contentData.title;
-        subtitleInput.value = contentData.subtitle;
-        renderTestimonials();
-
-      } catch (error) {
-        console.error("Error loading content:", error);
-        showNotification('No se pudo cargar el contenido.', true);
-      }
-    };
 
     function renderTestimonials() {
       if (!container || !template) return;
@@ -108,19 +102,19 @@ import Layout from '../../layouts/AdminLayout.astro';
       if (!contentData.testimonials) return;
       
       contentData.testimonials.forEach(testimonial => {
-        const el = template.content.cloneNode(true) as HTMLElement;
-        const testimonialItem = el.querySelector('.testimonial-item') as HTMLElement;
+        const el = template.content.cloneNode(true);
+        const testimonialItem = el.querySelector('.testimonial-item');
         testimonialItem.dataset.testimonialId = testimonial.id;
-        (testimonialItem.querySelector('[data-field="quote"]') as HTMLTextAreaElement).value = testimonial.quote;
-        (testimonialItem.querySelector('[data-field="name"]') as HTMLInputElement).value = testimonial.name;
-        (testimonialItem.querySelector('[data-field="role"]') as HTMLInputElement).value = testimonial.role;
+        testimonialItem.querySelector('[data-field="quote"]').value = testimonial.quote;
+        testimonialItem.querySelector('[data-field="name"]').value = testimonial.name;
+        testimonialItem.querySelector('[data-field="role"]').value = testimonial.role;
         container.appendChild(testimonialItem);
       });
     }
 
     if (form && container && template && saveBtn && notification && titleInput && subtitleInput) {
-      form.addEventListener('click', (e: Event) => {
-        const target = e.target as HTMLElement;
+      form.addEventListener('click', (e) => {
+        const target = e.target;
         if (target.id === 'add-testimonial-btn') {
           contentData.testimonials.push({ id: crypto.randomUUID(), quote: 'Nueva cita...', name: 'Nombre', role: 'Rol o Empresa' });
           renderTestimonials();
@@ -129,7 +123,7 @@ import Layout from '../../layouts/AdminLayout.astro';
         const itemEl = target.closest('.testimonial-item');
         if (itemEl && target.classList.contains('delete-testimonial-btn')) {
           if (confirm('¿Seguro que quieres borrar este testimonio?')) {
-            const testimonialId = (itemEl as HTMLElement).dataset.testimonialId;
+            const testimonialId = itemEl.dataset.testimonialId;
             contentData.testimonials = contentData.testimonials.filter(t => t.id !== testimonialId);
             renderTestimonials();
           }
@@ -141,10 +135,10 @@ import Layout from '../../layouts/AdminLayout.astro';
           if (!container) return;
           const updatedTestimonials = Array.from(container.querySelectorAll('.testimonial-item')).map(itemEl => {
               return {
-                  id: (itemEl as HTMLElement).dataset.testimonialId,
-                  quote: (itemEl.querySelector('[data-field="quote"]') as HTMLTextAreaElement).value,
-                  name: (itemEl.querySelector('[data-field="name"]') as HTMLInputElement).value,
-                  role: (itemEl.querySelector('[data-field="role"]') as HTMLInputElement).value,
+                  id: itemEl.dataset.testimonialId,
+                  quote: itemEl.querySelector('[data-field="quote"]').value,
+                  name: itemEl.querySelector('[data-field="name"]').value,
+                  role: itemEl.querySelector('[data-field="role"]').value,
               }
           });
   
@@ -157,7 +151,10 @@ import Layout from '../../layouts/AdminLayout.astro';
         try {
           const response = await fetch('/api/testimonials', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': authHeader
+            },
             body: JSON.stringify(finalData),
           });
           if (!response.ok) throw new Error('Error al guardar');
@@ -168,7 +165,7 @@ import Layout from '../../layouts/AdminLayout.astro';
         }
       });
       
-      loadContent();
+      renderTestimonials();
     } else {
         console.error('Faltan elementos del formulario en la página.')
     }

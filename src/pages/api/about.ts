@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { verifyApiAuth, createAuthResponse } from '../../utils/auth';
 
 const contentPath = path.join(process.cwd(), 'src/content/about.json');
 
@@ -22,6 +23,11 @@ export const GET: APIRoute = async () => {
 
 export const POST: APIRoute = async ({ request }) => {
   try {
+    // Verificar autenticación
+    if (!verifyApiAuth(request)) {
+      return createAuthResponse();
+    }
+
     const data = await request.json();
     await fs.writeFile(contentPath, JSON.stringify(data, null, 2));
     return new Response(JSON.stringify({ message: "Content updated successfully" }), {

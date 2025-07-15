@@ -1,5 +1,12 @@
 ---
 import Layout from '../../layouts/AdminLayout.astro';
+import heroContent from '../../content/hero.json';
+
+// Pasar las credenciales de forma segura al cliente
+const credentials = {
+  username: import.meta.env.USUARIO,
+  password: import.meta.env.PASS
+};
 ---
 
 <Layout title="Admin - Hero Section">
@@ -15,22 +22,22 @@ import Layout from '../../layouts/AdminLayout.astro';
       <div class="space-y-6">
         <div>
           <label for="headline" class="block text-sm font-medium text-foreground/90">Titular Principal</label>
-          <input type="text" id="headline" name="headline" class="mt-1 block w-full input">
+          <input type="text" id="headline" name="headline" value={heroContent.headline} class="mt-1 block w-full input">
         </div>
         
         <div>
           <label for="subheadline" class="block text-sm font-medium text-foreground/90">Sub-titular</label>
-          <input type="text" id="subheadline" name="subheadline" class="mt-1 block w-full input">
+          <input type="text" id="subheadline" name="subheadline" value={heroContent.subheadline} class="mt-1 block w-full input">
         </div>
         
         <div>
           <label for="paragraph" class="block text-sm font-medium text-foreground/90">Párrafo de Introducción</label>
-          <textarea id="paragraph" name="paragraph" rows="4" class="mt-1 block w-full input"></textarea>
+          <textarea id="paragraph" name="paragraph" rows="4" class="mt-1 block w-full input">{heroContent.paragraph}</textarea>
         </div>
         
         <div>
           <label for="ctaButton" class="block text-sm font-medium text-foreground/90">Texto del Botón (CTA)</label>
-          <input type="text" id="ctaButton" name="ctaButton" class="mt-1 block w-full input">
+          <input type="text" id="ctaButton" name="ctaButton" value={heroContent.ctaButton} class="mt-1 block w-full input">
         </div>
 
         <hr class="border-foreground/20">
@@ -39,49 +46,32 @@ import Layout from '../../layouts/AdminLayout.astro';
         
         <div>
           <label for="promiseTitle" class="block text-sm font-medium text-foreground/90">Título de la Promesa</label>
-          <input type="text" id="promiseTitle" name="promiseTitle" class="mt-1 block w-full input">
+          <input type="text" id="promiseTitle" name="promiseTitle" value={heroContent.promise.title} class="mt-1 block w-full input">
         </div>
         
         <div>
           <label for="promiseParagraph" class="block text-sm font-medium text-foreground/90">Párrafo de la Promesa</label>
-          <textarea id="promiseParagraph" name="promiseParagraph" rows="4" class="mt-1 block w-full input"></textarea>
+          <textarea id="promiseParagraph" name="promiseParagraph" rows="4" class="mt-1 block w-full input">{heroContent.promise.paragraph}</textarea>
         </div>
       </div>
     </form>
   </div>
 </Layout>
 
-<script>
+<script is:inline define:vars={{ authCredentials: credentials }}>
 document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('hero-form') as HTMLFormElement | null;
+  const form = document.getElementById('hero-form');
   const saveBtn = document.getElementById('save-btn');
   const notification = document.getElementById('notification');
 
-  const showNotification = (message: string, isError = false) => {
+  // Preparar autenticación
+  const authHeader = 'Basic ' + btoa(authCredentials.username + ':' + authCredentials.password);
+
+  const showNotification = (message, isError = false) => {
     if (notification) {
       notification.textContent = message;
       notification.className = `p-4 mb-4 rounded-lg ${isError ? 'bg-red-200 text-red-800' : 'bg-green-200 text-green-800'} block`;
       setTimeout(() => { notification.classList.add('hidden'); }, 3000);
-    }
-  };
-  
-  const loadContent = async () => {
-    if (!form) return;
-    try {
-      const response = await fetch('/api/hero');
-      if (!response.ok) throw new Error('Failed to load content');
-      const content = await response.json();
-      
-      (form.elements.namedItem('headline') as HTMLInputElement).value = content.headline;
-      (form.elements.namedItem('subheadline') as HTMLInputElement).value = content.subheadline;
-      (form.elements.namedItem('paragraph') as HTMLInputElement).value = content.paragraph;
-      (form.elements.namedItem('ctaButton') as HTMLInputElement).value = content.ctaButton;
-      (form.elements.namedItem('promiseTitle') as HTMLInputElement).value = content.promise.title;
-      (form.elements.namedItem('promiseParagraph') as HTMLInputElement).value = content.promise.paragraph;
-
-    } catch (error) {
-      console.error("Error loading content:", error);
-      showNotification('No se pudo cargar el contenido.', true);
     }
   };
 
@@ -102,7 +92,10 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const response = await fetch('/api/hero', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': authHeader
+        },
         body: JSON.stringify(data),
       });
 
@@ -114,7 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   if (form && saveBtn && notification) {
-    loadContent();
     saveBtn.addEventListener('click', handleSave);
   } else {
     console.error('Error: No se encontraron los elementos del formulario en la página.');

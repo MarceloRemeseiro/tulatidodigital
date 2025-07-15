@@ -1,5 +1,12 @@
 ---
 import Layout from '../../layouts/AdminLayout.astro';
+import aboutContent from '../../content/about.json';
+
+// Pasar las credenciales de forma segura al cliente
+const credentials = {
+  username: import.meta.env.USUARIO,
+  password: import.meta.env.PASS
+};
 ---
 
 <Layout title="Admin | Quiénes Somos">
@@ -18,15 +25,15 @@ import Layout from '../../layouts/AdminLayout.astro';
         <legend class="text-xl font-bold px-2">Contenido Principal</legend>
         <div>
           <label for="title" class="block text-sm font-medium">Título Principal</label>
-          <input type="text" id="title" name="title" class="mt-1 block w-full input">
+          <input type="text" id="title" name="title" value={aboutContent.title} class="mt-1 block w-full input">
         </div>
         <div>
           <label for="paragraph" class="block text-sm font-medium">Párrafo Principal</label>
-          <textarea id="paragraph" name="paragraph" rows="6" class="mt-1 block w-full input"></textarea>
+          <textarea id="paragraph" name="paragraph" rows="6" class="mt-1 block w-full input">{aboutContent.paragraph}</textarea>
         </div>
         <div>
             <label for="cta" class="block text-sm font-medium">Texto del Botón (CTA)</label>
-            <input type="text" id="cta" name="cta" class="mt-1 block w-full input">
+            <input type="text" id="cta" name="cta" value={aboutContent.cta} class="mt-1 block w-full input">
         </div>
       </fieldset>
       
@@ -34,11 +41,11 @@ import Layout from '../../layouts/AdminLayout.astro';
         <legend class="text-xl font-bold px-2 text-secondary">Sección de Enfoque</legend>
         <div>
           <label for="focus-title" class="block text-sm font-medium">Título de Enfoque</label>
-          <input type="text" id="focus-title" name="focus.title" class="mt-1 block w-full input">
+          <input type="text" id="focus-title" name="focus.title" value={aboutContent.focus.title} class="mt-1 block w-full input">
         </div>
         <div>
           <label for="focus-paragraph" class="block text-sm font-medium">Párrafo de Enfoque</label>
-          <textarea id="focus-paragraph" name="focus.paragraph" rows="4" class="mt-1 block w-full input"></textarea>
+          <textarea id="focus-paragraph" name="focus.paragraph" rows="4" class="mt-1 block w-full input">{aboutContent.focus.paragraph}</textarea>
         </div>
       </fieldset>
       
@@ -46,7 +53,7 @@ import Layout from '../../layouts/AdminLayout.astro';
         <legend class="text-xl font-bold px-2 text-primary">Sección de Razones</legend>
         <div>
           <label for="reasons-title" class="block text-sm font-medium">Título de Razones</label>
-          <input type="text" id="reasons-title" name="reasons.title" class="mt-1 block w-full input">
+          <input type="text" id="reasons-title" name="reasons.title" value={aboutContent.reasons.title} class="mt-1 block w-full input">
         </div>
         <div id="reasons-list" class="space-y-4 mt-4">
           <!-- Los items se cargarán aquí dinámicamente -->
@@ -65,14 +72,16 @@ import Layout from '../../layouts/AdminLayout.astro';
     </div>
 </template>
 
-<script is:inline>
+<script is:inline define:vars={{ contentData: aboutContent, authCredentials: credentials }}>
   document.addEventListener('DOMContentLoaded', async () => {
     const form = document.getElementById('about-form');
     const reasonsList = document.getElementById('reasons-list');
     const saveButton = document.getElementById('save-button');
     const notification = document.getElementById('notification');
     const reasonTemplate = document.getElementById('reason-template');
-    let contentData = {};
+
+    // Preparar autenticación
+    const authHeader = 'Basic ' + btoa(authCredentials.username + ':' + authCredentials.password);
 
     function showNotification(message, isError = false) {
       notification.textContent = message;
@@ -81,26 +90,6 @@ import Layout from '../../layouts/AdminLayout.astro';
       setTimeout(() => {
         notification.classList.add('hidden');
       }, 3000);
-    }
-
-    async function loadContent() {
-      try {
-        const response = await fetch('/api/about');
-        if (!response.ok) throw new Error('Failed to load content');
-        contentData = await response.json();
-        
-        document.getElementById('title').value = contentData.title;
-        document.getElementById('paragraph').value = contentData.paragraph;
-        document.getElementById('cta').value = contentData.cta;
-        document.getElementById('focus-title').value = contentData.focus.title;
-        document.getElementById('focus-paragraph').value = contentData.focus.paragraph;
-        document.getElementById('reasons-title').value = contentData.reasons.title;
-        renderReasons();
-
-      } catch (error) {
-        console.error("Error loading content:", error);
-        showNotification('No se pudo cargar el contenido.', true);
-      }
     }
 
     function renderReasons() {
@@ -162,7 +151,10 @@ import Layout from '../../layouts/AdminLayout.astro';
       try {
         const response = await fetch('/api/about', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': authHeader
+          },
           body: JSON.stringify(updatedContent)
         });
 
@@ -178,6 +170,6 @@ import Layout from '../../layouts/AdminLayout.astro';
       }
     });
 
-    loadContent();
+    renderReasons();
   });
 </script> 

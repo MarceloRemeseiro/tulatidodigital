@@ -5,6 +5,12 @@ import content from '../../content/services.json';
 import type { ServiceContent } from '../../content/types';
 
 const typedContent = content as ServiceContent;
+
+// Pasar las credenciales de forma segura al cliente
+const credentials = {
+  username: import.meta.env.USUARIO,
+  password: import.meta.env.PASS
+};
 ---
 
 <Layout title="Admin - Servicios">
@@ -152,9 +158,12 @@ const typedContent = content as ServiceContent;
   </div>
 </template>
 
-<script define:vars={{ initialContent: typedContent }}>
+<script is:inline define:vars={{ initialContent: typedContent, authCredentials: credentials }}>
 document.addEventListener('DOMContentLoaded', () => {
   let content = JSON.parse(JSON.stringify(initialContent));
+  
+  // Preparar autenticación
+  const authHeader = 'Basic ' + btoa(authCredentials.username + ':' + authCredentials.password);
 
   // FIX: Asegurarse de que todos los elementos tengan un ID para poder editarlos.
   // Estos IDs se guardarán permanentemente al hacer clic en "Guardar Cambios".
@@ -355,7 +364,10 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const response = await fetch('/api/services', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': authHeader
+        },
         body: JSON.stringify({ action: 'update_all', data: content }),
       });
       if (!response.ok) throw new Error('Error de red al guardar');

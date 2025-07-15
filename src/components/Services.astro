@@ -105,7 +105,7 @@ const { title, subtitle, toggle, packages, individualServices, modal } = content
     </div>
   </div>
 </div>
-<script define:vars={{ individualServices }} is:inline>
+<script is:inline define:vars={{ services: individualServices }}>
   document.addEventListener('DOMContentLoaded', function () {
     const togglePaquetes = document.getElementById('toggle-paquetes');
     const toggleIndividuales = document.getElementById('toggle-individuales');
@@ -116,7 +116,7 @@ const { title, subtitle, toggle, packages, individualServices, modal } = content
     function renderIndividualServices() {
       if (!servicesGrid) return;
       servicesGrid.innerHTML = '';
-      individualServices.forEach((service) => {
+      services.forEach((service) => {
         const serviceCard = document.createElement('div');
         serviceCard.className = `bg-background p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow border border-foreground/10 text-center ${service.type === 'ia-special' ? 'bg-secondary/10 border-2 border-secondary' : ''}`;
         serviceCard.innerHTML = `

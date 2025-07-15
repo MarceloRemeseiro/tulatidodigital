@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import type { ServiceContent } from '../../content/types';
+import { verifyApiAuth, createAuthResponse } from '../../utils/auth';
 
 export const prerender = false;
 
@@ -13,6 +14,11 @@ async function writeDb(data: ServiceContent): Promise<void> {
 
 export const POST: APIRoute = async ({ request }) => {
   try {
+    // Verificar autenticación
+    if (!verifyApiAuth(request)) {
+      return createAuthResponse();
+    }
+
     const body = await request.json();
     const { action, data } = body;
 

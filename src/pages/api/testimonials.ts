@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { verifyApiAuth, createAuthResponse } from '../../utils/auth';
 
 const testimonialsPath = path.join(process.cwd(), 'src/content/testimonials.json');
 
@@ -22,6 +23,11 @@ export const GET: APIRoute = async () => {
 
 export const POST: APIRoute = async ({ request }) => {
   try {
+    // Verificar autenticación
+    if (!verifyApiAuth(request)) {
+      return createAuthResponse();
+    }
+
     const data = await request.json();
     
     // Aquí podrías añadir validación de datos con Zod si quieres más seguridad
