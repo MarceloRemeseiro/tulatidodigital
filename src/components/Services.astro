@@ -2,6 +2,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import type { ServiceContent, Package } from '../content/types';
+import { formatText } from '../utils/textFormatter';
 
 // Leer el contenido dinámicamente
 const servicesPath = path.join(process.cwd(), 'src/content/services.json');
@@ -15,7 +16,7 @@ const { title, subtitle, toggle, packages, individualServices } = content;
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center">
       <h2 class="text-3xl md:text-4xl font-extrabold text-foreground">{title}</h2>
-      <p class="mt-4 max-w-2xl mx-auto text-lg text-foreground/80">{subtitle}</p>
+      <p class="mt-4 max-w-2xl mx-auto text-lg text-foreground/80" set:html={formatText(subtitle)}></p>
     </div>
 
     <div class="mt-12 flex justify-center space-x-2 md:space-x-4 bg-foreground/10 p-2 rounded-full max-w-sm mx-auto">
@@ -37,13 +38,12 @@ const { title, subtitle, toggle, packages, individualServices } = content;
               : "bg-background-secondary border border-foreground/10"
           ]}>
             <h3 class="text-2xl font-bold">{pkg.title}</h3>
-            <p class:list={["mt-4", { "opacity-90": index === 1, "text-foreground/80": index !== 1 }]}>
-              {pkg.description}
+            <p class:list={["mt-4", { "opacity-90": index === 1, "text-foreground/80": index !== 1 }]} set:html={formatText(pkg.description)}>
             </p>
             <ul class:list={["mt-6 space-y-3", { "text-foreground/90": index !== 1 }]}>
               {pkg.features.map((feature: string) => (
                 <li class="flex items-center">
-                  <span class:list={["mr-3", { "text-primary": index !== 1 }]}>✔</span>{feature}
+                  <span class:list={["mr-3", { "text-primary": index !== 1 }]}>✔</span><span set:html={formatText(feature)}></span>
                 </li>
               ))}
             </ul>
@@ -77,6 +77,16 @@ const { title, subtitle, toggle, packages, individualServices } = content;
     const individualesContainer = document.getElementById('individuales-container');
     const servicesGrid = document.getElementById('services-grid');
 
+    // Función helper para formatear texto
+    function formatText(text) {
+      if (!text) return '';
+      // Convertir saltos de línea a <br>
+      let formatted = text.replace(/\n/g, '<br>');
+      // Convertir **texto** a <strong>texto</strong>
+      formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      return formatted;
+    }
+
     function renderIndividualServices() {
       if (!servicesGrid) return;
       servicesGrid.innerHTML = '';
@@ -85,7 +95,7 @@ const { title, subtitle, toggle, packages, individualServices } = content;
         serviceCard.className = `bg-background p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow border border-foreground/10 text-center ${service.type === 'ia-special' ? 'bg-secondary/10 border-2 border-secondary' : ''}`;
         serviceCard.innerHTML = `
           <h3 class="text-xl font-bold ${service.type === 'ia-special' ? 'text-secondary' : 'text-foreground'}">${service.title}</h3>
-          <p class="mt-2 text-sm ${service.type === 'ia-special' ? 'text-secondary' : 'text-foreground/80'}">${service.description}</p>
+          <p class="mt-2 text-sm ${service.type === 'ia-special' ? 'text-secondary' : 'text-foreground/80'}">${formatText(service.description)}</p>
           ${service.type === 'ia-special' ? 
             `<a href="/sin-camara" class="mt-4 inline-block text-secondary hover:text-secondary/90 font-semibold">${service.cta}</a>` :
             `<a href="#contacto" class="mt-4 inline-block text-primary hover:text-primary/90 font-semibold">${service.cta}</a>`

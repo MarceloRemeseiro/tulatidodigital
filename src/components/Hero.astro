@@ -1,6 +1,7 @@
 ---
 import { promises as fs } from 'fs';
 import path from 'path';
+import { formatText } from '../utils/textFormatter';
 
 // Leer el contenido dinámicamente
 const heroPath = path.join(process.cwd(), 'src/content/hero.json');
@@ -102,8 +103,7 @@ const content = JSON.parse(heroFile);
           {content.subheadline}
         </span>
       </h1>
-      <p class="mt-8 max-w-3xl mx-auto text-lg sm:text-xl hero-paragraph leading-relaxed">
-        {content.paragraph}
+      <p class="mt-8 max-w-3xl mx-auto text-lg sm:text-xl hero-paragraph leading-relaxed" set:html={formatText(content.paragraph)}>
       </p>
       <div class="mt-12">
         <a href="#contacto" class="inline-block bg-yellow-400 text-gray-900 font-bold py-3 px-6 sm:py-4 sm:px-10 rounded-full text-base sm:text-lg hover:bg-yellow-300 transition-all transform hover:scale-105 glow-box-hero shadow-2xl">
@@ -126,9 +126,13 @@ const content = JSON.parse(heroFile);
     <h2 class="text-3xl md:text-4xl font-bold text-primary">
       {content.promise.title}
     </h2>
-    <p class="mt-6 text-lg text-foreground/80 leading-relaxed">
-      {content.promise.paragraph}
+    <p class="mt-6 text-lg text-foreground/80 leading-relaxed" set:html={formatText(content.promise.paragraph)}>
     </p>
+    <div class="mt-8">
+      <a href="#contacto" class="inline-block bg-primary hover:bg-primary/90 text-white font-bold py-4 px-8 rounded-lg text-lg transition-colors duration-300 shadow-lg hover:shadow-xl">
+        {content.promise.ctaButton}
+      </a>
+    </div>
   </div>
 </section>
 

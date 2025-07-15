@@ -29,6 +29,15 @@ const credentials = {
     
     <div id="notification" class="hidden p-4 mb-4 rounded-lg"></div>
 
+    <!-- Información sobre formato -->
+    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+      <h3 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">💡 Formato de texto disponible:</h3>
+      <ul class="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+        <li>• Para <strong>negritas</strong>: usa **texto en negrita**</li>
+        <li>• Los saltos de línea se respetan automáticamente</li>
+      </ul>
+    </div>
+
     <form id="services-form">
       <fieldset class="space-y-6 border border-foreground/20 p-6 rounded-lg">
         <legend class="text-xl font-bold px-2">Contenido Principal</legend>
@@ -40,6 +49,7 @@ const credentials = {
 
         <div>
           <label for="subtitle" class="block text-sm font-medium">Subtítulo</label>
+          <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
           <textarea id="subtitle" name="subtitle" rows="3" class="mt-1 block w-full input">{typedContent.subtitle}</textarea>
         </div>
       </fieldset>
@@ -49,18 +59,12 @@ const credentials = {
         <div id="packages-container" class="space-y-6">
           <!-- Los paquetes se renderizarán aquí con JS -->
         </div>
-        <div class="mt-6">
-          <button type="button" id="add-package-btn" class="button-secondary">Añadir Paquete</button>
-        </div>
       </fieldset>
       
       <fieldset class="mt-8 border border-foreground/20 p-6 rounded-lg">
         <legend class="text-xl font-bold px-2">Servicios Individuales</legend>
         <div id="services-container" class="space-y-6">
           <!-- Los servicios se renderizarán aquí con JS -->
-        </div>
-        <div class="mt-6">
-          <button type="button" id="add-service-btn" class="button-secondary">Añadir Servicio</button>
         </div>
       </fieldset>
 
@@ -83,6 +87,7 @@ const credentials = {
       </div>
       <div>
         <label class="block text-sm font-medium">Descripción</label>
+        <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
         <textarea data-field="description" rows="3" class="package-field mt-1 block w-full input"></textarea>
       </div>
       <div>
@@ -120,6 +125,7 @@ const credentials = {
       </div>
       <div>
         <label class="block text-sm font-medium">Descripción</label>
+        <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
         <textarea data-field="description" rows="3" class="service-field mt-1 block w-full input"></textarea>
       </div>
       <div>
@@ -226,17 +232,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // MANEJO DE CLICS (Añadir/Borrar) - SOLO LOCAL
+  // MANEJO DE CLICS (Borrar) - SOLO LOCAL
   form.addEventListener('click', (e) => {
     const target = e.target;
-    if (target.id === 'add-package-btn') {
-      content.packages.push({ id: crypto.randomUUID(), title: 'Nuevo Paquete', description: '', features: [], cta: 'Saber Más' });
-      renderPackages();
-    }
-    if (target.id === 'add-service-btn') {
-      content.individualServices.push({ id: crypto.randomUUID(), title: 'Nuevo Servicio', description: '', cta: 'Saber Más', type: 'individual' });
-      renderServices();
-    }
     
     const pkgEl = target.closest('.package-item');
     if (pkgEl) {

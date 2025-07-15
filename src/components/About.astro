@@ -1,6 +1,7 @@
 ---
 import { promises as fs } from 'fs';
 import path from 'path';
+import { formatText } from '../utils/textFormatter';
 
 // Leer el contenido dinámicamente
 const contentPath = path.join(process.cwd(), 'src/content/about.json');
@@ -13,32 +14,22 @@ const content = JSON.parse(contentFile);
     <h2 class="text-4xl font-bold text-black dark:text-white">
       {content.title}
     </h2>
-    <p class="mt-6 text-xl text-foreground/90">
-      {content.paragraph}
+    {content.subtitle && (
+      <p class="mt-4 text-xl text-primary font-semibold" set:html={formatText(content.subtitle)}>
+      </p>
+    )}
+    <p class="mt-6 text-xl text-foreground/90" set:html={formatText(content.paragraph)}>
     </p>
     <div class="mt-12">
-      <h3 class="text-3xl font-bold text-primary">
+      <h3 class="text-4xl font-bold text-black dark:text-white">
         {content.focus.title}
       </h3>
-      <p class="mt-6 text-lg text-foreground/80">
-        {content.focus.paragraph}
+      {content.focus.subtitle && (
+        <p class="mt-4 text-xl text-primary font-semibold" set:html={formatText(content.focus.subtitle)}>
+        </p>
+      )}
+      <p class="mt-6 text-lg text-foreground/80" set:html={formatText(content.focus.paragraph)}>
       </p>
     </div>
-    <div class="mt-12 text-left">
-      <h3 class="text-3xl font-bold text-black dark:text-white">
-        {content.reasons.title}
-      </h3>
-      <ul class="mt-6 space-y-4 text-lg text-foreground/80">
-        {content.reasons.items.map((item: any) => (
-          <li class="flex items-start">
-            <span class="text-secondary text-2xl mr-3">{item.icon}</span>
-            <span>{item.text}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-    <a href="#contacto" class="mt-12 inline-block bg-gradient-to-r from-primary to-secondary text-primary-foreground font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
-      {content.cta}
-    </a>
   </div>
 </section> 

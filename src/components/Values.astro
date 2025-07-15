@@ -1,0 +1,37 @@
+---
+import { formatText } from '../utils/textFormatter';
+
+// Leer el contenido dinámicamente
+import { promises as fs } from 'fs';
+import path from 'path';
+
+const valuesPath = path.join(process.cwd(), 'src/content/values.json');
+const valuesFile = await fs.readFile(valuesPath, 'utf-8');
+const content = JSON.parse(valuesFile);
+---
+
+<section class="py-16 bg-background-main">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Cards de valores -->
+    <div class="grid md:grid-cols-3 gap-8">
+      {content.items.map((item: any) => (
+        <div class="bg-background p-8 rounded-2xl shadow-md border border-foreground/10 text-center hover:shadow-lg transition-shadow">
+          <div class="text-4xl mb-4">{item.icon}</div>
+          <p class="text-foreground/80 leading-relaxed" set:html={formatText(item.text)}>
+          </p>
+        </div>
+      ))}
+    </div>
+
+    <!-- Texto y CTA debajo de las cards -->
+    <div class="text-center mt-16">
+      <h3 class="text-2xl md:text-3xl font-bold text-foreground mb-6" set:html={formatText(content.bottomText)}>
+      </h3>
+      <div class="mt-8">
+        <a href="#contacto" class="inline-block bg-primary hover:bg-primary/90 text-white font-bold py-4 px-8 rounded-lg text-lg transition-colors duration-300 shadow-lg hover:shadow-xl">
+          {content.ctaButton}
+        </a>
+      </div>
+    </div>
+  </div>
+</section> 

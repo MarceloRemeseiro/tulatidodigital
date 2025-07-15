@@ -17,144 +17,103 @@ const credentials = {
 };
 ---
 
-<Layout title="Admin | Quiénes Somos">
-  <button slot="page-actions" id="save-button" class="button-primary">Guardar Cambios</button>
+<Layout title="Admin - Sección Nosotros">
+  <button slot="page-actions" id="save-btn" class="button-primary">Guardar Cambios</button>
 
-  <main class="max-w-4xl mx-auto px-4 py-8">
+  <div class="max-w-4xl mx-auto py-10 px-4">
     <a href="/admin" class="text-primary hover:underline mb-4 block">&larr; Volver al panel de admin</a>
-    <h1 class="text-3xl font-bold mb-6 text-foreground">Editar Sección "Quiénes Somos"</h1>
-    <p class="mb-6 text-foreground/80">Todos los cambios que realices se guardarán únicamente cuando presiones el botón "Guardar Cambios" de la esquina superior derecha.</p>
+    <h1 class="text-3xl font-bold mb-6">Editar Contenido de "Nosotros"</h1>
     
     <div id="notification" class="hidden p-4 mb-4 rounded-lg"></div>
 
-    <form id="about-form" class="space-y-8">
-      
-      <fieldset class="space-y-6 border border-foreground/20 p-6 rounded-lg">
-        <legend class="text-xl font-bold px-2">Contenido Principal</legend>
+    <!-- Información sobre formato -->
+    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+      <h3 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">💡 Formato de texto disponible:</h3>
+      <ul class="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+        <li>• Para <strong>negritas</strong>: usa **texto en negrita**</li>
+        <li>• Los saltos de línea se respetan automáticamente</li>
+      </ul>
+    </div>
+
+    <form id="about-form">
+      <div class="space-y-6">
         <div>
-          <label for="title" class="block text-sm font-medium">Título Principal</label>
+          <label for="title" class="block text-sm font-medium text-foreground/90">Título Principal</label>
           <input type="text" id="title" name="title" value={aboutContent.title} class="mt-1 block w-full input">
         </div>
+        
         <div>
-          <label for="paragraph" class="block text-sm font-medium">Párrafo Principal</label>
-          <textarea id="paragraph" name="paragraph" rows="6" class="mt-1 block w-full input">{aboutContent.paragraph}</textarea>
+          <label for="subtitle" class="block text-sm font-medium text-foreground/90">Subtítulo</label>
+          <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
+          <input type="text" id="subtitle" name="subtitle" value={aboutContent.subtitle || ''} class="mt-1 block w-full input">
         </div>
+        
         <div>
-            <label for="cta" class="block text-sm font-medium">Texto del Botón (CTA)</label>
-            <input type="text" id="cta" name="cta" value={aboutContent.cta} class="mt-1 block w-full input">
+          <label for="paragraph" class="block text-sm font-medium text-foreground/90">Párrafo Principal</label>
+          <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
+          <textarea id="paragraph" name="paragraph" rows="4" class="mt-1 block w-full input">{aboutContent.paragraph}</textarea>
         </div>
-      </fieldset>
-      
-      <fieldset class="space-y-6 border border-foreground/20 p-6 rounded-lg">
-        <legend class="text-xl font-bold px-2 text-secondary">Sección de Enfoque</legend>
+
+        <hr class="border-foreground/20">
+
+        <h2 class="text-2xl font-bold">Sección Enfoque</h2>
+        
         <div>
-          <label for="focus-title" class="block text-sm font-medium">Título de Enfoque</label>
-          <input type="text" id="focus-title" name="focus.title" value={aboutContent.focus.title} class="mt-1 block w-full input">
+          <label for="focusTitle" class="block text-sm font-medium text-foreground/90">Título del Enfoque</label>
+          <input type="text" id="focusTitle" name="focusTitle" value={aboutContent.focus.title} class="mt-1 block w-full input">
         </div>
+        
         <div>
-          <label for="focus-paragraph" class="block text-sm font-medium">Párrafo de Enfoque</label>
-          <textarea id="focus-paragraph" name="focus.paragraph" rows="4" class="mt-1 block w-full input">{aboutContent.focus.paragraph}</textarea>
+          <label for="focusSubtitle" class="block text-sm font-medium text-foreground/90">Subtítulo del Enfoque</label>
+          <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
+          <input type="text" id="focusSubtitle" name="focusSubtitle" value={aboutContent.focus.subtitle || ''} class="mt-1 block w-full input">
         </div>
-      </fieldset>
-      
-      <fieldset class="space-y-6 border border-foreground/20 p-6 rounded-lg">
-        <legend class="text-xl font-bold px-2 text-primary">Sección de Razones</legend>
+        
         <div>
-          <label for="reasons-title" class="block text-sm font-medium">Título de Razones</label>
-          <input type="text" id="reasons-title" name="reasons.title" value={aboutContent.reasons.title} class="mt-1 block w-full input">
+          <label for="focusParagraph" class="block text-sm font-medium text-foreground/90">Párrafo del Enfoque</label>
+          <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
+          <textarea id="focusParagraph" name="focusParagraph" rows="4" class="mt-1 block w-full input">{aboutContent.focus.paragraph}</textarea>
         </div>
-        <div id="reasons-list" class="space-y-4 mt-4">
-          <!-- Los items se cargarán aquí dinámicamente -->
-        </div>
-        <button type="button" id="add-reason" class="button-secondary">Añadir Razón</button>
-      </fieldset>
+
+
+      </div>
     </form>
-  </main>
+  </div>
 </Layout>
 
-<template id="reason-template">
-    <div class="reason-item flex items-center gap-2 p-2 bg-background-secondary rounded">
-        <input type="text" data-field="icon" class="w-16 p-2 bg-background border border-border rounded" placeholder="Icono">
-        <input type="text" data-field="text" class="flex-grow p-2 bg-background border border-border rounded" placeholder="Texto de la razón">
-        <button type="button" class="remove-reason button-danger-outline">✖</button>
-    </div>
-</template>
+
 
 <script is:inline define:vars={{ contentData: aboutContent, authCredentials: credentials }}>
   document.addEventListener('DOMContentLoaded', async () => {
     const form = document.getElementById('about-form');
-    const reasonsList = document.getElementById('reasons-list');
-    const saveButton = document.getElementById('save-button');
+    const saveButton = document.getElementById('save-btn');
     const notification = document.getElementById('notification');
-    const reasonTemplate = document.getElementById('reason-template');
 
     // Preparar autenticación
     const authHeader = 'Basic ' + btoa(authCredentials.username + ':' + authCredentials.password);
 
-    function showNotification(message, isError = false) {
-      notification.textContent = message;
-      notification.className = `p-4 mb-4 rounded-lg ${isError ? 'bg-red-500/20 text-red-500' : 'bg-green-500/20 text-green-500'}`;
-      notification.classList.remove('hidden');
-      setTimeout(() => {
-        notification.classList.add('hidden');
-      }, 3000);
-    }
-
-    function renderReasons() {
-      reasonsList.innerHTML = '';
-      if (!contentData.reasons || !contentData.reasons.items) return;
-      
-      contentData.reasons.items.forEach((item, index) => {
-        const reasonNode = reasonTemplate.content.cloneNode(true);
-        const reasonDiv = reasonNode.querySelector('.reason-item');
-        reasonDiv.dataset.index = index;
-        reasonDiv.querySelector('[data-field="icon"]').value = item.icon;
-        reasonDiv.querySelector('[data-field="text"]').value = item.text;
-        reasonsList.appendChild(reasonNode);
-      });
-    }
-    
-    document.getElementById('add-reason').addEventListener('click', () => {
-        if (!contentData.reasons.items) contentData.reasons.items = [];
-        contentData.reasons.items.push({ icon: '🆕', text: 'Nueva razón' });
-        renderReasons();
-    });
-
-    reasonsList.addEventListener('click', (e) => {
-      const removeButton = e.target.closest('.remove-reason');
-      if (removeButton) {
-        const index = removeButton.closest('.reason-item').dataset.index;
-        contentData.reasons.items.splice(index, 1);
-        renderReasons();
+    const showNotification = (message, isError = false) => {
+      if (notification) {
+        notification.textContent = message;
+        notification.className = `p-4 mb-4 rounded-lg ${isError ? 'bg-red-200 text-red-800' : 'bg-green-200 text-green-800'} block`;
+        setTimeout(() => { notification.classList.add('hidden'); }, 3000);
       }
-    });
+    };
 
-    saveButton.addEventListener('click', async () => {
-      saveButton.textContent = 'Guardando...';
-      saveButton.disabled = true;
-
+    const handleSave = async () => {
+      if (!form) return;
       const formData = new FormData(form);
-      const updatedContent = {
+      
+      const data = {
         title: formData.get('title'),
+        subtitle: formData.get('subtitle'),
         paragraph: formData.get('paragraph'),
-        cta: formData.get('cta'),
         focus: {
-          title: formData.get('focus.title'),
-          paragraph: formData.get('focus.paragraph')
-        },
-        reasons: {
-          title: formData.get('reasons.title'),
-          items: []
+          title: formData.get('focusTitle'),
+          subtitle: formData.get('focusSubtitle'),
+          paragraph: formData.get('focusParagraph')
         }
       };
-      
-      const reasonNodes = reasonsList.querySelectorAll('.reason-item');
-      reasonNodes.forEach(node => {
-          updatedContent.reasons.items.push({
-              icon: node.querySelector('[data-field="icon"]').value,
-              text: node.querySelector('[data-field="text"]').value
-          });
-      });
 
       try {
         const response = await fetch('/api/about', {
@@ -163,21 +122,20 @@ const credentials = {
             'Content-Type': 'application/json',
             'Authorization': authHeader
           },
-          body: JSON.stringify(updatedContent)
+          body: JSON.stringify(data),
         });
 
-        if (!response.ok) throw new Error('Failed to save');
+        if (!response.ok) throw new Error('Error al guardar');
         showNotification('¡Contenido guardado con éxito!');
-        
       } catch (error) {
-        console.error("Error saving content:", error);
-        showNotification('Error al guardar el contenido.', true);
-      } finally {
-        saveButton.textContent = 'Guardar Cambios';
-        saveButton.disabled = false;
+        showNotification('Error al guardar. Inténtalo de nuevo.', true);
       }
-    });
+    };
 
-    renderReasons();
+    if (form && saveButton && notification) {
+      saveButton.addEventListener('click', handleSave);
+    } else {
+      console.error('Error: No se encontraron los elementos del formulario en la página.');
+    }
   });
 </script> 

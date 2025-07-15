@@ -1,0 +1,146 @@
+---
+export const prerender = false;
+
+import Layout from '../../layouts/AdminLayout.astro';
+import { promises as fs } from 'fs';
+import path from 'path';
+
+// Leer el contenido dinámicamente
+const valuesPath = path.join(process.cwd(), 'src/content/values.json');
+const valuesFile = await fs.readFile(valuesPath, 'utf-8');
+const valuesContent = JSON.parse(valuesFile);
+
+// Pasar las credenciales de forma segura al cliente
+const credentials = {
+  username: import.meta.env.USUARIO,
+  password: import.meta.env.PASS
+};
+---
+
+<Layout title="Admin - Sección Valores">
+  <button slot="page-actions" id="save-btn" class="button-primary">Guardar Cambios</button>
+
+  <div class="max-w-4xl mx-auto py-10 px-4">
+    <a href="/admin" class="text-primary hover:underline mb-4 block">&larr; Volver al panel de admin</a>
+    <h1 class="text-3xl font-bold mb-6">Editar Contenido de la Sección Valores</h1>
+    
+    <div id="notification" class="hidden p-4 mb-4 rounded-lg"></div>
+
+    <!-- Información sobre formato -->
+    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+      <h3 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">💡 Formato de texto disponible:</h3>
+      <ul class="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+        <li>• Para <strong>negritas</strong>: usa **texto en negrita**</li>
+        <li>• Los saltos de línea se respetan automáticamente</li>
+      </ul>
+    </div>
+
+    <form id="values-form">
+      <div class="space-y-8">
+        
+        <!-- Cards de Valores -->
+        <div class="bg-background-alt p-6 rounded-lg">
+          <h2 class="text-2xl font-bold mb-4">Tarjetas de Valores</h2>
+          
+          {valuesContent.items.map((item: any, index: number) => (
+            <div class="border-b border-foreground/20 pb-6 mb-6 last:border-b-0 last:mb-0">
+              <h3 class="text-lg font-semibold mb-4">Tarjeta {index + 1}</h3>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label for={`icon-${index}`} class="block text-sm font-medium text-foreground/90">Icono/Emoji</label>
+                  <input type="text" id={`icon-${index}`} name={`icon-${index}`} value={item.icon} class="mt-1 block w-full input">
+                </div>
+                <div class="md:col-span-1">
+                  <label for={`text-${index}`} class="block text-sm font-medium text-foreground/90">Texto</label>
+                  <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
+                  <textarea id={`text-${index}`} name={`text-${index}`} rows="4" class="mt-1 block w-full input">{item.text}</textarea>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <hr class="border-foreground/20">
+
+        <!-- Texto del fondo y CTA -->
+        <div class="bg-background-alt p-6 rounded-lg">
+          <h2 class="text-2xl font-bold mb-4">Texto y Botón CTA</h2>
+          
+          <div class="space-y-4">
+            <div>
+              <label for="bottomText" class="block text-sm font-medium text-foreground/90">Texto debajo de las tarjetas</label>
+              <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
+              <textarea id="bottomText" name="bottomText" rows="3" class="mt-1 block w-full input">{valuesContent.bottomText}</textarea>
+            </div>
+            
+            <div>
+              <label for="ctaButton" class="block text-sm font-medium text-foreground/90">Texto del Botón CTA</label>
+              <input type="text" id="ctaButton" name="ctaButton" value={valuesContent.ctaButton} class="mt-1 block w-full input">
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</Layout>
+
+<script is:inline define:vars={{ authCredentials: credentials }}>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('values-form');
+  const saveBtn = document.getElementById('save-btn');
+  const notification = document.getElementById('notification');
+
+  // Preparar autenticación
+  const authHeader = 'Basic ' + btoa(authCredentials.username + ':' + authCredentials.password);
+
+  const showNotification = (message, isError = false) => {
+    if (notification) {
+      notification.textContent = message;
+      notification.className = `p-4 mb-4 rounded-lg ${isError ? 'bg-red-200 text-red-800' : 'bg-green-200 text-green-800'} block`;
+      setTimeout(() => { notification.classList.add('hidden'); }, 3000);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!form) return;
+    const formData = new FormData(form);
+    
+    // Construir el objeto de datos
+    const items = [];
+    for (let i = 0; i < 3; i++) {
+      items.push({
+        icon: formData.get(`icon-${i}`),
+        text: formData.get(`text-${i}`)
+      });
+    }
+    
+    const data = {
+      items: items,
+      bottomText: formData.get('bottomText'),
+      ctaButton: formData.get('ctaButton')
+    };
+
+    try {
+      const response = await fetch('/api/values', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': authHeader
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) throw new Error('Error al guardar');
+      showNotification('¡Contenido guardado con éxito!');
+    } catch (error) {
+      showNotification('Error al guardar. Inténtalo de nuevo.', true);
+    }
+  };
+
+  if (form && saveBtn && notification) {
+    saveBtn.addEventListener('click', handleSave);
+  } else {
+    console.error('Error: No se encontraron los elementos del formulario en la página.');
+  }
+});
+</script> 

@@ -26,6 +26,15 @@ const credentials = {
     
     <div id="notification" class="hidden p-4 mb-4 rounded-lg"></div>
 
+    <!-- Información sobre formato -->
+    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+      <h3 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">💡 Formato de texto disponible:</h3>
+      <ul class="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+        <li>• Para <strong>negritas</strong>: usa **texto en negrita**</li>
+        <li>• Los saltos de línea se respetan automáticamente</li>
+      </ul>
+    </div>
+
     <form id="hero-form">
       <div class="space-y-6">
         <div>
@@ -40,6 +49,7 @@ const credentials = {
         
         <div>
           <label for="paragraph" class="block text-sm font-medium text-foreground/90">Párrafo de Introducción</label>
+          <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
           <textarea id="paragraph" name="paragraph" rows="4" class="mt-1 block w-full input">{heroContent.paragraph}</textarea>
         </div>
         
@@ -59,7 +69,13 @@ const credentials = {
         
         <div>
           <label for="promiseParagraph" class="block text-sm font-medium text-foreground/90">Párrafo de la Promesa</label>
+          <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
           <textarea id="promiseParagraph" name="promiseParagraph" rows="4" class="mt-1 block w-full input">{heroContent.promise.paragraph}</textarea>
+        </div>
+        
+        <div>
+          <label for="promiseCtaButton" class="block text-sm font-medium text-foreground/90">Texto del Botón CTA (Promesa)</label>
+          <input type="text" id="promiseCtaButton" name="promiseCtaButton" value={heroContent.promise.ctaButton} class="mt-1 block w-full input">
         </div>
       </div>
     </form>
@@ -93,7 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
       ctaButton: formData.get('ctaButton'),
       promise: {
         title: formData.get('promiseTitle'),
-        paragraph: formData.get('promiseParagraph')
+        paragraph: formData.get('promiseParagraph'),
+        ctaButton: formData.get('promiseCtaButton')
       }
     };
 

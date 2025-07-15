@@ -2,6 +2,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import type { Testimonial } from '../content/types';
+import { formatText } from '../utils/textFormatter';
 
 // Leer el contenido dinámicamente
 const testimonialsPath = path.join(process.cwd(), 'src/content/testimonials.json');
@@ -12,13 +13,13 @@ const testimonials = content.testimonials as Testimonial[];
 
 <section id="casos-exito" class="py-20 md:py-32 bg-background-main relative overflow-hidden">
     <!-- Comillas decorativas de fondo -->
-    <div class="absolute -top-10 left-4 md:left-10 text-[15rem] lg:text-[20rem] font-serif text-foreground/5 z-0" aria-hidden="true">“</div>
-    <div class="absolute -bottom-20 right-4 md:right-10 text-[15rem] lg:text-[20rem] font-serif text-foreground/5 z-0" aria-hidden="true">”</div>
+    <div class="absolute -top-10 left-4 md:left-10 text-[15rem] lg:text-[20rem] font-serif text-foreground/5 z-0" aria-hidden="true">"</div>
+    <div class="absolute -bottom-20 right-4 md:right-10 text-[15rem] lg:text-[20rem] font-serif text-foreground/5 z-0" aria-hidden="true">"</div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="text-center">
             <h2 class="text-3xl md:text-4xl font-extrabold text-primary">{content.title}</h2>
-            <p class="mt-4 max-w-2xl mx-auto text-lg text-foreground/80">{content.subtitle}</p>
+            <p class="mt-4 max-w-2xl mx-auto text-lg text-foreground/80" set:html={formatText(content.subtitle)}></p>
         </div>
         
         <div class="mt-16 overflow-hidden relative max-w-4xl mx-auto">
@@ -43,6 +44,16 @@ const testimonials = content.testimonials as Testimonial[];
     let currentTestimonial = 0;
     let carouselInterval;
 
+    // Función helper para formatear texto
+    function formatText(text) {
+      if (!text) return '';
+      // Convertir saltos de línea a <br>
+      let formatted = text.replace(/\n/g, '<br>');
+      // Convertir **texto** a <strong>texto</strong>
+      formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      return formatted;
+    }
+
     function renderCarousel() {
       carouselContainer.innerHTML = '';
       dotsContainer.innerHTML = '';
@@ -50,10 +61,10 @@ const testimonials = content.testimonials as Testimonial[];
       testimonials.forEach((t, index) => {
         const slide = document.createElement('div');
         slide.className = 'w-full flex-shrink-0 px-4';
-        // HTML de la tarjeta de testimonio unificado
+        // HTML de la tarjeta de testimonio unificado con formateo
         slide.innerHTML = `
           <div class="bg-gradient-to-br from-card to-background-alt text-card-foreground p-8 rounded-2xl shadow-lg border border-border h-full flex flex-col justify-center">
-            <p class="text-xl italic">"${t.quote}"</p>
+            <p class="text-xl italic">"${formatText(t.quote)}"</p>
             <p class="mt-8 text-lg font-bold text-primary">${t.name}</p>
             <p class="text-sm text-muted-foreground">${t.role}</p>
           </div>

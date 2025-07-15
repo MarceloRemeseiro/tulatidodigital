@@ -1,0 +1,39 @@
+---
+import { formatText } from '../utils/textFormatter';
+
+// Leer el contenido dinámicamente
+import { promises as fs } from 'fs';
+import path from 'path';
+
+const reasonsPath = path.join(process.cwd(), 'src/content/reasons.json');
+const reasonsFile = await fs.readFile(reasonsPath, 'utf-8');
+const content = JSON.parse(reasonsFile);
+---
+
+<section class="py-20 md:py-32 bg-background-alt section-fade-in">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-left">
+      <h3 class="text-3xl font-bold text-black dark:text-white">
+        {content.title}
+      </h3>
+      <ul class="mt-6 space-y-4 text-lg text-foreground/80">
+        {content.items.map((item: any) => (
+          <li class="flex items-start">
+            <span class="text-secondary text-2xl mr-3">{item.icon}</span>
+            <span set:html={formatText(item.text)}></span>
+          </li>
+        ))}
+      </ul>
+    </div>
+    
+    <div class="text-center mt-12">
+      <a href="#contacto" class="inline-block bg-gradient-to-r from-primary to-secondary text-primary-foreground font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-opacity shadow-lg">
+        {content.cta}
+      </a>
+      {content.bottomText && (
+        <p class="mt-4 text-sm text-foreground/70 italic" set:html={formatText(content.bottomText)}>
+        </p>
+      )}
+    </div>
+  </div>
+</section> 
