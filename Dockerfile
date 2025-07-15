@@ -22,6 +22,14 @@ WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 # Copiar la salida de la build desde la etapa de build
 COPY --from=builder /app/dist ./dist
+# Copiar el directorio de contenido para que las APIs puedan escribir
+COPY --from=builder /app/src/content ./src/content
+
+# Dar permisos de escritura al directorio de contenido
+RUN chmod -R 755 ./src/content && chown -R node:node ./src/content
+
+# Cambiar al usuario node para ejecutar la aplicación
+USER node
 
 EXPOSE 1030
 

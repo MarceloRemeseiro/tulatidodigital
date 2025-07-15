@@ -81,9 +81,7 @@ const credentials = {
     const reasonTemplate = document.getElementById('reason-template');
 
     // Preparar autenticación
-    console.log('Auth credentials:', { username: authCredentials.username, passwordLength: authCredentials.password?.length });
     const authHeader = 'Basic ' + btoa(authCredentials.username + ':' + authCredentials.password);
-    console.log('Auth header created:', authHeader);
 
     function showNotification(message, isError = false) {
       notification.textContent = message;
@@ -151,12 +149,6 @@ const credentials = {
       });
 
       try {
-        console.log('Making fetch request with headers:', {
-          'Content-Type': 'application/json',
-          'Authorization': authHeader
-        });
-        console.log('Data being sent:', updatedContent);
-        
         const response = await fetch('/api/about', {
           method: 'POST',
           headers: { 
@@ -166,13 +158,7 @@ const credentials = {
           body: JSON.stringify(updatedContent)
         });
 
-        console.log('Response status:', response.status);
-        const responseText = await response.text();
-        console.log('Response text:', responseText);
-
-        if (!response.ok) {
-          throw new Error(`Failed to save: ${response.status} - ${responseText}`);
-        }
+        if (!response.ok) throw new Error('Failed to save');
         showNotification('¡Contenido guardado con éxito!');
         
       } catch (error) {
