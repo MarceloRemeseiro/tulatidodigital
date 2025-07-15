@@ -1,8 +1,14 @@
 ---
-import content from '../content/services.json';
+import { promises as fs } from 'fs';
+import path from 'path';
 import type { ServiceContent, Package, Step } from '../content/types';
 
-const { title, subtitle, toggle, packages, individualServices, modal } = content as ServiceContent;
+// Leer el contenido dinámicamente
+const servicesPath = path.join(process.cwd(), 'src/content/services.json');
+const servicesFile = await fs.readFile(servicesPath, 'utf-8');
+const content = JSON.parse(servicesFile) as ServiceContent;
+
+const { title, subtitle, toggle, packages, individualServices, modal } = content;
 ---
 
 <section id="servicios" class="py-20 md:py-32 bg-background-alt section-fade-in">

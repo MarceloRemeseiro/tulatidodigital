@@ -1,6 +1,14 @@
 ---
+export const prerender = false;
+
 import Layout from '../../layouts/AdminLayout.astro';
-import aboutContent from '../../content/about.json';
+import { promises as fs } from 'fs';
+import path from 'path';
+
+// Leer el contenido dinámicamente
+const aboutPath = path.join(process.cwd(), 'src/content/about.json');
+const aboutFile = await fs.readFile(aboutPath, 'utf-8');
+const aboutContent = JSON.parse(aboutFile);
 
 // Pasar las credenciales de forma segura al cliente
 const credentials = {

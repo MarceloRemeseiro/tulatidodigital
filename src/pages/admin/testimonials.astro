@@ -1,6 +1,14 @@
 ---
+export const prerender = false;
+
 import Layout from '../../layouts/AdminLayout.astro';
-import testimonialsContent from '../../content/testimonials.json';
+import { promises as fs } from 'fs';
+import path from 'path';
+
+// Leer el contenido dinámicamente
+const testimonialsPath = path.join(process.cwd(), 'src/content/testimonials.json');
+const testimonialsFile = await fs.readFile(testimonialsPath, 'utf-8');
+const testimonialsContent = JSON.parse(testimonialsFile);
 
 // Pasar las credenciales de forma segura al cliente
 const credentials = {
