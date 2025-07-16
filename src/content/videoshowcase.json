@@ -1,0 +1,43 @@
+{
+  "mainTitle": "¿Miedo escénico?",
+  "mainTitleHighlight": "Problema resuelto.",
+  "subtitle": "Crea vídeos profesionales con avatares de IA sin ponerte delante de la cámara. Tu mensaje, tu voz, tu presencia... sin estrés.",
+  "videoSubtitle": "👉 Mira el resultado",
+  "featuresTitle": "Vídeos que impactan, sin que tengas que aparecer",
+  "features": [
+    {
+      "emoji": "🤖",
+      "title": "Avatares hiperrealistas",
+      "description": "Portavoces digitales indistinguibles de personas reales"
+    },
+    {
+      "emoji": "🎵",
+      "title": "Voces naturales",
+      "description": "Síntesis de voz avanzada que suena humana"
+    },
+    {
+      "emoji": "⚡",
+      "title": "Producción rápida",
+      "description": "De guión a vídeo final en tiempo récord"
+    },
+    {
+      "emoji": "🎯",
+      "title": "Tu mensaje, tu marca",
+      "description": "Personalización completa según tu estilo y audiencia"
+    }
+  ],
+  "idealForTitle": "💡 Ideal para:",
+  "idealForItems": [
+    "Presentaciones de servicios",
+    "Contenido para redes sociales",
+    "Campañas de ventas",
+    "Material formativo",
+    "Lanzamientos de productos",
+    "otra cosa"
+  ],
+  "buttons": {
+    "primary": "Ver servicio completo",
+    "secondary": "Quiero mi vídeo IA"
+  },
+  "videoFileName": "video-1752660904746.mp4"
+}
