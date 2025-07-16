@@ -22,9 +22,21 @@ function getCurrentVideo(): string | null {
 // Función para actualizar el nombre del video en el JSON
 function updateVideoFileName(fileName: string) {
   try {
+    console.log('Updating video filename to:', fileName);
+    console.log('Reading from:', CONTENT_FILE);
+    
     const content = JSON.parse(fs.readFileSync(CONTENT_FILE, 'utf-8'));
+    console.log('Current content videoFileName:', content.videoFileName);
+    
     content.videoFileName = fileName;
+    console.log('New content videoFileName:', content.videoFileName);
+    
     fs.writeFileSync(CONTENT_FILE, JSON.stringify(content, null, 2));
+    console.log('JSON file updated successfully');
+    
+    // Verificar que se escribió correctamente
+    const verifyContent = JSON.parse(fs.readFileSync(CONTENT_FILE, 'utf-8'));
+    console.log('Verified videoFileName after write:', verifyContent.videoFileName);
   } catch (error) {
     console.error('Error updating video filename:', error);
   }
