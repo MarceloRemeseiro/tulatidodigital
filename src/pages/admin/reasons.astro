@@ -12,8 +12,8 @@ const reasonsContent = JSON.parse(reasonsFile);
 
 // Pasar las credenciales de forma segura al cliente
 const credentials = {
-  username: import.meta.env.USUARIO,
-  password: import.meta.env.PASS
+  username: process.env.USUARIO || import.meta.env.USUARIO,
+  password: process.env.PASS || import.meta.env.PASS
 };
 ---
 

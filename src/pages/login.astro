@@ -9,32 +9,17 @@ if (Astro.request.method === 'POST') {
   const password = formData.get('password');
 
   // Estas variables vienen del .env
-  const secretUser = import.meta.env.USUARIO;
-  const secretPass = import.meta.env.PASS;
-
-  // Debug temporal para producción
-  console.log('Login debug:', {
-    receivedUsername: username,
-    receivedPassword: password ? '***' : 'EMPTY',
-    expectedUsername: secretUser ? '***' : 'UNDEFINED',
-    expectedPassword: secretPass ? '***' : 'UNDEFINED',
-    usernameMatch: username === secretUser,
-    passwordMatch: password === secretPass,
-    isProduction: import.meta.env.PROD
-  });
+  const secretUser = process.env.USUARIO || import.meta.env.USUARIO;
+  const secretPass = process.env.PASS || import.meta.env.PASS;
 
   if (username === secretUser && password === secretPass) {
     // Las credenciales son correctas. Creamos la cookie.
-    const cookieOptions = {
+    Astro.cookies.set('session', 'admin-logged-in', {
       path: '/',
       httpOnly: true,
       secure: import.meta.env.PROD, // Solo secure en producción
       maxAge: 60 * 60 * 24 // 1 día
-    };
-    
-    console.log('Setting cookie with options:', cookieOptions);
-    Astro.cookies.set('session', 'admin-logged-in', cookieOptions);
-    console.log('Cookie set successfully, redirecting to /admin');
+    });
     return Astro.redirect('/admin');
   } else {
     error = 'Usuario o contraseña incorrectos.';
