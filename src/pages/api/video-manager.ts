@@ -34,7 +34,11 @@ function updateVideoFileName(fileName: string) {
 export const GET: APIRoute = async ({ request }) => {
   const authHeader = request.headers.get('authorization');
   
-  if (!authHeader || authHeader !== 'Bearer admin-token') {
+  // Verificar tanto Basic Auth como Bearer token para compatibilidad
+  const isBasicAuth = authHeader && authHeader.startsWith('Basic ');
+  const isBearerAuth = authHeader === 'Bearer admin-token';
+  
+  if (!authHeader || (!isBasicAuth && !isBearerAuth)) {
     return new Response(JSON.stringify({ error: 'No autorizado' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' }
@@ -56,7 +60,11 @@ export const GET: APIRoute = async ({ request }) => {
 export const POST: APIRoute = async ({ request }) => {
   const authHeader = request.headers.get('authorization');
   
-  if (!authHeader || authHeader !== 'Bearer admin-token') {
+  // Verificar tanto Basic Auth como Bearer token para compatibilidad
+  const isBasicAuth = authHeader && authHeader.startsWith('Basic ');
+  const isBearerAuth = authHeader === 'Bearer admin-token';
+  
+  if (!authHeader || (!isBasicAuth && !isBearerAuth)) {
     return new Response(JSON.stringify({ error: 'No autorizado' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' }
@@ -144,7 +152,11 @@ export const POST: APIRoute = async ({ request }) => {
 export const DELETE: APIRoute = async ({ request }) => {
   const authHeader = request.headers.get('authorization');
   
-  if (!authHeader || authHeader !== 'Bearer admin-token') {
+  // Verificar tanto Basic Auth como Bearer token para compatibilidad
+  const isBasicAuth = authHeader && authHeader.startsWith('Basic ');
+  const isBearerAuth = authHeader === 'Bearer admin-token';
+  
+  if (!authHeader || (!isBasicAuth && !isBearerAuth)) {
     return new Response(JSON.stringify({ error: 'No autorizado' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' }
@@ -152,9 +164,13 @@ export const DELETE: APIRoute = async ({ request }) => {
   }
 
   try {
+    console.log('DELETE video: Starting deletion process');
+    
     const currentVideo = getCurrentVideo();
+    console.log('DELETE video: Current video found:', currentVideo);
     
     if (!currentVideo) {
+      console.log('DELETE video: No video to delete');
       return new Response(JSON.stringify({ 
         error: 'No hay video para eliminar' 
       }), {
@@ -164,14 +180,21 @@ export const DELETE: APIRoute = async ({ request }) => {
     }
 
     const filePath = path.join(PUBLIC_DIR, currentVideo);
+    console.log('DELETE video: File path:', filePath);
     
     // Eliminar archivo físico
     if (fs.existsSync(filePath)) {
+      console.log('DELETE video: File exists, deleting...');
       fs.unlinkSync(filePath);
+      console.log('DELETE video: File deleted successfully');
+    } else {
+      console.log('DELETE video: File does not exist');
     }
 
     // Actualizar JSON para usar video por defecto
+    console.log('DELETE video: Updating JSON with default video');
     updateVideoFileName('videoAvatar.mp4');
+    console.log('DELETE video: JSON updated successfully');
 
     return new Response(JSON.stringify({ 
       success: true,
