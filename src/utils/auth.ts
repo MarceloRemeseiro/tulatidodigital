@@ -9,8 +9,8 @@ export function verifyApiAuth(request: Request): boolean {
   const credentials = atob(base64Credentials);
   const [username, password] = credentials.split(':');
 
-  const secretUser = import.meta.env.USUARIO;
-  const secretPass = import.meta.env.PASS;
+  const secretUser = process.env.USUARIO || import.meta.env.USUARIO;
+  const secretPass = process.env.PASS || import.meta.env.PASS;
 
   return username === secretUser && password === secretPass;
 }
