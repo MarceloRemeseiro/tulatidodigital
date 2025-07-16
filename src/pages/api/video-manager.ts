@@ -164,13 +164,9 @@ export const DELETE: APIRoute = async ({ request }) => {
   }
 
   try {
-    console.log('DELETE video: Starting deletion process');
-    
     const currentVideo = getCurrentVideo();
-    console.log('DELETE video: Current video found:', currentVideo);
     
     if (!currentVideo) {
-      console.log('DELETE video: No video to delete');
       return new Response(JSON.stringify({ 
         error: 'No hay video para eliminar' 
       }), {
@@ -180,21 +176,14 @@ export const DELETE: APIRoute = async ({ request }) => {
     }
 
     const filePath = path.join(PUBLIC_DIR, currentVideo);
-    console.log('DELETE video: File path:', filePath);
     
     // Eliminar archivo físico
     if (fs.existsSync(filePath)) {
-      console.log('DELETE video: File exists, deleting...');
       fs.unlinkSync(filePath);
-      console.log('DELETE video: File deleted successfully');
-    } else {
-      console.log('DELETE video: File does not exist');
     }
 
     // Actualizar JSON para usar video por defecto
-    console.log('DELETE video: Updating JSON with default video');
     updateVideoFileName('videoAvatar.mp4');
-    console.log('DELETE video: JSON updated successfully');
 
     return new Response(JSON.stringify({ 
       success: true,

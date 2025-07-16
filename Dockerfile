@@ -27,8 +27,9 @@ COPY --from=builder /app/src/content ./src/content
 # Copiar archivos estáticos (incluyendo vídeos)
 COPY --from=builder /app/public ./public
 
-# Dar permisos de escritura al directorio de contenido
+# Dar permisos de escritura a los directorios necesarios
 RUN chmod -R 755 ./src/content && chown -R node:node ./src/content
+RUN chmod -R 755 ./public && chown -R node:node ./public
 
 # Cambiar al usuario node para ejecutar la aplicación
 USER node
