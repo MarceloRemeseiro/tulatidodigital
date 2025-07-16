@@ -1,15 +1,22 @@
 ---
+export const prerender = false;
 import VideoAvatar from './VideoAvatar.astro';
-import videoshowcaseContent from '../content/videoshowcase.json';
 import type { VideoShowcaseContent } from '../content/types';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 interface Props {
   background?: 'main' | 'alt';
 }
 
 const { background = 'main' } = Astro.props;
+
+// Leer el contenido dinámicamente
+const videoshowcasePath = path.join(process.cwd(), 'src/content/videoshowcase.json');
+const videoshowcaseFile = await fs.readFile(videoshowcasePath, 'utf-8');
+const content = JSON.parse(videoshowcaseFile) as VideoShowcaseContent;
+
 const bgClass = background === 'alt' ? 'bg-background-alt' : 'bg-background-main';
-const content = videoshowcaseContent as VideoShowcaseContent;
 ---
 
 <section class={`py-20 md:py-32 ${bgClass} section-fade-in`}>
