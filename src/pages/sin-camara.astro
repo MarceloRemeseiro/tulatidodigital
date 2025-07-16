@@ -1,6 +1,16 @@
 ---
 // Esta es una página estática independiente para el servicio de vídeos con IA
 export const prerender = false;
+
+import { promises as fs } from 'fs';
+import path from 'path';
+import type { VideoShowcaseContent } from '../content/types';
+
+// Leer el archivo de videoshowcase para obtener el nombre del video
+const videoshowcasePath = path.join(process.cwd(), 'src/content/videoshowcase.json');
+const videoshowcaseFile = await fs.readFile(videoshowcasePath, 'utf-8');
+const videoshowcaseContent = JSON.parse(videoshowcaseFile) as VideoShowcaseContent;
+const videoFileName = videoshowcaseContent.videoFileName || 'videoAvatar.mp4';
 ---
 
 <!DOCTYPE html>
@@ -280,7 +290,7 @@ export const prerender = false;
                                 playsinline
                                 style="display: none;"
                             >
-                                <source src="/videoAvatar.mp4" type="video/mp4">
+                                <source src={`/${videoFileName}`} type="video/mp4">
                                 Tu navegador no soporta video HTML5.
                             </video>
                         </div>
