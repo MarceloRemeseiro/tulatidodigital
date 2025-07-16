@@ -1,0 +1,46 @@
+{
+  "components": [
+    {
+      "id": "services",
+      "name": "Servicios",
+      "component": "Services",
+      "enabled": true,
+      "position": 1
+    },
+    {
+      "id": "videoshowcase",
+      "name": "VideoShowcase",
+      "component": "VideoShowcase",
+      "enabled": true,
+      "position": 2
+    },
+    {
+      "id": "testimonials",
+      "name": "Testimonios",
+      "component": "Testimonials",
+      "enabled": true,
+      "position": 3
+    },
+    {
+      "id": "about",
+      "name": "Quiénes Somos",
+      "component": "About",
+      "enabled": true,
+      "position": 4
+    },
+    {
+      "id": "values",
+      "name": "Valores",
+      "component": "Values",
+      "enabled": true,
+      "position": 5
+    },
+    {
+      "id": "reasons",
+      "name": "Razones",
+      "component": "Reasons",
+      "enabled": true,
+      "position": 6
+    }
+  ]
+}
