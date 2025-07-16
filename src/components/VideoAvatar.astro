@@ -8,6 +8,7 @@ interface Props {
   loop?: boolean;
   className?: string;
   containerClass?: string;
+  videoFileName?: string;
 }
 
 const { 
@@ -18,7 +19,8 @@ const {
   muted = true,
   loop = true,
   className = "",
-  containerClass = ""
+  containerClass = "",
+  videoFileName = "videoAvatar.mp4"
 } = Astro.props;
 
 // Generar IDs únicos para cada instancia
@@ -170,7 +172,7 @@ const uniqueId = `video-${Math.random().toString(36).substr(2, 9)}`;
       playsinline
       style="display: none;"
     >
-      <source src="/videoAvatar.mp4" type="video/mp4">
+      <source src={`/${videoFileName}`} type="video/mp4">
       Tu navegador no soporta video HTML5.
     </video>
     

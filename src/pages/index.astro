@@ -12,6 +12,34 @@ import Values from '../components/Values.astro';
 import Reasons from '../components/Reasons.astro';
 import Contact from '../components/Contact.astro';
 import Footer from '../components/Footer.astro';
+import { promises as fs } from 'fs';
+import path from 'path';
+import type { LayoutContent } from '../content/types';
+
+// Leer configuración del layout
+const layoutPath = path.join(process.cwd(), 'src/content/layout.json');
+const layoutFile = await fs.readFile(layoutPath, 'utf-8');
+const layoutContent = JSON.parse(layoutFile) as LayoutContent;
+
+// Ordenar componentes habilitados por posición
+const enabledComponents = layoutContent.components
+  .filter(comp => comp.enabled)
+  .sort((a, b) => a.position - b.position);
+
+// Mapa de componentes
+const componentMap = {
+  Services,
+  VideoShowcase,
+  Testimonials,
+  About,
+  Values,
+  Reasons
+};
+
+// Función para determinar el background según la posición
+function getBackgroundType(position: number): 'alt' | 'main' {
+  return position % 2 === 1 ? 'alt' : 'main';
+}
 ---
 
 <Layout title="TU LATIDO DIGITAL | Impulso Digital Disruptivo y Empático">
@@ -19,12 +47,19 @@ import Footer from '../components/Footer.astro';
   
   <main>
     <Hero />
-    <Services />
-    <VideoShowcase />
-    <Testimonials />
-    <About />
-    <Values />
-    <Reasons />
+    
+    <!-- Componentes dinámicos basados en configuración -->
+    {enabledComponents.map((comp, index) => {
+      const position = index + 1;
+      const background = getBackgroundType(position);
+      const Component = componentMap[comp.component as keyof typeof componentMap];
+      
+      if (Component) {
+        return <Component background={background} />;
+      }
+      return null;
+    })}
+    
     <Contact />
   </main>
   

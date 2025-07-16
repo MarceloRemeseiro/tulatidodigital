@@ -1,0 +1,585 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { promises as fs } from 'fs';
+import path from 'path';
+import type { VideoShowcaseContent } from '../../content/types';
+
+const cookies = Astro.cookies;
+const isAuthenticated = cookies.get('session')?.value === 'admin-logged-in';
+
+if (!isAuthenticated) {
+  return Astro.redirect('/login');
+}
+
+// Leer el contenido dinámicamente
+const videoshowcasePath = path.join(process.cwd(), 'src/content/videoshowcase.json');
+const videoshowcaseFile = await fs.readFile(videoshowcasePath, 'utf-8');
+const content = JSON.parse(videoshowcaseFile);
+const typedContent = content as VideoShowcaseContent;
+
+// Pasar las credenciales de forma segura al cliente
+const credentials = {
+  username: import.meta.env.USUARIO,
+  password: import.meta.env.PASS
+};
+---
+
+<AdminLayout title="Administrar VideoShowcase">
+  <button slot="page-actions" id="save-btn" class="button-primary">Guardar Cambios</button>
+
+  <div class="max-w-4xl mx-auto py-10 px-4">
+    <a href="/admin" class="text-primary hover:underline mb-4 block">&larr; Volver al panel de admin</a>
+    <h1 class="text-3xl font-bold mb-6">Editar Contenido de la Sección VideoShowcase</h1>
+    <p class="mb-6 text-foreground/80">Todos los cambios que realices se guardarán únicamente cuando presiones el botón "Guardar Cambios" de la esquina superior derecha.</p>
+    
+    <div id="notification" class="hidden p-4 mb-4 rounded-lg"></div>
+
+    <!-- Información sobre formato -->
+    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+      <h3 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">💡 Formato de texto disponible:</h3>
+      <ul class="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+        <li>• Para <strong>negritas</strong>: usa **texto en negrita**</li>
+        <li>• Los saltos de línea se respetan automáticamente</li>
+      </ul>
+    </div>
+
+    <!-- Gestión de Video -->
+    <fieldset class="space-y-6 border border-foreground/20 p-6 rounded-lg mb-8">
+      <legend class="text-xl font-bold px-2">Gestión de Video</legend>
+        
+        <div id="video-status" class="mb-4 p-4 rounded-lg">
+          <!-- Status del video se carga aquí -->
+        </div>
+
+        <div id="video-actions" class="space-y-4">
+          <!-- Botones de acción para video -->
+        </div>
+
+        <!-- Formulario de subida (inicialmente oculto) -->
+        <div id="upload-form" class="hidden mt-4 p-4 border rounded-lg bg-background">
+          <h3 class="font-semibold mb-3">Subir Nuevo Video</h3>
+          <form id="video-upload-form" enctype="multipart/form-data">
+            <div class="space-y-4">
+              <div>
+                <label for="video-file" class="block text-sm font-medium text-foreground mb-2">
+                  Archivo de Video (Vertical - 9:16)
+                </label>
+                <input 
+                  type="file" 
+                  id="video-file" 
+                  name="video" 
+                  accept="video/mp4,video/webm,video/mov,video/avi"
+                  class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  required
+                >
+                <p class="text-xs text-muted-foreground mt-1">
+                  Formatos permitidos: MP4, WebM, MOV, AVI. Máximo 50MB.
+                </p>
+              </div>
+              <div class="flex space-x-3">
+                <button 
+                  type="submit" 
+                  class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50"
+                >
+                  Subir Video
+                </button>
+                <button 
+                  type="button" 
+                  id="cancel-upload-btn"
+                  class="px-4 py-2 border border-input text-foreground rounded-md hover:bg-accent"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+    </fieldset>
+
+    <!-- Editor de Contenido -->
+    <form id="content-form">
+      <fieldset class="mt-8 border border-foreground/20 p-6 rounded-lg">
+        <legend class="text-xl font-bold px-2">Contenido de la Sección</legend>
+        
+        <div class="space-y-6">
+          <!-- Título Principal -->
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <label for="mainTitle" class="block text-sm font-medium">
+                Título Principal
+              </label>
+              <input 
+                type="text" 
+                id="mainTitle" 
+                name="mainTitle"
+                class="mt-1 block w-full input"
+                required
+              >
+            </div>
+            <div>
+              <label for="mainTitleHighlight" class="block text-sm font-medium">
+                Parte Destacada del Título
+              </label>
+              <input 
+                type="text" 
+                id="mainTitleHighlight" 
+                name="mainTitleHighlight"
+                class="mt-1 block w-full input"
+                required
+              >
+            </div>
+          </div>
+
+          <!-- Subtítulo -->
+          <div>
+            <label for="subtitle" class="block text-sm font-medium">
+              Subtítulo
+            </label>
+            <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
+            <textarea 
+              id="subtitle" 
+              name="subtitle"
+              rows="3"
+              class="mt-1 block w-full input"
+              required
+            ></textarea>
+          </div>
+
+          <!-- Video Subtitle -->
+          <div>
+            <label for="videoSubtitle" class="block text-sm font-medium">
+              Subtítulo del Video
+            </label>
+            <input 
+              type="text" 
+              id="videoSubtitle" 
+              name="videoSubtitle"
+              class="mt-1 block w-full input"
+              required
+            >
+          </div>
+
+          <!-- Título de Características -->
+          <div>
+            <label for="featuresTitle" class="block text-sm font-medium">
+              Título de Características
+            </label>
+            <input 
+              type="text" 
+              id="featuresTitle" 
+              name="featuresTitle"
+              class="mt-1 block w-full input"
+              required
+            >
+          </div>
+
+          <!-- Características -->
+          <div>
+            <label class="block text-sm font-medium">
+              Características (4 elementos)
+            </label>
+            <div id="features-container" class="space-y-4">
+              <!-- Se generan dinámicamente 4 features -->
+            </div>
+          </div>
+
+          <!-- Ideal Para -->
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <label for="idealForTitle" class="block text-sm font-medium">
+                Título "Ideal Para"
+              </label>
+              <input 
+                type="text" 
+                id="idealForTitle" 
+                name="idealForTitle"
+                class="mt-1 block w-full input"
+                required
+              >
+            </div>
+            <div>
+              <label for="idealForItems" class="block text-sm font-medium">
+                Items "Ideal Para" (separados por comas)
+              </label>
+              <textarea 
+                id="idealForItems" 
+                name="idealForItems"
+                rows="3"
+                class="mt-1 block w-full input"
+                placeholder="Item 1, Item 2, Item 3..."
+                required
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Botones -->
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <label for="primaryButton" class="block text-sm font-medium">
+                Texto Botón Primario
+              </label>
+              <input 
+                type="text" 
+                id="primaryButton" 
+                name="primaryButton"
+                class="mt-1 block w-full input"
+                required
+              >
+            </div>
+            <div>
+              <label for="secondaryButton" class="block text-sm font-medium">
+                Texto Botón Secundario
+              </label>
+              <input 
+                type="text" 
+                id="secondaryButton" 
+                name="secondaryButton"
+                class="mt-1 block w-full input"
+                required
+              >
+            </div>
+          </div>
+
+
+        </div>
+      </fieldset>
+    </form>
+  </div>
+
+  <!-- Modal de Loading -->
+  <div id="loading-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-background p-6 rounded-lg">
+      <div class="text-center">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+        <p class="text-foreground">Procesando...</p>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ initialContent: typedContent, authCredentials: credentials }}>
+    document.addEventListener('DOMContentLoaded', () => {
+      let currentContent = JSON.parse(JSON.stringify(initialContent));
+      
+      // Preparar autenticación
+      const authHeader = 'Basic ' + btoa(authCredentials.username + ':' + authCredentials.password);
+
+      const form = document.getElementById('content-form');
+      const saveBtn = document.getElementById('save-btn');
+      const notification = document.getElementById('notification');
+
+      // Cargar estado del video al cargar la página
+      loadVideoStatus();
+      populateForm(currentContent);
+      generateFeaturesForm();
+      
+      // Event listeners
+      document.getElementById('cancel-upload-btn')?.addEventListener('click', hideUploadForm);
+      document.getElementById('video-upload-form')?.addEventListener('submit', handleVideoUpload);
+      saveBtn?.addEventListener('click', handleSaveContent);
+
+      // Gestión de Video
+      async function loadVideoStatus() {
+        try {
+          const response = await fetch('/api/video-manager', {
+            headers: {
+              'Authorization': 'Bearer admin-token'
+            }
+          });
+          
+          const data = await response.json();
+          const statusDiv = document.getElementById('video-status');
+          const actionsDiv = document.getElementById('video-actions');
+          
+          if (data.hasVideo) {
+            if (statusDiv) {
+              statusDiv.innerHTML = `
+                <div class="bg-green-50 border border-green-200 text-green-800 rounded-lg p-4">
+                  <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <strong>Video disponible:</strong> ${data.videoFileName}
+                  </div>
+                </div>
+              `;
+            }
+            
+            if (actionsDiv) {
+              actionsDiv.innerHTML = `
+                <button 
+                  id="delete-video-btn"
+                  class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                >
+                  Eliminar Video
+                </button>
+              `;
+              
+              document.getElementById('delete-video-btn')?.addEventListener('click', deleteVideo);
+            }
+          } else {
+            if (statusDiv) {
+              statusDiv.innerHTML = `
+                <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4">
+                  <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    <strong>No hay video disponible</strong>
+                  </div>
+                </div>
+              `;
+            }
+            
+            if (actionsDiv) {
+              actionsDiv.innerHTML = `
+                <button 
+                  id="upload-video-btn"
+                  class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+                >
+                  Subir Video
+                </button>
+              `;
+              
+              document.getElementById('upload-video-btn')?.addEventListener('click', showUploadForm);
+            }
+          }
+        } catch (error) {
+          console.error('Error loading video status:', error);
+        }
+      }
+
+      async function deleteVideo() {
+        if (!confirm('¿Estás seguro de que quieres eliminar el video actual?')) {
+          return;
+        }
+        
+        showLoading();
+        
+        try {
+          const response = await fetch('/api/video-manager', {
+            method: 'DELETE',
+            headers: {
+              'Authorization': 'Bearer admin-token'
+            }
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            await loadVideoStatus();
+            showNotification('Video eliminado exitosamente', false);
+          } else {
+            showNotification(data.error, true);
+          }
+        } catch (error) {
+          showNotification('Error al eliminar video', true);
+        } finally {
+          hideLoading();
+        }
+      }
+
+      function showUploadForm() {
+        const uploadForm = document.getElementById('upload-form');
+        if (uploadForm) uploadForm.classList.remove('hidden');
+      }
+
+      function hideUploadForm() {
+        const uploadForm = document.getElementById('upload-form');
+        const videoForm = document.getElementById('video-upload-form');
+        if (uploadForm) uploadForm.classList.add('hidden');
+        if (videoForm && videoForm.reset) videoForm.reset();
+      }
+
+      async function handleVideoUpload(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const file = formData.get('video');
+        
+        if (!file) {
+          showNotification('Selecciona un archivo', true);
+          return;
+        }
+        
+        showLoading();
+        
+        try {
+          const response = await fetch('/api/video-manager', {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer admin-token'
+            },
+            body: formData
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            hideUploadForm();
+            await loadVideoStatus();
+            showNotification('Video subido exitosamente', false);
+          } else {
+            showNotification(data.error, true);
+          }
+        } catch (error) {
+          showNotification('Error al subir video', true);
+        } finally {
+          hideLoading();
+        }
+      }
+
+      function populateForm(content) {
+        const elements = {
+          mainTitle: document.getElementById('mainTitle'),
+          mainTitleHighlight: document.getElementById('mainTitleHighlight'),
+          subtitle: document.getElementById('subtitle'),
+          videoSubtitle: document.getElementById('videoSubtitle'),
+          featuresTitle: document.getElementById('featuresTitle'),
+          idealForTitle: document.getElementById('idealForTitle'),
+          idealForItems: document.getElementById('idealForItems'),
+          primaryButton: document.getElementById('primaryButton'),
+          secondaryButton: document.getElementById('secondaryButton')
+        };
+
+        if (elements.mainTitle) elements.mainTitle.value = content.mainTitle || '';
+        if (elements.mainTitleHighlight) elements.mainTitleHighlight.value = content.mainTitleHighlight || '';
+        if (elements.subtitle) elements.subtitle.value = content.subtitle || '';
+        if (elements.videoSubtitle) elements.videoSubtitle.value = content.videoSubtitle || '';
+        if (elements.featuresTitle) elements.featuresTitle.value = content.featuresTitle || '';
+        if (elements.idealForTitle) elements.idealForTitle.value = content.idealForTitle || '';
+        if (elements.idealForItems) elements.idealForItems.value = content.idealForItems?.join(', ') || '';
+        if (elements.primaryButton) elements.primaryButton.value = content.buttons?.primary || '';
+        if (elements.secondaryButton) elements.secondaryButton.value = content.buttons?.secondary || '';
+      }
+
+      function generateFeaturesForm() {
+        const container = document.getElementById('features-container');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        for (let i = 0; i < 4; i++) {
+          const feature = currentContent?.features?.[i] || { emoji: '', title: '', description: '' };
+          
+          const featureDiv = document.createElement('div');
+          featureDiv.className = 'border-t border-foreground/10 pt-6';
+          featureDiv.innerHTML = `
+            <h4 class="font-medium text-foreground mb-3">Característica ${i + 1}</h4>
+            <div class="grid md:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-sm font-medium">Emoji</label>
+                <input 
+                  type="text" 
+                  name="feature-${i}-emoji"
+                  value="${feature.emoji}"
+                  class="mt-1 block w-full input text-center"
+                  maxlength="2"
+                >
+              </div>
+              <div>
+                <label class="block text-sm font-medium">Título</label>
+                <input 
+                  type="text" 
+                  name="feature-${i}-title"
+                  value="${feature.title}"
+                  class="mt-1 block w-full input"
+                >
+              </div>
+              <div>
+                <label class="block text-sm font-medium">Descripción</label>
+                <input 
+                  type="text" 
+                  name="feature-${i}-description"
+                  value="${feature.description}"
+                  class="mt-1 block w-full input"
+                >
+              </div>
+            </div>
+          `;
+          
+          container.appendChild(featureDiv);
+        }
+      }
+
+      async function handleSaveContent() {
+        if (!form) return;
+        
+        showLoading();
+        
+        try {
+          const formData = new FormData(form);
+          
+          const features = [];
+          for (let i = 0; i < 4; i++) {
+            features.push({
+              emoji: formData.get(`feature-${i}-emoji`) || '',
+              title: formData.get(`feature-${i}-title`) || '',
+              description: formData.get(`feature-${i}-description`) || ''
+            });
+          }
+          
+          const idealForItemsValue = formData.get('idealForItems');
+          const idealForItems = idealForItemsValue ? idealForItemsValue.split(',').map(item => item.trim()).filter(item => item) : [];
+          
+          const contentData = {
+            mainTitle: formData.get('mainTitle'),
+            mainTitleHighlight: formData.get('mainTitleHighlight'),
+            subtitle: formData.get('subtitle'),
+            videoSubtitle: formData.get('videoSubtitle'),
+            featuresTitle: formData.get('featuresTitle'),
+            features: features,
+            idealForTitle: formData.get('idealForTitle'),
+            idealForItems: idealForItems,
+            buttons: {
+              primary: formData.get('primaryButton'),
+              secondary: formData.get('secondaryButton')
+            },
+            videoFileName: currentContent?.videoFileName || 'videoAvatar.mp4'
+          };
+          
+          const response = await fetch('/api/videoshowcase', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': authHeader
+            },
+            body: JSON.stringify(contentData)
+          });
+          
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error de red al guardar');
+          }
+          
+          showNotification('¡Contenido guardado con éxito!', false);
+          currentContent = contentData;
+        } catch (error) {
+          console.error('Error al guardar:', error);
+          showNotification(`Error al guardar: ${error.message}`, true);
+        } finally {
+          hideLoading();
+        }
+      }
+
+      function showLoading() {
+        const modal = document.getElementById('loading-modal');
+        if (modal) modal.classList.remove('hidden');
+      }
+
+      function hideLoading() {
+        const modal = document.getElementById('loading-modal');
+        if (modal) modal.classList.add('hidden');
+      }
+
+      function showNotification(message, isError) {
+        if (notification) {
+          notification.textContent = message;
+          notification.className = `p-4 mb-4 rounded-lg ${isError ? 'bg-red-200 text-red-800' : 'bg-green-200 text-green-800'} block`;
+          setTimeout(() => { notification.classList.add('hidden'); }, 3000);
+        }
+      }
+    });
+  </script>
+</AdminLayout> 

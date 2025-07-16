@@ -47,4 +47,36 @@ export interface Testimonial {
     quote: string;
     name: string;
     role: string;
+}
+
+export interface VideoShowcaseContent {
+  mainTitle: string;
+  mainTitleHighlight: string;
+  subtitle: string;
+  videoSubtitle: string;
+  featuresTitle: string;
+  features: {
+    emoji: string;
+    title: string;
+    description: string;
+  }[];
+  idealForTitle: string;
+  idealForItems: string[];
+  buttons: {
+    primary: string;
+    secondary: string;
+  };
+  videoFileName: string;
+}
+
+export interface LayoutComponent {
+  id: string;
+  name: string;
+  component: string;
+  enabled: boolean;
+  position: number;
+}
+
+export interface LayoutContent {
+  components: LayoutComponent[];
 } 

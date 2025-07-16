@@ -4,14 +4,21 @@ import path from 'path';
 import type { Testimonial } from '../content/types';
 import { formatText } from '../utils/textFormatter';
 
+interface Props {
+  background?: 'main' | 'alt';
+}
+
 // Leer el contenido dinámicamente
 const testimonialsPath = path.join(process.cwd(), 'src/content/testimonials.json');
 const testimonialsFile = await fs.readFile(testimonialsPath, 'utf-8');
 const content = JSON.parse(testimonialsFile);
 const testimonials = content.testimonials as Testimonial[];
+
+const { background = 'main' } = Astro.props;
+const bgClass = background === 'alt' ? 'bg-background-alt' : 'bg-background-main';
 ---
 
-<section id="casos-exito" class="py-20 md:py-32 bg-background-main relative overflow-hidden">
+<section id="casos-exito" class={`py-20 md:py-32 ${bgClass} relative overflow-hidden`}>
     <!-- Comillas decorativas de fondo -->
     <div class="absolute -top-10 left-4 md:left-10 text-[15rem] lg:text-[20rem] font-serif text-foreground/5 z-0" aria-hidden="true">"</div>
     <div class="absolute -bottom-20 right-4 md:right-10 text-[15rem] lg:text-[20rem] font-serif text-foreground/5 z-0" aria-hidden="true">"</div>

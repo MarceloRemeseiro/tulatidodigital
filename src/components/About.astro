@@ -3,13 +3,20 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { formatText } from '../utils/textFormatter';
 
+interface Props {
+  background?: 'main' | 'alt';
+}
+
 // Leer el contenido dinámicamente
 const contentPath = path.join(process.cwd(), 'src/content/about.json');
 const contentFile = await fs.readFile(contentPath, 'utf-8');
 const content = JSON.parse(contentFile);
+
+const { background = 'alt' } = Astro.props;
+const bgClass = background === 'alt' ? 'bg-background-alt' : 'bg-background-main';
 ---
 
-<section id="nosotros" class="py-20 md:py-32 bg-background-alt section-fade-in">
+<section id="nosotros" class={`py-20 md:py-32 ${bgClass} section-fade-in`}>
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
     <h2 class="text-4xl font-bold text-black dark:text-white">
       {content.title}

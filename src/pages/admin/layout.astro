@@ -1,0 +1,305 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { promises as fs } from 'fs';
+import path from 'path';
+import type { LayoutContent } from '../../content/types';
+
+const cookies = Astro.cookies;
+const isAuthenticated = cookies.get('session')?.value === 'admin-logged-in';
+
+if (!isAuthenticated) {
+  return Astro.redirect('/login');
+}
+
+// Leer el contenido dinámicamente
+const layoutPath = path.join(process.cwd(), 'src/content/layout.json');
+const layoutFile = await fs.readFile(layoutPath, 'utf-8');
+const content = JSON.parse(layoutFile);
+const typedContent = content as LayoutContent;
+
+// Pasar las credenciales de forma segura al cliente
+const credentials = {
+  username: import.meta.env.USUARIO,
+  password: import.meta.env.PASS
+};
+---
+
+<AdminLayout title="Administrar Layout">
+  <button slot="page-actions" id="save-btn" class="button-primary">Guardar Cambios</button>
+
+  <div class="max-w-4xl mx-auto py-10 px-4">
+    <a href="/admin" class="text-primary hover:underline mb-4 block">&larr; Volver al panel de admin</a>
+    
+    <div id="notification" class="hidden p-4 mb-4 rounded-lg"></div>
+    
+    <h1 class="text-3xl font-bold mb-6">Administrar Orden de Componentes</h1>
+    <p class="mb-6 text-foreground/80">
+      Arrastra los componentes para cambiar su orden en la página principal. 
+      Los backgrounds se asignan automáticamente (alt - main - alt - main...).
+    </p>
+
+    <!-- Información sobre backgrounds -->
+    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+      <h3 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">📋 Información de Backgrounds:</h3>
+      <ul class="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+        <li>• <strong>Posición 1:</strong> background="alt" (gris claro)</li>
+        <li>• <strong>Posición 2:</strong> background="main" (blanco)</li>
+        <li>• <strong>Posición 3:</strong> background="alt" (gris claro)</li>
+        <li>• <strong>Posición 4:</strong> background="main" (blanco)</li>
+        <li>• <strong>Posición 5:</strong> background="alt" (gris claro)</li>
+        <li>• <strong>Posición 6:</strong> background="main" (blanco)</li>
+      </ul>
+    </div>
+
+    <div class="bg-card rounded-lg border shadow-sm p-6">
+      <h2 class="text-xl font-semibold text-foreground mb-4">Orden de Componentes</h2>
+      
+      <div id="components-list" class="space-y-3">
+        <!-- Los componentes se cargarán aquí dinámicamente -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Estilos para drag and drop -->
+  <style>
+    .component-item {
+      transition: all 0.2s ease;
+    }
+    
+    .component-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .component-item.dragging {
+      opacity: 0.5;
+      transform: rotate(5deg);
+    }
+    
+    .component-item.drag-over {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+      border-color: #3b82f6;
+    }
+    
+    .drag-handle {
+      cursor: grab;
+    }
+    
+    .drag-handle:active {
+      cursor: grabbing;
+    }
+    
+    .background-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 8px;
+    }
+    
+    .bg-alt {
+      background-color: #f1f5f9; /* stone-100 */
+      border: 2px solid #94a3b8; /* slate-400 */
+    }
+    
+    .bg-main {
+      background-color: #ffffff;
+      border: 2px solid #64748b; /* slate-500 */
+    }
+  </style>
+
+  <script is:inline define:vars={{ initialContent: typedContent, authCredentials: credentials }}>
+    document.addEventListener('DOMContentLoaded', () => {
+      let components = JSON.parse(JSON.stringify(initialContent.components));
+      
+      // Preparar autenticación
+      const authHeader = 'Basic ' + btoa(authCredentials.username + ':' + authCredentials.password);
+
+      const saveBtn = document.getElementById('save-btn');
+      const notification = document.getElementById('notification');
+      const componentsList = document.getElementById('components-list');
+
+      // Ordenar componentes por posición
+      components.sort((a, b) => a.position - b.position);
+
+      // Función para determinar el background según la posición
+      function getBackgroundType(position) {
+        return position % 2 === 1 ? 'alt' : 'main';
+      }
+
+      // Función para renderizar la lista de componentes
+      function renderComponents() {
+        if (!componentsList) return;
+        
+        componentsList.innerHTML = '';
+        
+        components.forEach((component, index) => {
+          const position = index + 1;
+          const backgroundType = getBackgroundType(position);
+          
+          const componentEl = document.createElement('div');
+          componentEl.className = 'component-item bg-background border border-input rounded-lg p-4 cursor-move';
+          componentEl.draggable = true;
+          componentEl.dataset.componentId = component.id;
+          
+          componentEl.innerHTML = `
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <div class="drag-handle text-muted-foreground">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                  </svg>
+                </div>
+                <div class="background-indicator ${backgroundType === 'alt' ? 'bg-alt' : 'bg-main'}"></div>
+                <div>
+                  <h3 class="font-semibold text-foreground">${component.name}</h3>
+                  <p class="text-sm text-muted-foreground">
+                    Posición ${position} • Background: ${backgroundType}
+                  </p>
+                </div>
+              </div>
+              
+              <div class="flex items-center space-x-3">
+                <label class="flex items-center space-x-2">
+                  <input 
+                    type="checkbox" 
+                    ${component.enabled ? 'checked' : ''} 
+                    onchange="toggleComponent('${component.id}', this.checked)"
+                    class="rounded border-input"
+                  >
+                  <span class="text-sm text-foreground">Habilitado</span>
+                </label>
+                
+                <span class="text-sm font-mono text-muted-foreground bg-muted px-2 py-1 rounded">
+                  ${component.component}
+                </span>
+              </div>
+            </div>
+          `;
+          
+          componentsList.appendChild(componentEl);
+        });
+        
+        setupDragAndDrop();
+      }
+
+      // Función para alternar habilitado/deshabilitado
+      window.toggleComponent = function(componentId, enabled) {
+        const component = components.find(c => c.id === componentId);
+        if (component) {
+          component.enabled = enabled;
+        }
+      };
+
+      // Configurar drag and drop
+      function setupDragAndDrop() {
+        const items = componentsList.querySelectorAll('.component-item');
+        
+        items.forEach(item => {
+          item.addEventListener('dragstart', handleDragStart);
+          item.addEventListener('dragover', handleDragOver);
+          item.addEventListener('drop', handleDrop);
+          item.addEventListener('dragend', handleDragEnd);
+        });
+      }
+
+      let draggedElement = null;
+
+      function handleDragStart(e) {
+        draggedElement = e.target;
+        e.target.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', e.target.outerHTML);
+      }
+
+      function handleDragOver(e) {
+        if (e.preventDefault) {
+          e.preventDefault();
+        }
+        
+        e.target.classList.add('drag-over');
+        e.dataTransfer.dropEffect = 'move';
+        return false;
+      }
+
+      function handleDrop(e) {
+        if (e.stopPropagation) {
+          e.stopPropagation();
+        }
+
+        if (draggedElement !== e.target) {
+          const draggedId = draggedElement.dataset.componentId;
+          const targetId = e.target.closest('.component-item')?.dataset.componentId;
+          
+          if (draggedId && targetId) {
+            reorderComponents(draggedId, targetId);
+          }
+        }
+
+        return false;
+      }
+
+      function handleDragEnd(e) {
+        const items = componentsList.querySelectorAll('.component-item');
+        items.forEach(item => {
+          item.classList.remove('dragging', 'drag-over');
+        });
+      }
+
+      // Reordenar componentes
+      function reorderComponents(draggedId, targetId) {
+        const draggedIndex = components.findIndex(c => c.id === draggedId);
+        const targetIndex = components.findIndex(c => c.id === targetId);
+        
+        if (draggedIndex > -1 && targetIndex > -1) {
+          const draggedComponent = components.splice(draggedIndex, 1)[0];
+          components.splice(targetIndex, 0, draggedComponent);
+          
+          // Actualizar posiciones
+          components.forEach((component, index) => {
+            component.position = index + 1;
+          });
+          
+          renderComponents();
+        }
+      }
+
+      // Guardar cambios
+      async function handleSave() {
+        try {
+          const response = await fetch('/api/layout', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': authHeader
+            },
+            body: JSON.stringify({ components })
+          });
+
+          if (!response.ok) throw new Error('Error de red al guardar');
+
+          showNotification('¡Orden de componentes guardado con éxito!', false);
+        } catch (error) {
+          showNotification('Error al guardar. Inténtalo de nuevo.', true);
+        }
+      }
+
+      function showNotification(message, isError) {
+        if (notification) {
+          notification.textContent = message;
+          notification.className = `p-4 mb-4 rounded-lg ${isError ? 'bg-red-200 text-red-800' : 'bg-green-200 text-green-800'} block`;
+          setTimeout(() => { notification.classList.add('hidden'); }, 3000);
+        }
+      }
+
+      // Event listeners
+      saveBtn?.addEventListener('click', handleSave);
+
+      // Renderizado inicial
+      renderComponents();
+    });
+  </script>
+</AdminLayout> 

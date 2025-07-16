@@ -1,16 +1,24 @@
 ---
 import VideoAvatar from './VideoAvatar.astro';
+import videoshowcaseContent from '../content/videoshowcase.json';
+import type { VideoShowcaseContent } from '../content/types';
+
+interface Props {
+  background?: 'main' | 'alt';
+}
+
+const { background = 'main' } = Astro.props;
+const bgClass = background === 'alt' ? 'bg-background-alt' : 'bg-background-main';
+const content = videoshowcaseContent as VideoShowcaseContent;
 ---
 
-<section class="py-20 md:py-32 bg-background-main section-fade-in">
+<section class={`py-20 md:py-32 ${bgClass} section-fade-in`}>
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-16">
       <h2 class="text-3xl md:text-4xl font-extrabold text-foreground mb-4">
-        ¿Miedo escénico? <span class="text-primary">Problema resuelto.</span>
+        {content.mainTitle} <span class="text-primary">{content.mainTitleHighlight}</span>
       </h2>
-      <p class="text-lg text-foreground/80 max-w-3xl mx-auto">
-        Crea vídeos profesionales con avatares de IA sin ponerte delante de la cámara. 
-        Tu mensaje, tu voz, tu presencia... <strong>sin estrés</strong>.
+      <p class="text-lg text-foreground/80 max-w-3xl mx-auto" set:html={content.subtitle}>
       </p>
     </div>
 
@@ -18,8 +26,9 @@ import VideoAvatar from './VideoAvatar.astro';
       <!-- Columna izquierda: Video -->
       <div class="order-2 lg:order-1">
         <VideoAvatar 
+          videoFileName={content.videoFileName}
           title=""
-          subtitle="👉 Mira el resultado"
+          subtitle={content.videoSubtitle}
           showControls={true}
           autoplay={false}
           muted={true}
@@ -32,59 +41,29 @@ import VideoAvatar from './VideoAvatar.astro';
       <div class="order-1 lg:order-2 space-y-8">
         <div>
           <h3 class="text-2xl font-bold text-foreground mb-4">
-            Vídeos que impactan, sin que tengas que aparecer
+            {content.featuresTitle}
           </h3>
           <div class="space-y-4">
-            <div class="flex items-start space-x-4">
-              <div class="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                <span class="text-primary text-xl">🤖</span>
+            {content.features.map((feature) => (
+              <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                  <span class="text-primary text-xl">{feature.emoji}</span>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-foreground">{feature.title}</h4>
+                  <p class="text-sm text-foreground/70">{feature.description}</p>
+                </div>
               </div>
-              <div>
-                <h4 class="font-semibold text-foreground">Avatares hiperrealistas</h4>
-                <p class="text-sm text-foreground/70">Portavoces digitales indistinguibles de personas reales</p>
-              </div>
-            </div>
-            
-            <div class="flex items-start space-x-4">
-              <div class="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                <span class="text-primary text-xl">🎵</span>
-              </div>
-              <div>
-                <h4 class="font-semibold text-foreground">Voces naturales</h4>
-                <p class="text-sm text-foreground/70">Síntesis de voz avanzada que suena humana</p>
-              </div>
-            </div>
-            
-            <div class="flex items-start space-x-4">
-              <div class="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                <span class="text-primary text-xl">⚡</span>
-              </div>
-              <div>
-                <h4 class="font-semibold text-foreground">Producción rápida</h4>
-                <p class="text-sm text-foreground/70">De guión a vídeo final en tiempo récord</p>
-              </div>
-            </div>
-            
-            <div class="flex items-start space-x-4">
-              <div class="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                <span class="text-primary text-xl">🎯</span>
-              </div>
-              <div>
-                <h4 class="font-semibold text-foreground">Tu mensaje, tu marca</h4>
-                <p class="text-sm text-foreground/70">Personalización completa según tu estilo y audiencia</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
         <div class="bg-primary/5 p-6 rounded-xl border border-primary/10">
-          <h4 class="font-bold text-foreground mb-2">💡 Ideal para:</h4>
+          <h4 class="font-bold text-foreground mb-2">{content.idealForTitle}</h4>
           <ul class="text-sm text-foreground/80 space-y-1">
-            <li>• Presentaciones de servicios</li>
-            <li>• Contenido para redes sociales</li>
-            <li>• Campañas de ventas</li>
-            <li>• Material formativo</li>
-            <li>• Lanzamientos de productos</li>
+            {content.idealForItems.map((item) => (
+              <li>• {item}</li>
+            ))}
           </ul>
         </div>
 
@@ -93,13 +72,13 @@ import VideoAvatar from './VideoAvatar.astro';
             href="/sin-camara" 
             class="inline-block bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-lg hover:shadow-xl text-center"
           >
-            Ver servicio completo
+            {content.buttons.primary}
           </a>
           <a 
             href="#contacto" 
             class="inline-block border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold py-3 px-6 rounded-lg transition-all duration-300 text-center"
           >
-            Quiero mi vídeo IA
+            {content.buttons.secondary}
           </a>
         </div>
       </div>
