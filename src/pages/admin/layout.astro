@@ -2,9 +2,7 @@
 export const prerender = false;
 
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import { promises as fs } from 'fs';
-import path from 'path';
-import type { LayoutContent } from '../../content/types';
+import { getLayoutConfig } from '../../lib/content';
 
 const cookies = Astro.cookies;
 const isAuthenticated = cookies.get('session')?.value === 'admin-logged-in';
@@ -13,11 +11,25 @@ if (!isAuthenticated) {
   return Astro.redirect('/login');
 }
 
-// Leer el contenido dinámicamente
-const layoutPath = path.join(process.cwd(), 'src/content/layout.json');
-const layoutFile = await fs.readFile(layoutPath, 'utf-8');
-const content = JSON.parse(layoutFile);
-const typedContent = content as LayoutContent;
+// Leer el contenido desde la base de datos
+
+const dbContent = await getLayoutConfig();
+
+if (!dbContent) {
+  throw new Error('Layout config not found in database');
+}
+
+// Type casting para JSONB
+const typedContent = {
+  ...dbContent,
+  components: dbContent.components as Array<{
+    id: string;
+    name: string;
+    component: string;
+    enabled: boolean;
+    position: number;
+  }>
+};
 
 // Pasar las credenciales de forma segura al cliente
 const credentials = {
@@ -242,7 +254,7 @@ const credentials = {
         return false;
       }
 
-      function handleDragEnd(e) {
+      function handleDragEnd() {
         const items = componentsList.querySelectorAll('.component-item');
         items.forEach(item => {
           item.classList.remove('dragging', 'drag-over');

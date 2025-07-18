@@ -1,8 +1,7 @@
 import type { APIRoute } from 'astro';
-import fs from 'node:fs';
-import path from 'node:path';
-
-const CONTENT_FILE = path.join(process.cwd(), 'src/content/layout.json');
+import { db } from '../../lib/db';
+import { layoutConfig } from '../../lib/schema';
+import { eq } from 'drizzle-orm';
 
 export const GET: APIRoute = async ({ request }) => {
   const url = new URL(request.url);
@@ -20,8 +19,17 @@ export const GET: APIRoute = async ({ request }) => {
   }
 
   try {
-    const content = fs.readFileSync(CONTENT_FILE, 'utf-8');
-    return new Response(content, {
+    const result = await db.select().from(layoutConfig).limit(1);
+    const content = result[0];
+    
+    if (!content) {
+      return new Response(JSON.stringify({ error: 'Configuración no encontrada' }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    return new Response(JSON.stringify(content), {
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (error) {
@@ -68,7 +76,23 @@ export const PUT: APIRoute = async ({ request }) => {
       }
     }
 
-    fs.writeFileSync(CONTENT_FILE, JSON.stringify(data, null, 2));
+    // Obtener el registro existente
+    const existing = await db.select().from(layoutConfig).limit(1);
+    
+    if (existing.length > 0) {
+      // Actualizar registro existente
+      await db.update(layoutConfig)
+        .set({ 
+          components: data.components,
+          updatedAt: new Date()
+        })
+        .where(eq(layoutConfig.id, existing[0].id));
+    } else {
+      // Crear nuevo registro
+      await db.insert(layoutConfig).values({
+        components: data.components
+      });
+    }
     
     return new Response(JSON.stringify({ success: true }), {
       headers: { 'Content-Type': 'application/json' }

@@ -22,13 +22,15 @@ WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 # Copiar la salida de la build desde la etapa de build
 COPY --from=builder /app/dist ./dist
-# Copiar el directorio de contenido para que las APIs puedan escribir
-COPY --from=builder /app/src/content ./src/content
 # Copiar archivos estáticos (incluyendo vídeos)
 COPY --from=builder /app/public ./public
+# Copiar archivos de configuración necesarios
+COPY --from=builder /app/package*.json ./
 
-# Dar permisos de escritura a los directorios necesarios
-RUN chmod -R 755 ./src/content && chown -R node:node ./src/content
+# Asegurar que los subdirectorios necesarios existen
+RUN mkdir -p ./public/assets
+
+# Dar permisos de escritura al directorio público para videos
 RUN chmod -R 755 ./public && chown -R node:node ./public
 
 # Cambiar al usuario node para ejecutar la aplicación

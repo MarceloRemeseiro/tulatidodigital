@@ -24,7 +24,7 @@ const {
 } = Astro.props;
 
 // Generar IDs únicos para cada instancia
-const uniqueId = `video-${Math.random().toString(36).substr(2, 9)}`;
+const uniqueId = `video-${Math.random().toString(36).substring(2, 11)}`;
 ---
 
 <style>
@@ -169,6 +169,7 @@ const uniqueId = `video-${Math.random().toString(36).substr(2, 9)}`;
       controls={showControls}
       muted={muted}
       loop={loop}
+      autoplay={autoplay}
       playsinline
       style="display: none;"
     >
@@ -192,7 +193,7 @@ const uniqueId = `video-${Math.random().toString(36).substr(2, 9)}`;
   
 </div>
 
-<script define:vars={{ uniqueId }}>
+<script is:inline define:vars={{ uniqueId }}>
   document.addEventListener('DOMContentLoaded', function() {
     const video = document.getElementById(uniqueId);
     const container = document.getElementById(`${uniqueId}-container`);

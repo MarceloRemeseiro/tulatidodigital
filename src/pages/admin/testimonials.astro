@@ -2,13 +2,35 @@
 export const prerender = false;
 
 import Layout from '../../layouts/AdminLayout.astro';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { getTestimonialsConfig, getTestimonials } from '../../lib/content';
 
-// Leer el contenido dinámicamente
-const testimonialsPath = path.join(process.cwd(), 'src/content/testimonials.json');
-const testimonialsFile = await fs.readFile(testimonialsPath, 'utf-8');
-const testimonialsContent = JSON.parse(testimonialsFile);
+const cookies = Astro.cookies;
+const isAuthenticated = cookies.get('session')?.value === 'admin-logged-in';
+
+if (!isAuthenticated) {
+  return Astro.redirect('/login');
+}
+
+// Leer el contenido desde la base de datos
+const config = await getTestimonialsConfig();
+const rawTestimonials = await getTestimonials();
+
+if (!config) {
+  throw new Error('Testimonials config not found in database');
+}
+
+// Mapear campos de BD a los campos que espera el admin
+const testimonials = rawTestimonials.map(t => ({
+  id: t.id,
+  quote: t.quote,
+  name: t.author,
+  role: t.role || t.author // Usar role si existe, sino author como fallback
+}));
+
+const content = {
+  config,
+  testimonials: testimonials || []
+};
 
 // Pasar las credenciales de forma segura al cliente
 const credentials = {
@@ -41,12 +63,12 @@ const credentials = {
         <legend class="text-xl font-bold px-2">Contenido Principal</legend>
         <div>
           <label for="title" class="block text-sm font-medium">Título Principal</label>
-          <input type="text" id="title" name="title" value={testimonialsContent.title} class="mt-1 block w-full input">
+          <input type="text" id="title" name="title" value={content.config.title} class="mt-1 block w-full input">
         </div>
         <div>
           <label for="subtitle" class="block text-sm font-medium">Subtítulo</label>
           <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
-          <textarea id="subtitle" name="subtitle" rows="3" class="mt-1 block w-full input">{testimonialsContent.subtitle}</textarea>
+          <textarea id="subtitle" name="subtitle" rows="3" class="mt-1 block w-full input">{content.config.subtitle}</textarea>
         </div>
       </fieldset>
 
@@ -87,7 +109,7 @@ const credentials = {
   </div>
 </template>
 
-<script is:inline define:vars={{ contentData: testimonialsContent, authCredentials: credentials }}>
+<script is:inline define:vars={{ contentData: content, authCredentials: credentials }}>
   document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('testimonials-form');
     const container = document.getElementById('testimonials-container');

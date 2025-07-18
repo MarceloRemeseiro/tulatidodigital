@@ -2,13 +2,21 @@
 export const prerender = false;
 
 import Layout from '../../layouts/AdminLayout.astro';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { getAboutContent } from '../../lib/content';
 
-// Leer el contenido dinámicamente
-const aboutPath = path.join(process.cwd(), 'src/content/about.json');
-const aboutFile = await fs.readFile(aboutPath, 'utf-8');
-const aboutContent = JSON.parse(aboutFile);
+const cookies = Astro.cookies;
+const isAuthenticated = cookies.get('session')?.value === 'admin-logged-in';
+
+if (!isAuthenticated) {
+  return Astro.redirect('/login');
+}
+
+// Leer el contenido desde la base de datos
+const content = await getAboutContent();
+
+if (!content) {
+  throw new Error('About content not found in database');
+}
 
 // Pasar las credenciales de forma segura al cliente
 const credentials = {
@@ -35,107 +43,102 @@ const credentials = {
       </ul>
     </div>
 
-    <form id="about-form">
-      <div class="space-y-6">
+    <form id="about-form" class="space-y-6">
+      <fieldset class="space-y-6 border border-foreground/20 p-6 rounded-lg">
+        <legend class="text-xl font-bold px-2">Sección Principal</legend>
+        
         <div>
           <label for="title" class="block text-sm font-medium text-foreground/90">Título Principal</label>
-          <input type="text" id="title" name="title" value={aboutContent.title} class="mt-1 block w-full input">
+          <input type="text" id="title" name="title" value={content.title} class="mt-1 block w-full input">
         </div>
         
         <div>
           <label for="subtitle" class="block text-sm font-medium text-foreground/90">Subtítulo</label>
           <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
-          <input type="text" id="subtitle" name="subtitle" value={aboutContent.subtitle || ''} class="mt-1 block w-full input">
+          <input type="text" id="subtitle" name="subtitle" value={content.subtitle || ''} class="mt-1 block w-full input">
         </div>
         
         <div>
           <label for="paragraph" class="block text-sm font-medium text-foreground/90">Párrafo Principal</label>
           <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
-          <textarea id="paragraph" name="paragraph" rows="4" class="mt-1 block w-full input">{aboutContent.paragraph}</textarea>
+          <textarea id="paragraph" name="paragraph" rows="6" class="mt-1 block w-full input">{content.paragraph}</textarea>
         </div>
+      </fieldset>
 
-        <hr class="border-foreground/20">
-
-        <h2 class="text-2xl font-bold">Sección Enfoque</h2>
+      <fieldset class="space-y-6 border border-foreground/20 p-6 rounded-lg">
+        <legend class="text-xl font-bold px-2">Sección Enfoque</legend>
         
         <div>
           <label for="focusTitle" class="block text-sm font-medium text-foreground/90">Título del Enfoque</label>
-          <input type="text" id="focusTitle" name="focusTitle" value={aboutContent.focus.title} class="mt-1 block w-full input">
+          <input type="text" id="focusTitle" name="focusTitle" value={content.focusTitle} class="mt-1 block w-full input">
         </div>
         
         <div>
           <label for="focusSubtitle" class="block text-sm font-medium text-foreground/90">Subtítulo del Enfoque</label>
           <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
-          <input type="text" id="focusSubtitle" name="focusSubtitle" value={aboutContent.focus.subtitle || ''} class="mt-1 block w-full input">
+          <input type="text" id="focusSubtitle" name="focusSubtitle" value={content.focusSubtitle || ''} class="mt-1 block w-full input">
         </div>
         
         <div>
           <label for="focusParagraph" class="block text-sm font-medium text-foreground/90">Párrafo del Enfoque</label>
           <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
-          <textarea id="focusParagraph" name="focusParagraph" rows="4" class="mt-1 block w-full input">{aboutContent.focus.paragraph}</textarea>
+          <textarea id="focusParagraph" name="focusParagraph" rows="6" class="mt-1 block w-full input">{content.focusParagraph}</textarea>
         </div>
-
-
-      </div>
+      </fieldset>
     </form>
   </div>
 </Layout>
 
+<script is:inline define:vars={{ authCredentials: credentials }}>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('about-form');
+  const saveBtn = document.getElementById('save-btn');
+  const notification = document.getElementById('notification');
 
+  // Preparar autenticación
+  const authHeader = 'Basic ' + btoa(authCredentials.username + ':' + authCredentials.password);
 
-<script is:inline define:vars={{ contentData: aboutContent, authCredentials: credentials }}>
-  document.addEventListener('DOMContentLoaded', async () => {
-    const form = document.getElementById('about-form');
-    const saveButton = document.getElementById('save-btn');
-    const notification = document.getElementById('notification');
-
-    // Preparar autenticación
-    const authHeader = 'Basic ' + btoa(authCredentials.username + ':' + authCredentials.password);
-
-    const showNotification = (message, isError = false) => {
-      if (notification) {
-        notification.textContent = message;
-        notification.className = `p-4 mb-4 rounded-lg ${isError ? 'bg-red-200 text-red-800' : 'bg-green-200 text-green-800'} block`;
-        setTimeout(() => { notification.classList.add('hidden'); }, 3000);
-      }
-    };
-
-    const handleSave = async () => {
-      if (!form) return;
-      const formData = new FormData(form);
-      
-      const data = {
-        title: formData.get('title'),
-        subtitle: formData.get('subtitle'),
-        paragraph: formData.get('paragraph'),
-        focus: {
-          title: formData.get('focusTitle'),
-          subtitle: formData.get('focusSubtitle'),
-          paragraph: formData.get('focusParagraph')
-        }
-      };
-
-      try {
-        const response = await fetch('/api/about', {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': authHeader
-          },
-          body: JSON.stringify(data),
-        });
-
-        if (!response.ok) throw new Error('Error al guardar');
-        showNotification('¡Contenido guardado con éxito!');
-      } catch (error) {
-        showNotification('Error al guardar. Inténtalo de nuevo.', true);
-      }
-    };
-
-    if (form && saveButton && notification) {
-      saveButton.addEventListener('click', handleSave);
-    } else {
-      console.error('Error: No se encontraron los elementos del formulario en la página.');
+  const showNotification = (message, isError = false) => {
+    if (notification) {
+      notification.textContent = message;
+      notification.className = `p-4 mb-4 rounded-lg ${isError ? 'bg-red-200 text-red-800' : 'bg-green-200 text-green-800'} block`;
+      setTimeout(() => { notification.classList.add('hidden'); }, 3000);
     }
-  });
+  };
+
+  const handleSave = async () => {
+    if (!form) return;
+    const formData = new FormData(form);
+    const data = {
+      title: formData.get('title'),
+      subtitle: formData.get('subtitle'),
+      paragraph: formData.get('paragraph'),
+      focusTitle: formData.get('focusTitle'),
+      focusSubtitle: formData.get('focusSubtitle'),
+      focusParagraph: formData.get('focusParagraph')
+    };
+
+    try {
+      const response = await fetch('/api/about', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': authHeader
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) throw new Error('Error al guardar');
+      showNotification('¡Contenido guardado con éxito!');
+    } catch (error) {
+      showNotification('Error al guardar. Inténtalo de nuevo.', true);
+    }
+  };
+
+  if (form && saveBtn && notification) {
+    saveBtn.addEventListener('click', handleSave);
+  } else {
+    console.error('Error: No se encontraron los elementos del formulario en la página.');
+  }
+});
 </script> 

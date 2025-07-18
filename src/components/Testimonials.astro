@@ -1,21 +1,32 @@
 ---
-import { promises as fs } from 'fs';
-import path from 'path';
-import type { Testimonial } from '../content/types';
+export const prerender = false;
+
 import { formatText } from '../utils/textFormatter';
+import { getTestimonialsConfig, getTestimonials } from '../lib/content';
 
 interface Props {
   background?: 'main' | 'alt';
 }
 
-// Leer el contenido dinámicamente
-const testimonialsPath = path.join(process.cwd(), 'src/content/testimonials.json');
-const testimonialsFile = await fs.readFile(testimonialsPath, 'utf-8');
-const content = JSON.parse(testimonialsFile);
-const testimonials = content.testimonials as Testimonial[];
+// Leer el contenido desde la base de datos
+const config = await getTestimonialsConfig();
+const rawTestimonials = await getTestimonials();
+
+if (!config) {
+  throw new Error('Testimonials config not found in database');
+}
+
+// Mapear campos de BD a los campos que espera el componente
+const testimonials = rawTestimonials.map(t => ({
+  quote: t.quote,
+  name: t.author,
+  role: t.role || t.author // Usar role si existe, sino author como fallback
+}));
 
 const { background = 'main' } = Astro.props;
 const bgClass = background === 'alt' ? 'bg-background-alt' : 'bg-background-main';
+
+const { title, subtitle } = config;
 ---
 
 <section id="casos-exito" class={`py-20 md:py-32 ${bgClass} relative overflow-hidden`}>
@@ -25,8 +36,8 @@ const bgClass = background === 'alt' ? 'bg-background-alt' : 'bg-background-main
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="text-center">
-            <h2 class="text-3xl md:text-4xl font-extrabold text-primary">{content.title}</h2>
-            <p class="mt-4 max-w-2xl mx-auto text-lg text-foreground/80" set:html={formatText(content.subtitle)}></p>
+            <h2 class="text-3xl md:text-4xl font-extrabold text-primary">{title}</h2>
+            <p class="mt-4 max-w-2xl mx-auto text-lg text-foreground/80" set:html={formatText(subtitle)}></p>
         </div>
         
         <div class="mt-16 overflow-hidden relative max-w-4xl mx-auto">

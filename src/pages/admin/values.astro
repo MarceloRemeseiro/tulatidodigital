@@ -2,13 +2,27 @@
 export const prerender = false;
 
 import Layout from '../../layouts/AdminLayout.astro';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { getValuesContent } from '../../lib/content';
 
-// Leer el contenido dinámicamente
-const valuesPath = path.join(process.cwd(), 'src/content/values.json');
-const valuesFile = await fs.readFile(valuesPath, 'utf-8');
-const valuesContent = JSON.parse(valuesFile);
+const cookies = Astro.cookies;
+const isAuthenticated = cookies.get('session')?.value === 'admin-logged-in';
+
+if (!isAuthenticated) {
+  return Astro.redirect('/login');
+}
+
+// Leer el contenido desde la base de datos
+const dbContent = await getValuesContent();
+
+if (!dbContent) {
+  throw new Error('Values content not found in database');
+}
+
+// Type casting para JSONB fields
+const valuesContent = {
+  ...dbContent,
+  items: dbContent.items as Array<{ icon: string; text: string }>
+};
 
 // Pasar las credenciales de forma segura al cliente
 const credentials = {

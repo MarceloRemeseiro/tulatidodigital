@@ -2,15 +2,23 @@
 export const prerender = false;
 
 import Layout from '../../layouts/AdminLayout.astro';
-import { promises as fs } from 'fs';
-import path from 'path';
-import type { ServiceContent } from '../../content/types';
+import { getServicesConfig, getServices } from '../../lib/content';
 
-// Leer el contenido dinámicamente
-const servicesPath = path.join(process.cwd(), 'src/content/services.json');
-const servicesFile = await fs.readFile(servicesPath, 'utf-8');
-const content = JSON.parse(servicesFile);
-const typedContent = content as ServiceContent;
+const cookies = Astro.cookies;
+const isAuthenticated = cookies.get('session')?.value === 'admin-logged-in';
+
+if (!isAuthenticated) {
+  return Astro.redirect('/login');
+}
+
+// Leer el contenido desde la base de datos
+const config = await getServicesConfig();
+const services = await getServices();
+
+const typedContent = {
+  config: config || { title: 'Servicios', subtitle: '' },
+  services: services || []
+};
 
 // Pasar las credenciales de forma segura al cliente
 const credentials = {
@@ -44,13 +52,13 @@ const credentials = {
         
         <div>
           <label for="title" class="block text-sm font-medium">Título Principal</label>
-          <input type="text" id="title" name="title" value={typedContent.title} class="mt-1 block w-full input">
+          <input type="text" id="title" name="title" value={typedContent.config.title} class="mt-1 block w-full input">
         </div>
 
         <div>
           <label for="subtitle" class="block text-sm font-medium">Subtítulo</label>
           <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
-          <textarea id="subtitle" name="subtitle" rows="3" class="mt-1 block w-full input">{typedContent.subtitle}</textarea>
+          <textarea id="subtitle" name="subtitle" rows="3" class="mt-1 block w-full input">{typedContent.config.subtitle}</textarea>
         </div>
       </fieldset>
 
@@ -155,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const authHeader = 'Basic ' + btoa(authCredentials.username + ':' + authCredentials.password);
 
   // Asegurarse de que todos los servicios tengan un ID
-  content.individualServices.forEach(service => {
+  content.services.forEach(service => {
     if (!service.id) service.id = crypto.randomUUID();
   });
 
@@ -166,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderServices() {
     servicesContainer.innerHTML = '';
-    content.individualServices.forEach(service => {
+    content.services.forEach(service => {
       const serviceEl = serviceTemplate.content.cloneNode(true).firstElementChild;
       serviceEl.dataset.serviceId = service.id;
       serviceEl.querySelector('[data-field="title"]').value = service.title;
@@ -234,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
       linkType: 'contact',
       customLink: ''
     };
-    content.individualServices.push(newService);
+    content.services.push(newService);
     renderServices();
   }
 
@@ -246,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (serviceEl && target.classList.contains('delete-service-btn')) {
       if (confirm('¿Seguro que quieres borrar este servicio?')) {
         const serviceId = serviceEl.dataset.serviceId;
-        content.individualServices = content.individualServices.filter(s => s.id !== serviceId);
+        content.services = content.services.filter(s => s.id !== serviceId);
         renderServices();
       }
     }
@@ -262,12 +270,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (serviceEl) {
         const serviceId = serviceEl.dataset.serviceId;
-        const service = content.individualServices.find(s => s.id === serviceId);
+        const service = content.services.find(s => s.id === serviceId);
         if (service && target.matches('[data-field]')) {
             service[target.dataset.field] = target.value;
         }
     } else { // Campos generales (título y subtítulo)
-        if(content[target.id] !== undefined) content[target.id] = target.value;
+        if(content.config[target.id] !== undefined) content.config[target.id] = target.value;
     }
   });
 
@@ -283,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (target.value === 'contact') {
         customLinkInput.value = '';
         const serviceId = serviceEl.dataset.serviceId;
-        const service = content.individualServices.find(s => s.id === serviceId);
+        const service = content.services.find(s => s.id === serviceId);
         if (service) service.customLink = '';
       }
     }
@@ -299,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
           'Content-Type': 'application/json',
           'Authorization': authHeader
         },
-        body: JSON.stringify({ action: 'update_all', data: content }),
+        body: JSON.stringify(content),
       });
       if (!response.ok) throw new Error('Error de red al guardar');
       

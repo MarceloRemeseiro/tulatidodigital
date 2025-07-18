@@ -1,67 +1,98 @@
 import type { APIRoute } from 'astro';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { db } from '../../lib/db';
+import { reasonsContent } from '../../lib/schema';
+import { eq } from 'drizzle-orm';
 
-// Función para verificar autenticación (Basic Auth o Bearer token)
-function checkAuth(request: Request): boolean {
-  const authHeader = request.headers.get('authorization');
+export const prerender = false;
+
+export const GET: APIRoute = async ({ request }) => {
+  const url = new URL(request.url);
+  const authHeader = url.searchParams.get('auth') || request.headers.get('authorization');
   
-  if (!authHeader) {
-    return false;
+  // Verificar tanto Basic Auth como Bearer token para compatibilidad
+  const isBasicAuth = authHeader && authHeader.startsWith('Basic ');
+  const isBearerAuth = authHeader === 'Bearer admin-token';
+  
+  if (!authHeader || (!isBasicAuth && !isBearerAuth)) {
+    return new Response(JSON.stringify({ error: 'No autorizado' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 
-  // Verificar Bearer token
-  if (authHeader === 'Bearer admin-token') {
-    return true;
+  try {
+    const result = await db.select().from(reasonsContent).limit(1);
+    const content = result[0];
+    
+    if (!content) {
+      return new Response(JSON.stringify({ error: 'Contenido no encontrado' }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    return new Response(JSON.stringify(content), {
+      headers: { 'Content-Type': 'application/json' }
+    });
+  } catch (error) {
+    console.error('Error al obtener reasons:', error);
+    return new Response(JSON.stringify({ error: 'Error interno del servidor' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
-
-  // Verificar Basic Auth
-  if (authHeader.startsWith('Basic ')) {
-    const base64Credentials = authHeader.slice(6);
-    const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
-    const [username, password] = credentials.split(':');
-
-    const expectedUsername = process.env.USUARIO || import.meta.env.USUARIO;
-    const expectedPassword = process.env.PASS || import.meta.env.PASS;
-
-    return username === expectedUsername && password === expectedPassword;
-  }
-
-  return false;
-}
+};
 
 export const POST: APIRoute = async ({ request }) => {
-  // Verificar autenticación
-  if (!checkAuth(request)) {
-    return new Response('Unauthorized', { status: 401 });
+  const url = new URL(request.url);
+  const authHeader = url.searchParams.get('auth') || request.headers.get('authorization');
+  
+  // Verificar tanto Basic Auth como Bearer token para compatibilidad
+  const isBasicAuth = authHeader && authHeader.startsWith('Basic ');
+  const isBearerAuth = authHeader === 'Bearer admin-token';
+  
+  if (!authHeader || (!isBasicAuth && !isBearerAuth)) {
+    return new Response(JSON.stringify({ error: 'No autorizado' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 
   try {
     const data = await request.json();
     
-    // Validar estructura de datos
-    if (!data.title || !data.items || !Array.isArray(data.items) || !data.cta) {
-      return new Response('Invalid data structure', { status: 400 });
+    // Actualizar o insertar contenido
+    const existing = await db.select().from(reasonsContent).limit(1);
+    
+    if (existing.length > 0) {
+      // Actualizar existente
+      await db.update(reasonsContent)
+        .set({
+          title: data.title,
+          items: data.items,
+          cta: data.cta,
+          bottomText: data.bottomText,
+          updatedAt: new Date()
+        })
+        .where(eq(reasonsContent.id, existing[0].id));
+    } else {
+      // Insertar nuevo
+      await db.insert(reasonsContent).values({
+        title: data.title,
+        items: data.items,
+        cta: data.cta,
+        bottomText: data.bottomText
+      });
     }
-
-    // Validar que cada item tenga icon y text
-    for (const item of data.items) {
-      if (!item.icon || !item.text) {
-        return new Response('Each item must have icon and text', { status: 400 });
-      }
-    }
-
-    const reasonsPath = path.join(process.cwd(), 'src/content/reasons.json');
-    await fs.writeFile(reasonsPath, JSON.stringify(data, null, 2));
-
+    
     return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' }
     });
   } catch (error) {
-    console.error('Error saving reasons content:', error);
-    return new Response('Internal Server Error', { status: 500 });
+    console.error('Error al guardar reasons:', error);
+    return new Response(JSON.stringify({ error: 'Error interno del servidor' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }; 

@@ -6,23 +6,23 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "1030:4321"
+      - "4321:4321"
     environment:
-      - NODE_ENV=production
-      - PUBLICA=false
+      - NODE_ENV=development
+      - PUBLICA=true
       - USUARIO=adminLatido
       - PASS=?LyRa!!2025
       - EMAIL_USER=tulatidodigital@gmail.com
       - EMAIL_PASS=ygxw mmda tdkm czte
       - EMAIL_TO=tulatidodigital@gmail.com
       - DATABASE_URL=postgres://admin:tulatidodb@tulatido.marceloremeseiro.com:55006/defaultdb
+    restart: unless-stopped
     volumes:
       - ./public:/app/public
-    restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4321/"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
-    depends_on: [] 
+

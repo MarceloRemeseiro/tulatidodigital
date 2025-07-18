@@ -1,9 +1,7 @@
 ---
 export const prerender = false;
 import VideoAvatar from './VideoAvatar.astro';
-import type { VideoShowcaseContent } from '../content/types';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { getVideoShowcase } from '../lib/content';
 
 interface Props {
   background?: 'main' | 'alt';
@@ -11,13 +9,23 @@ interface Props {
 
 const { background = 'main' } = Astro.props;
 
-// Leer el contenido dinámicamente
-const videoshowcasePath = path.join(process.cwd(), 'src/content/videoshowcase.json');
-const videoshowcaseFile = await fs.readFile(videoshowcasePath, 'utf-8');
-const content = JSON.parse(videoshowcaseFile) as VideoShowcaseContent;
+// Leer el contenido desde la base de datos
+const dbContent = await getVideoShowcase();
+
+if (!dbContent) {
+  throw new Error('VideoShowcase content not found in database');
+}
+
+// Type casting para JSONB fields
+const content = {
+  ...dbContent,
+  features: dbContent.features as Array<{ emoji: string; title: string; description: string }>,
+  idealForItems: dbContent.idealForItems as string[],
+  buttons: dbContent.buttons as { primary?: string; secondary?: string }
+};
 
 // Debug temporal para verificar el video
-console.log('VideoShowcase: Video filename from JSON:', content.videoFileName);
+console.log('VideoShowcase: Video filename from DB:', content.videoFileName);
 
 const bgClass = background === 'alt' ? 'bg-background-alt' : 'bg-background-main';
 ---

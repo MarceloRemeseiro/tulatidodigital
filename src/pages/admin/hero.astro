@@ -2,13 +2,21 @@
 export const prerender = false;
 
 import Layout from '../../layouts/AdminLayout.astro';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { getHeroContent } from '../../lib/content';
 
-// Leer el contenido dinámicamente
-const heroPath = path.join(process.cwd(), 'src/content/hero.json');
-const heroFile = await fs.readFile(heroPath, 'utf-8');
-const heroContent = JSON.parse(heroFile);
+const cookies = Astro.cookies;
+const isAuthenticated = cookies.get('session')?.value === 'admin-logged-in';
+
+if (!isAuthenticated) {
+  return Astro.redirect('/login');
+}
+
+// Leer el contenido desde la base de datos
+const content = await getHeroContent();
+
+if (!content) {
+  throw new Error('Hero content not found in database');
+}
 
 // Pasar las credenciales de forma segura al cliente
 const credentials = {
@@ -39,28 +47,28 @@ const credentials = {
       <div class="space-y-6">
         <div>
           <label for="mainTitle" class="block text-sm font-medium text-foreground/90">Título Principal (H1 - Más grande)</label>
-          <input type="text" id="mainTitle" name="mainTitle" value={heroContent.mainTitle} class="mt-1 block w-full input">
+          <input type="text" id="mainTitle" name="mainTitle" value={content.mainTitle} class="mt-1 block w-full input">
         </div>
         
         <div>
           <label for="subtitle" class="block text-sm font-medium text-foreground/90">Subtítulo (H2 - Mediano)</label>
-          <input type="text" id="subtitle" name="subtitle" value={heroContent.subtitle} class="mt-1 block w-full input">
+          <input type="text" id="subtitle" name="subtitle" value={content.subtitle} class="mt-1 block w-full input">
         </div>
         
         <div>
           <label for="highlight" class="block text-sm font-medium text-foreground/90">Texto Destacado (H3 - Pequeño, amarillo)</label>
-          <input type="text" id="highlight" name="highlight" value={heroContent.highlight} class="mt-1 block w-full input">
+          <input type="text" id="highlight" name="highlight" value={content.highlight} class="mt-1 block w-full input">
         </div>
         
         <div>
           <label for="paragraph" class="block text-sm font-medium text-foreground/90">Párrafo de Introducción</label>
           <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
-          <textarea id="paragraph" name="paragraph" rows="4" class="mt-1 block w-full input">{heroContent.paragraph}</textarea>
+          <textarea id="paragraph" name="paragraph" rows="4" class="mt-1 block w-full input">{content.paragraph}</textarea>
         </div>
         
         <div>
           <label for="ctaButton" class="block text-sm font-medium text-foreground/90">Texto del Botón (CTA)</label>
-          <input type="text" id="ctaButton" name="ctaButton" value={heroContent.ctaButton} class="mt-1 block w-full input">
+          <input type="text" id="ctaButton" name="ctaButton" value={content.ctaButton} class="mt-1 block w-full input">
         </div>
 
         <hr class="border-foreground/20">
@@ -69,18 +77,18 @@ const credentials = {
         
         <div>
           <label for="promiseTitle" class="block text-sm font-medium text-foreground/90">Título de la Promesa</label>
-          <input type="text" id="promiseTitle" name="promiseTitle" value={heroContent.promise.title} class="mt-1 block w-full input">
+          <input type="text" id="promiseTitle" name="promiseTitle" value={content.promiseTitle} class="mt-1 block w-full input">
         </div>
         
         <div>
           <label for="promiseParagraph" class="block text-sm font-medium text-foreground/90">Párrafo de la Promesa</label>
           <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
-          <textarea id="promiseParagraph" name="promiseParagraph" rows="4" class="mt-1 block w-full input">{heroContent.promise.paragraph}</textarea>
+          <textarea id="promiseParagraph" name="promiseParagraph" rows="4" class="mt-1 block w-full input">{content.promiseParagraph}</textarea>
         </div>
         
         <div>
           <label for="promiseCtaButton" class="block text-sm font-medium text-foreground/90">Texto del Botón CTA (Promesa)</label>
-          <input type="text" id="promiseCtaButton" name="promiseCtaButton" value={heroContent.promise.ctaButton} class="mt-1 block w-full input">
+          <input type="text" id="promiseCtaButton" name="promiseCtaButton" value={content.promiseCtaButton} class="mt-1 block w-full input">
         </div>
       </div>
     </form>
@@ -113,11 +121,9 @@ document.addEventListener('DOMContentLoaded', () => {
       highlight: formData.get('highlight'),
       paragraph: formData.get('paragraph'),
       ctaButton: formData.get('ctaButton'),
-      promise: {
-        title: formData.get('promiseTitle'),
-        paragraph: formData.get('promiseParagraph'),
-        ctaButton: formData.get('promiseCtaButton')
-      }
+      promiseTitle: formData.get('promiseTitle'),
+      promiseParagraph: formData.get('promiseParagraph'),
+      promiseCtaButton: formData.get('promiseCtaButton')
     };
 
     try {

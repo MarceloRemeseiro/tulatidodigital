@@ -2,18 +2,19 @@
 // Esta es una página estática independiente para el servicio de vídeos con IA
 export const prerender = false;
 
-import { promises as fs } from 'fs';
-import path from 'path';
-import type { VideoShowcaseContent } from '../content/types';
+import { getVideoShowcase } from '../lib/content';
 
-// Leer el archivo de videoshowcase para obtener el nombre del video
-const videoshowcasePath = path.join(process.cwd(), 'src/content/videoshowcase.json');
-const videoshowcaseFile = await fs.readFile(videoshowcasePath, 'utf-8');
-const videoshowcaseContent = JSON.parse(videoshowcaseFile) as VideoShowcaseContent;
+// Leer el contenido de videoshowcase desde la base de datos
+const videoshowcaseContent = await getVideoShowcase();
+
+if (!videoshowcaseContent) {
+  throw new Error('VideoShowcase content not found in database');
+}
+
 const videoFileName = videoshowcaseContent.videoFileName || 'videoAvatar.mp4';
 
 // Debug temporal para verificar el video
-console.log('Sin-camara: Video filename from JSON:', videoFileName);
+console.log('Sin-camara: Video filename from DB:', videoFileName);
 ---
 
 <!DOCTYPE html>

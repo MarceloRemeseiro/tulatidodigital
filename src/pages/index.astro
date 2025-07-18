@@ -12,17 +12,25 @@ import Values from '../components/Values.astro';
 import Reasons from '../components/Reasons.astro';
 import Contact from '../components/Contact.astro';
 import Footer from '../components/Footer.astro';
-import { promises as fs } from 'fs';
-import path from 'path';
-import type { LayoutContent } from '../content/types';
+import { getLayoutConfig } from '../lib/content';
 
-// Leer configuración del layout
-const layoutPath = path.join(process.cwd(), 'src/content/layout.json');
-const layoutFile = await fs.readFile(layoutPath, 'utf-8');
-const layoutContent = JSON.parse(layoutFile) as LayoutContent;
+// Leer configuración del layout desde la base de datos
+const layoutContent = await getLayoutConfig();
 
-// Ordenar componentes habilitados por posición
-const enabledComponents = layoutContent.components
+if (!layoutContent) {
+  throw new Error('Layout config not found in database');
+}
+
+// Type casting para JSONB y ordenar componentes habilitados por posición
+const components = layoutContent.components as Array<{
+  id: string;
+  name: string;
+  component: string;
+  enabled: boolean;
+  position: number;
+}>;
+
+const enabledComponents = components
   .filter(comp => comp.enabled)
   .sort((a, b) => a.position - b.position);
 

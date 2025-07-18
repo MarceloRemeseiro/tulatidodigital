@@ -1,17 +1,22 @@
 import type { APIRoute } from 'astro';
 import fs from 'node:fs';
 import path from 'node:path';
+import { db } from '../../lib/db';
+import { videoShowcase } from '../../lib/schema';
+import { eq } from 'drizzle-orm';
 
 const PUBLIC_DIR = path.join(process.cwd(), 'public');
-const CONTENT_FILE = path.join(process.cwd(), 'src/content/videoshowcase.json');
 
 // Extensiones de video permitidas
 const ALLOWED_EXTENSIONS = ['.mp4', '.webm', '.mov', '.avi'];
 
-// Función para obtener el video actual
-function getCurrentVideo(): string | null {
+// Función para obtener el video actual desde la base de datos
+async function getCurrentVideo(): Promise<string | null> {
   try {
-    const content = JSON.parse(fs.readFileSync(CONTENT_FILE, 'utf-8'));
+    const result = await db.select().from(videoShowcase).limit(1);
+    const content = result[0];
+    if (!content) return null;
+    
     const videoPath = path.join(PUBLIC_DIR, content.videoFileName || '');
     return fs.existsSync(videoPath) ? content.videoFileName : null;
   } catch {
@@ -19,26 +24,31 @@ function getCurrentVideo(): string | null {
   }
 }
 
-// Función para actualizar el nombre del video en el JSON
-function updateVideoFileName(fileName: string) {
-  try {
-    console.log('Updating video filename to:', fileName);
-    console.log('Reading from:', CONTENT_FILE);
-    
-    const content = JSON.parse(fs.readFileSync(CONTENT_FILE, 'utf-8'));
-    console.log('Current content videoFileName:', content.videoFileName);
-    
-    content.videoFileName = fileName;
-    console.log('New content videoFileName:', content.videoFileName);
-    
-    fs.writeFileSync(CONTENT_FILE, JSON.stringify(content, null, 2));
-    console.log('JSON file updated successfully');
-    
-    // Verificar que se escribió correctamente
-    const verifyContent = JSON.parse(fs.readFileSync(CONTENT_FILE, 'utf-8'));
-    console.log('Verified videoFileName after write:', verifyContent.videoFileName);
-  } catch (error) {
-    console.error('Error updating video filename:', error);
+// Función para actualizar el nombre del video en la base de datos
+async function updateVideoInDatabase(fileName: string): Promise<void> {
+  const existing = await db.select().from(videoShowcase).limit(1);
+  
+  if (existing.length > 0) {
+    await db.update(videoShowcase)
+      .set({
+        videoFileName: fileName,
+        updatedAt: new Date()
+      })
+      .where(eq(videoShowcase.id, existing[0].id));
+  } else {
+    // Si no existe contenido, crear uno nuevo con valores por defecto
+    await db.insert(videoShowcase).values({
+      mainTitle: 'Tu mensaje en vídeo',
+      mainTitleHighlight: 'sin cámara',
+      subtitle: 'Crea vídeos profesionales con IA',
+      videoSubtitle: 'Descubre cómo funciona',
+      videoFileName: fileName,
+      featuresTitle: 'Características',
+      features: [],
+      idealForTitle: 'Ideal para',
+      idealForItems: [],
+      buttons: {}
+    });
   }
 }
 
@@ -57,7 +67,7 @@ export const GET: APIRoute = async ({ request }) => {
     });
   }
 
-  const currentVideo = getCurrentVideo();
+  const currentVideo = await getCurrentVideo();
   
   return new Response(JSON.stringify({ 
     hasVideo: !!currentVideo,
@@ -85,7 +95,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   try {
     // Verificar si ya existe un video
-    const currentVideo = getCurrentVideo();
+    const currentVideo = await getCurrentVideo();
     if (currentVideo) {
       return new Response(JSON.stringify({ 
         error: 'Ya existe un video. Debe eliminarlo antes de subir uno nuevo.' 
@@ -141,7 +151,7 @@ export const POST: APIRoute = async ({ request }) => {
     fs.writeFileSync(filePath, buffer);
 
     // Actualizar referencia en JSON
-    updateVideoFileName(fileName);
+    await updateVideoInDatabase(fileName);
 
     return new Response(JSON.stringify({ 
       success: true,
@@ -176,7 +186,7 @@ export const DELETE: APIRoute = async ({ request }) => {
   }
 
   try {
-    const currentVideo = getCurrentVideo();
+    const currentVideo = await getCurrentVideo();
     
     if (!currentVideo) {
       return new Response(JSON.stringify({ 
@@ -195,7 +205,7 @@ export const DELETE: APIRoute = async ({ request }) => {
     }
 
     // Actualizar JSON para usar video por defecto
-    updateVideoFileName('videoAvatar.mp4');
+    await updateVideoInDatabase('videoAvatar.mp4');
 
     return new Response(JSON.stringify({ 
       success: true,

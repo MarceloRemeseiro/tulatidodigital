@@ -2,9 +2,7 @@
 export const prerender = false;
 
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import { promises as fs } from 'fs';
-import path from 'path';
-import type { VideoShowcaseContent } from '../../content/types';
+import { getVideoShowcase } from '../../lib/content';
 
 const cookies = Astro.cookies;
 const isAuthenticated = cookies.get('session')?.value === 'admin-logged-in';
@@ -13,11 +11,20 @@ if (!isAuthenticated) {
   return Astro.redirect('/login');
 }
 
-// Leer el contenido dinámicamente
-const videoshowcasePath = path.join(process.cwd(), 'src/content/videoshowcase.json');
-const videoshowcaseFile = await fs.readFile(videoshowcasePath, 'utf-8');
-const content = JSON.parse(videoshowcaseFile);
-const typedContent = content as VideoShowcaseContent;
+// Leer el contenido desde la base de datos
+const dbContent = await getVideoShowcase();
+
+if (!dbContent) {
+  throw new Error('VideoShowcase content not found in database');
+}
+
+// Type casting para JSONB fields
+const content = {
+  ...dbContent,
+  features: dbContent.features as Array<{ icon: string; text: string }>,
+  idealForItems: dbContent.idealForItems as string[],
+  buttons: dbContent.buttons as { primary?: { text: string; link: string }; secondary?: { text: string; link: string } }
+};
 
 // Pasar las credenciales de forma segura al cliente
 const credentials = {
@@ -258,7 +265,7 @@ const credentials = {
     </div>
   </div>
 
-  <script is:inline define:vars={{ initialContent: typedContent, authCredentials: credentials }}>
+  <script is:inline define:vars={{ initialContent: content, authCredentials: credentials }}>
     document.addEventListener('DOMContentLoaded', () => {
       let currentContent = JSON.parse(JSON.stringify(initialContent));
       
@@ -540,7 +547,7 @@ const credentials = {
           };
           
           const response = await fetch('/api/videoshowcase', {
-            method: 'PUT',
+            method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': authHeader
