@@ -55,16 +55,12 @@ const credentials = {
       </fieldset>
 
       <fieldset class="mt-8 border border-foreground/20 p-6 rounded-lg">
-        <legend class="text-xl font-bold px-2">Paquetes Integrales</legend>
-        <div id="packages-container" class="space-y-6">
-          <!-- Los paquetes se renderizarán aquí con JS -->
-        </div>
-      </fieldset>
-      
-      <fieldset class="mt-8 border border-foreground/20 p-6 rounded-lg">
-        <legend class="text-xl font-bold px-2">Servicios Individuales</legend>
+        <legend class="text-xl font-bold px-2">Servicios</legend>
         <div id="services-container" class="space-y-6">
           <!-- Los servicios se renderizarán aquí con JS -->
+        </div>
+        <div class="mt-6 pt-4 border-t border-foreground/10">
+          <button type="button" id="add-service-btn" class="button-secondary">Agregar Nuevo Servicio</button>
         </div>
       </fieldset>
 
@@ -126,11 +122,24 @@ const credentials = {
       <div>
         <label class="block text-sm font-medium">Descripción</label>
         <small class="text-xs text-foreground/60 block mb-1">Puedes usar **negritas** y saltos de línea</small>
-        <textarea data-field="description" rows="3" class="service-field mt-1 block w-full input"></textarea>
+        <textarea data-field="description" rows="4" class="service-field mt-1 block w-full input"></textarea>
       </div>
       <div>
         <label class="block text-sm font-medium">Texto del Botón (CTA)</label>
         <input type="text" data-field="cta" class="service-field mt-1 block w-full input">
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Tipo de Enlace</label>
+        <select data-field="linkType" class="service-field link-type-select mt-1 block w-full input ">
+          <option value="contact">Enlace a sección contacto (#contacto)</option>
+          <option value="internal">Página interna (ej: sin-camara)</option>
+          <option value="external">Página externa (URL completa)</option>
+        </select>
+      </div>
+      <div class="link-input-container hidden">
+        <label class="block text-sm font-medium link-input-label">URL Destino</label>
+        <input type="text" data-field="customLink" class="service-field mt-1 block w-full input" placeholder="">
+        <small class="text-xs text-foreground/60 mt-1 link-input-help"></small>
       </div>
     </div>
   </div>
@@ -145,42 +154,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // Preparar autenticación
   const authHeader = 'Basic ' + btoa(authCredentials.username + ':' + authCredentials.password);
 
-  // FIX: Asegurarse de que todos los elementos tengan un ID para poder editarlos.
-  // Estos IDs se guardarán permanentemente al hacer clic en "Guardar Cambios".
-  content.packages.forEach(pkg => {
-    if (!pkg.id) pkg.id = crypto.randomUUID();
-  });
+  // Asegurarse de que todos los servicios tengan un ID
   content.individualServices.forEach(service => {
     if (!service.id) service.id = crypto.randomUUID();
   });
 
   const form = document.getElementById('services-form');
-  const packagesContainer = document.getElementById('packages-container');
   const servicesContainer = document.getElementById('services-container');
-  const packageTemplate = document.getElementById('package-template');
-  const featureTemplate = document.getElementById('feature-template');
   const serviceTemplate = document.getElementById('service-template');
-
-  // Funciones para renderizar el contenido (sin cambios)
-  function renderPackages() {
-    packagesContainer.innerHTML = '';
-    content.packages.forEach(pkg => {
-      const pkgEl = packageTemplate.content.cloneNode(true).firstElementChild;
-      pkgEl.dataset.packageId = pkg.id;
-      pkgEl.querySelector('[data-field="title"]').value = pkg.title;
-      pkgEl.querySelector('[data-field="description"]').value = pkg.description;
-      pkgEl.querySelector('[data-field="cta"]').value = pkg.cta;
-      const featuresList = pkgEl.querySelector('.features-list');
-      featuresList.innerHTML = '';
-      pkg.features.forEach((feature, index) => {
-        const featureEl = featureTemplate.content.cloneNode(true).firstElementChild;
-        featureEl.querySelector('.feature-input').value = feature;
-        featureEl.dataset.featureIndex = index;
-        featuresList.appendChild(featureEl);
-      });
-      packagesContainer.appendChild(pkgEl);
-    });
-  }
+  const addServiceBtn = document.getElementById('add-service-btn');
 
   function renderServices() {
     servicesContainer.innerHTML = '';
@@ -190,75 +172,75 @@ document.addEventListener('DOMContentLoaded', () => {
       serviceEl.querySelector('[data-field="title"]').value = service.title;
       serviceEl.querySelector('[data-field="description"]').value = service.description;
       serviceEl.querySelector('[data-field="cta"]').value = service.cta;
+      
+      // Determinar el tipo de enlace basado en el servicio existente
+      let linkType = 'contact';
+      let customLink = '';
+      
+      if (service.type === 'ia-special' || service.customLink === 'sin-camara') {
+        linkType = 'internal';
+        customLink = 'sin-camara';
+      } else if (service.customLink) {
+        if (service.customLink.startsWith('http')) {
+          linkType = 'external';
+          customLink = service.customLink;
+        } else {
+          linkType = 'internal';
+          customLink = service.customLink;
+        }
+      }
+      
+      serviceEl.querySelector('[data-field="linkType"]').value = linkType;
+      serviceEl.querySelector('[data-field="customLink"]').value = customLink;
+      
+      updateLinkInputVisibility(serviceEl);
       servicesContainer.appendChild(serviceEl);
     });
   }
 
-  function renderAll() {
-    renderPackages();
-    renderServices();
-  }
-  
-  // RENDERIZADO
-  function renderPackages() {
-    packagesContainer.innerHTML = '';
-    content.packages.forEach(pkg => {
-      const pkgEl = packageTemplate.content.cloneNode(true).firstElementChild;
-      pkgEl.dataset.packageId = pkg.id;
-      pkgEl.querySelector('[data-field="title"]').value = pkg.title;
-      pkgEl.querySelector('[data-field="description"]').value = pkg.description;
-      pkgEl.querySelector('[data-field="cta"]').value = pkg.cta;
-      const featuresList = pkgEl.querySelector('.features-list');
-      featuresList.innerHTML = '';
-      pkg.features.forEach((feature, index) => {
-        const featureEl = featureTemplate.content.cloneNode(true).firstElementChild;
-        featureEl.querySelector('.feature-input').value = feature;
-        featureEl.dataset.featureIndex = index;
-        featuresList.appendChild(featureEl);
-      });
-      packagesContainer.appendChild(pkgEl);
-    });
-  }
-
-  function renderServices() {
-    servicesContainer.innerHTML = '';
-    content.individualServices.forEach(service => {
-      const serviceEl = serviceTemplate.content.cloneNode(true).firstElementChild;
-      serviceEl.dataset.serviceId = service.id;
-      serviceEl.querySelector('[data-field="title"]').value = service.title;
-      serviceEl.querySelector('[data-field="description"]').value = service.description;
-      serviceEl.querySelector('[data-field="cta"]').value = service.cta;
-      servicesContainer.appendChild(serviceEl);
-    });
-  }
-
-  // MANEJO DE CLICS (Borrar) - SOLO LOCAL
-  form.addEventListener('click', (e) => {
-    const target = e.target;
+  // Función para mostrar/ocultar el campo de enlace personalizado
+  function updateLinkInputVisibility(serviceEl) {
+    const linkTypeSelect = serviceEl.querySelector('[data-field="linkType"]');
+    const linkContainer = serviceEl.querySelector('.link-input-container');
+    const linkInput = serviceEl.querySelector('[data-field="customLink"]');
+    const linkLabel = serviceEl.querySelector('.link-input-label');
+    const linkHelp = serviceEl.querySelector('.link-input-help');
     
-    const pkgEl = target.closest('.package-item');
-    if (pkgEl) {
-      const packageId = pkgEl.dataset.packageId;
-      if (target.classList.contains('delete-package-btn')) {
-        if (confirm('¿Seguro que quieres borrar este paquete?')) {
-          content.packages = content.packages.filter(p => p.id !== packageId);
-          renderPackages();
-        }
-      }
-      if (target.classList.contains('add-feature-btn')) {
-        const pkg = content.packages.find(p => p.id === packageId);
-        if (pkg) pkg.features.push('Nueva característica');
-        renderPackages();
-      }
-      if (target.classList.contains('delete-feature-btn')) {
-        const pkg = content.packages.find(p => p.id === packageId);
-        const featureEl = target.closest('.feature-item');
-        if (pkg && featureEl) {
-          pkg.features.splice(parseInt(featureEl.dataset.featureIndex, 10), 1);
-          renderPackages();
-        }
+    const linkType = linkTypeSelect.value;
+    
+    if (linkType === 'contact') {
+      linkContainer.classList.add('hidden');
+    } else {
+      linkContainer.classList.remove('hidden');
+      if (linkType === 'internal') {
+        linkLabel.textContent = 'Página Interna';
+        linkInput.placeholder = 'sin-camara';
+        linkHelp.textContent = 'Solo el nombre de la página, sin "/" al inicio';
+      } else if (linkType === 'external') {
+        linkLabel.textContent = 'URL Externa';
+        linkInput.placeholder = 'https://www.ejemplo.com';
+        linkHelp.textContent = 'URL completa incluyendo https://';
       }
     }
+  }
+
+  // Función para agregar nuevo servicio
+  function addNewService() {
+    const newService = {
+      id: crypto.randomUUID(),
+      title: 'Nuevo Servicio',
+      description: 'Descripción del servicio...',
+      cta: 'Saber más →',
+      linkType: 'contact',
+      customLink: ''
+    };
+    content.individualServices.push(newService);
+    renderServices();
+  }
+
+  // MANEJO DE CLICS (Borrar servicios) - SOLO LOCAL
+  form.addEventListener('click', (e) => {
+    const target = e.target;
     
     const serviceEl = target.closest('.service-item');
     if (serviceEl && target.classList.contains('delete-service-btn')) {
@@ -269,33 +251,41 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
+
+  // Agregar nuevo servicio
+  addServiceBtn.addEventListener('click', addNewService);
   
   // MANEJO DE EDICIÓN DE TEXTO - SOLO LOCAL
   form.addEventListener('input', (e) => {
     const target = e.target;
-    // ... (Lógica para actualizar el objeto 'content' localmente)
-    // Este código es un poco largo, pero maneja la actualización de todos los campos
-    const pkgEl = target.closest('.package-item');
     const serviceEl = target.closest('.service-item');
 
-    if (pkgEl) {
-        const packageId = pkgEl.dataset.packageId;
-        const pkg = content.packages.find(p => p.id === packageId);
-        if (!pkg) return;
-        if (target.matches('[data-field]')) {
-            pkg[target.dataset.field] = target.value;
-        } else if (target.matches('.feature-input')) {
-            const featureIndex = parseInt(target.closest('.feature-item').dataset.featureIndex, 10);
-            pkg.features[featureIndex] = target.value;
-        }
-    } else if (serviceEl) {
+    if (serviceEl) {
         const serviceId = serviceEl.dataset.serviceId;
         const service = content.individualServices.find(s => s.id === serviceId);
         if (service && target.matches('[data-field]')) {
             service[target.dataset.field] = target.value;
         }
-    } else { // Campos generales
+    } else { // Campos generales (título y subtítulo)
         if(content[target.id] !== undefined) content[target.id] = target.value;
+    }
+  });
+
+  // MANEJO DE CAMBIOS EN EL SELECT DE TIPO DE ENLACE
+  form.addEventListener('change', (e) => {
+    const target = e.target;
+    if (target.matches('.link-type-select')) {
+      const serviceEl = target.closest('.service-item');
+      updateLinkInputVisibility(serviceEl);
+      
+      // Limpiar el campo personalizado cuando se cambia el tipo
+      const customLinkInput = serviceEl.querySelector('[data-field="customLink"]');
+      if (target.value === 'contact') {
+        customLinkInput.value = '';
+        const serviceId = serviceEl.dataset.serviceId;
+        const service = content.individualServices.find(s => s.id === serviceId);
+        if (service) service.customLink = '';
+      }
     }
   });
 
@@ -323,6 +313,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  renderAll();
+  renderServices();
 });
 </script> 

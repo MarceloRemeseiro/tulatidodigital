@@ -11,6 +11,9 @@ const videoshowcasePath = path.join(process.cwd(), 'src/content/videoshowcase.js
 const videoshowcaseFile = await fs.readFile(videoshowcasePath, 'utf-8');
 const videoshowcaseContent = JSON.parse(videoshowcaseFile) as VideoShowcaseContent;
 const videoFileName = videoshowcaseContent.videoFileName || 'videoAvatar.mp4';
+
+// Debug temporal para verificar el video
+console.log('Sin-camara: Video filename from JSON:', videoFileName);
 ---
 
 <!DOCTYPE html>

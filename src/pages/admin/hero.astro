@@ -38,13 +38,18 @@ const credentials = {
     <form id="hero-form">
       <div class="space-y-6">
         <div>
-          <label for="headline" class="block text-sm font-medium text-foreground/90">Titular Principal</label>
-          <input type="text" id="headline" name="headline" value={heroContent.headline} class="mt-1 block w-full input">
+          <label for="mainTitle" class="block text-sm font-medium text-foreground/90">Título Principal (H1 - Más grande)</label>
+          <input type="text" id="mainTitle" name="mainTitle" value={heroContent.mainTitle} class="mt-1 block w-full input">
         </div>
         
         <div>
-          <label for="subheadline" class="block text-sm font-medium text-foreground/90">Sub-titular</label>
-          <input type="text" id="subheadline" name="subheadline" value={heroContent.subheadline} class="mt-1 block w-full input">
+          <label for="subtitle" class="block text-sm font-medium text-foreground/90">Subtítulo (H2 - Mediano)</label>
+          <input type="text" id="subtitle" name="subtitle" value={heroContent.subtitle} class="mt-1 block w-full input">
+        </div>
+        
+        <div>
+          <label for="highlight" class="block text-sm font-medium text-foreground/90">Texto Destacado (H3 - Pequeño, amarillo)</label>
+          <input type="text" id="highlight" name="highlight" value={heroContent.highlight} class="mt-1 block w-full input">
         </div>
         
         <div>
@@ -103,8 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!form) return;
     const formData = new FormData(form);
     const data = {
-      headline: formData.get('headline'),
-      subheadline: formData.get('subheadline'),
+      mainTitle: formData.get('mainTitle'),
+      subtitle: formData.get('subtitle'),
+      highlight: formData.get('highlight'),
       paragraph: formData.get('paragraph'),
       ctaButton: formData.get('ctaButton'),
       promise: {

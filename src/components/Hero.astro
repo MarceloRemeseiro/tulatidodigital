@@ -98,11 +98,14 @@ const content = JSON.parse(heroFile);
     
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
       <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold hero-text leading-tight">
-        {content.headline}
-        <span class="block text-yellow-400 mt-2 sm:mt-4">
-          {content.subheadline}
-        </span>
+        {content.mainTitle}
       </h1>
+      <h2 class="text-2xl sm:text-4xl lg:text-5xl font-bold hero-text leading-tight mt-4">
+        {content.subtitle}
+      </h2>
+      <h3 class="text-xl sm:text-3xl lg:text-4xl font-semibold text-yellow-400 leading-tight mt-4">
+        {content.highlight}
+      </h3>
       <p class="mt-8 max-w-3xl mx-auto text-lg sm:text-xl hero-paragraph leading-relaxed" set:html={formatText(content.paragraph)}>
       </p>
       <div class="mt-12">

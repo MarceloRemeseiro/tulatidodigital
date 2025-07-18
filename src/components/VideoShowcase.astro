@@ -16,6 +16,9 @@ const videoshowcasePath = path.join(process.cwd(), 'src/content/videoshowcase.js
 const videoshowcaseFile = await fs.readFile(videoshowcasePath, 'utf-8');
 const content = JSON.parse(videoshowcaseFile) as VideoShowcaseContent;
 
+// Debug temporal para verificar el video
+console.log('VideoShowcase: Video filename from JSON:', content.videoFileName);
+
 const bgClass = background === 'alt' ? 'bg-background-alt' : 'bg-background-main';
 ---
 

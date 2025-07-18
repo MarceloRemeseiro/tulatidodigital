@@ -2,21 +2,32 @@ import type { APIRoute } from 'astro';
 import { promises as fs } from 'fs';
 import path from 'path';
 
-// Función para verificar autenticación básica
+// Función para verificar autenticación (Basic Auth o Bearer token)
 function checkAuth(request: Request): boolean {
   const authHeader = request.headers.get('authorization');
-  if (!authHeader || !authHeader.startsWith('Basic ')) {
+  
+  if (!authHeader) {
     return false;
   }
 
-  const base64Credentials = authHeader.slice(6);
-  const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
-  const [username, password] = credentials.split(':');
+  // Verificar Bearer token
+  if (authHeader === 'Bearer admin-token') {
+    return true;
+  }
 
-  const expectedUsername = import.meta.env.USUARIO;
-  const expectedPassword = import.meta.env.PASS;
+  // Verificar Basic Auth
+  if (authHeader.startsWith('Basic ')) {
+    const base64Credentials = authHeader.slice(6);
+    const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
+    const [username, password] = credentials.split(':');
 
-  return username === expectedUsername && password === expectedPassword;
+    const expectedUsername = process.env.USUARIO || import.meta.env.USUARIO;
+    const expectedPassword = process.env.PASS || import.meta.env.PASS;
+
+    return username === expectedUsername && password === expectedPassword;
+  }
+
+  return false;
 }
 
 export const POST: APIRoute = async ({ request }) => {

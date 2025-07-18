@@ -25,14 +25,19 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     const allowedPaths = ['/en-construccion', '/login', '/sin-camara'];
     const currentPath = url.pathname;
     
+    // Permitir archivos estáticos (extensiones comunes)
+    const staticFileExtensions = ['.mp4', '.webm', '.mov', '.avi', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.css', '.js', '.woff', '.woff2', '.ttf'];
+    const isStaticFile = staticFileExtensions.some(ext => currentPath.toLowerCase().endsWith(ext));
+    
     console.log(`Middleware: Original URL: ${url.href}`);
     console.log(`Middleware: Pathname: "${currentPath}"`);
     console.log(`Middleware: PUBLICA=${isPublic}`);
+    console.log(`Middleware: Is static file:`, isStaticFile);
     console.log(`Middleware: Allowed paths:`, allowedPaths);
     console.log(`Middleware: Path included in allowed:`, allowedPaths.includes(currentPath));
     console.log(`Middleware: Starts with /api/:`, currentPath.startsWith('/api/'));
     
-    if (!allowedPaths.includes(currentPath) && !currentPath.startsWith('/api/')) {
+    if (!allowedPaths.includes(currentPath) && !currentPath.startsWith('/api/') && !isStaticFile) {
       console.log(`Middleware: ❌ Redirecting ${currentPath} to /en-construccion`);
       return redirect('/en-construccion');
     }

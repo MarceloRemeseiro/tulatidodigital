@@ -26,49 +26,8 @@ const { title, subtitle, toggle, packages, individualServices } = content;
       <p class="mt-4 max-w-2xl mx-auto text-lg text-foreground/80" set:html={formatText(subtitle)}></p>
     </div>
 
-    <div class="mt-12 flex justify-center space-x-2 md:space-x-4 bg-foreground/10 p-2 rounded-full max-w-sm mx-auto">
-      <button id="toggle-paquetes" class="w-full py-2 px-4 rounded-full text-sm md:text-base font-semibold transition active-toggle">
-        {toggle.packages}
-      </button>
-      <button id="toggle-individuales" class="w-full py-2 px-4 rounded-full text-sm md:text-base font-semibold transition text-foreground/80">
-        {toggle.individual}
-      </button>
-    </div>
-
-    <div id="paquetes-container" class="mt-16">
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {packages.map((pkg: Package, index: number) => (
-          <div class:list={[
-            "p-8 rounded-2xl shadow-lg transform hover:scale-105 transition-all duration-300",
-            index === 1 
-              ? "bg-gradient-brand text-primary-foreground ring-4 ring-offset-2 ring-primary" 
-              : "bg-background-secondary border border-foreground/10"
-          ]}>
-            <h3 class="text-2xl font-bold">{pkg.title}</h3>
-            <p class:list={["mt-4", { "opacity-90": index === 1, "text-foreground/80": index !== 1 }]} set:html={formatText(pkg.description)}>
-            </p>
-            <ul class:list={["mt-6 space-y-3", { "text-foreground/90": index !== 1 }]}>
-              {pkg.features.map((feature: string) => (
-                <li class="flex items-center">
-                  <span class:list={["mr-3", { "text-primary": index !== 1 }]}>✔</span><span set:html={formatText(feature)}></span>
-                </li>
-              ))}
-            </ul>
-            <a href="#contacto" class:list={[
-              "mt-8 block w-full text-center font-bold py-3 px-6 rounded-lg transition-colors",
-              index === 1 
-                ? "bg-background text-primary hover:bg-background/90" 
-                : "bg-primary text-primary-foreground hover:bg-primary/90"
-            ]}>
-              {pkg.cta}
-            </a>
-          </div>
-        ))}
-      </div>
-    </div>
-    
-    <div id="individuales-container" class="mt-16 hidden">
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8" id="services-grid">
+    <div class="mt-16">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" id="services-grid">
         <!-- Services will be dynamically loaded here -->
       </div>
     </div>
@@ -78,10 +37,6 @@ const { title, subtitle, toggle, packages, individualServices } = content;
 
 <script is:inline define:vars={{ services: individualServices }}>
   document.addEventListener('DOMContentLoaded', function () {
-    const togglePaquetes = document.getElementById('toggle-paquetes');
-    const toggleIndividuales = document.getElementById('toggle-individuales');
-    const paquetesContainer = document.getElementById('paquetes-container');
-    const individualesContainer = document.getElementById('individuales-container');
     const servicesGrid = document.getElementById('services-grid');
 
     // Función helper para formatear texto
@@ -94,41 +49,36 @@ const { title, subtitle, toggle, packages, individualServices } = content;
       return formatted;
     }
 
-    function renderIndividualServices() {
+    function renderServices() {
       if (!servicesGrid) return;
       servicesGrid.innerHTML = '';
       services.forEach((service) => {
+        // Determinar la URL del enlace y el target
+        let linkUrl = '#contacto'; // Por defecto
+        let linkTarget = '';
+        
+        if (service.linkType === 'internal' && service.customLink) {
+          linkUrl = `/${service.customLink}`;
+        } else if (service.linkType === 'external' && service.customLink) {
+          linkUrl = service.customLink;
+          linkTarget = ' target="_blank" rel="noopener noreferrer"';
+        } else if (service.type === 'ia-special') {
+          // Compatibilidad con el sistema anterior
+          linkUrl = '/sin-camara';
+        }
+        
         const serviceCard = document.createElement('div');
-        serviceCard.className = `bg-background p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow border border-foreground/10 text-center ${service.type === 'ia-special' ? 'bg-secondary/10 border-2 border-secondary' : ''}`;
+        serviceCard.className = 'bg-background p-6 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border border-foreground/10 text-center transform hover:scale-105';
         serviceCard.innerHTML = `
-          <h3 class="text-xl font-bold ${service.type === 'ia-special' ? 'text-secondary' : 'text-foreground'}">${service.title}</h3>
-          <p class="mt-2 text-sm ${service.type === 'ia-special' ? 'text-secondary' : 'text-foreground/80'}">${formatText(service.description)}</p>
-          ${service.type === 'ia-special' ? 
-            `<a href="/sin-camara" class="mt-4 inline-block text-secondary hover:text-secondary/90 font-semibold">${service.cta}</a>` :
-            `<a href="#contacto" class="mt-4 inline-block text-primary hover:text-primary/90 font-semibold">${service.cta}</a>`
-          }
+          <h3 class="text-xl font-bold text-foreground mb-3">${service.title}</h3>
+          <p class="text-sm text-foreground/80 leading-relaxed mb-4">${formatText(service.description)}</p>
+          <a href="${linkUrl}"${linkTarget} class="inline-block bg-primary text-primary-foreground px-4 py-2 rounded-lg font-semibold hover:bg-primary/90 transition-colors">${service.cta}</a>
         `;
         servicesGrid.appendChild(serviceCard);
       });
     }
 
-    togglePaquetes?.addEventListener('click', () => {
-      paquetesContainer?.classList.remove('hidden');
-      individualesContainer?.classList.add('hidden');
-      togglePaquetes?.classList.add('active-toggle');
-      toggleIndividuales?.classList.remove('active-toggle');
-      toggleIndividuales?.classList.add('text-foreground/80');
-    });
-
-    toggleIndividuales?.addEventListener('click', () => {
-      individualesContainer?.classList.remove('hidden');
-      paquetesContainer?.classList.add('hidden');
-      toggleIndividuales?.classList.add('active-toggle');
-      toggleIndividuales?.classList.remove('text-foreground/80');
-      togglePaquetes?.classList.remove('active-toggle');
-      renderIndividualServices();
-    });
-
-    togglePaquetes?.click();
+    // Renderizar servicios al cargar la página
+    renderServices();
   });
 </script> 
