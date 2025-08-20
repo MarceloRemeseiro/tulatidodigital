@@ -36,7 +36,7 @@ RUN chmod -R 755 ./public && chown -R node:node ./public
 # Cambiar al usuario node para ejecutar la aplicación
 USER node
 
-EXPOSE 1030
+EXPOSE 1003
 
 ENV HOST="0.0.0.0"
 
